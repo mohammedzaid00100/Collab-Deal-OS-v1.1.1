@@ -1,0 +1,26 @@
+name: Account maintenance
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+permissions: {}
+concurrency:
+  group: account-maintenance
+  cancel-in-progress: false
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Process notifications and expired AI reservations
+        env:
+          SITE_ORIGIN: ${{ secrets.SITE_ORIGIN }}
+          MAINTENANCE_JOB_SECRET: ${{ secrets.MAINTENANCE_JOB_SECRET }}
+        run: |
+          if [ -z "$SITE_ORIGIN" ] || [ -z "$MAINTENANCE_JOB_SECRET" ]; then
+            echo 'Configure SITE_ORIGIN and MAINTENANCE_JOB_SECRET to enable scheduled maintenance.'
+            exit 1
+          fi
+          curl --fail --silent --show-error --max-time 90 --request POST \
+            --header "Authorization: Bearer $MAINTENANCE_JOB_SECRET" \
+            "$SITE_ORIGIN/api/jobs/maintenance"

@@ -1,0 +1,42 @@
+name: Android package
+on:
+  workflow_dispatch:
+    inputs:
+      app_origin:
+        description: Public HTTPS application origin
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@v3
+      - run: npm ci
+      - run: npm run typecheck && npm test && npm run test:db
+      - run: npm run android:prepare
+        env:
+          CAPACITOR_SERVER_URL: ${{ inputs.app_origin }}
+      - name: Build debug APK and release bundle
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleDebug bundleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: collab-deal-os-android
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+            android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
