@@ -1,91 +1,38 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Check, Sparkles } from 'lucide-react';
+import { Check, Gift, Link2, MessageCircle } from 'lucide-react';
 import { PublicHeader } from '@/components/public/public-header';
 import { PublicFooter } from '@/components/public/public-footer';
-import { publicPlans, type PlanDefinition } from '@/lib/plans';
-import type { AccountType } from '@/types/domain';
 
-export const metadata: Metadata = { title: 'Pricing' };
+export const metadata: Metadata = { title: 'Free early access' };
 
-const audienceCopy = {
-  creator: {
-    eyebrow: 'Creator plans',
-    title: 'Know your value at every stage.',
-    description: 'Find opportunities and evaluate brand offers with creator-focused deal intelligence.',
-  },
-  brand: {
-    eyebrow: 'Brand plans',
-    title: 'Structure better creator investments.',
-    description: 'Compare creator fit and evaluate requested or proposed deal terms from the brand perspective.',
-  },
-} as const;
+const included = [
+  'Brand and creator accounts',
+  'Published collaboration deals',
+  'Creator interest comments',
+  'Private brand–creator messaging',
+  'Campaign and offer tools',
+  'Creator discovery and analytics',
+];
 
 export default function PricingPage() {
   return (
     <div className="min-h-svh bg-slate-50">
       <PublicHeader />
-      <main className="mx-auto w-[min(1120px,calc(100%-32px))] py-16 sm:py-20">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.1em] text-violet-700">
-            <Sparkles className="size-3.5" />
-            Equal pricing. Role-specific value.
-          </span>
-          <h1 className="mt-5 text-4xl font-bold tracking-[-0.055em] text-slate-950 sm:text-5xl">
-            Deal intelligence that pays for itself.
-          </h1>
-          <p className="mt-4 text-base leading-7 text-slate-600">
-            Creator and brand subscriptions have the same prices. Each presentation below explains the value for that side of the deal.
-          </p>
-        </div>
-
-        <PricingSection role="creator" />
-        <PricingSection role="brand" />
-
-        <p className="mt-9 text-center text-xs leading-5 text-slate-500">
-          Paid access activates only after a verified Razorpay webhook. Paid evaluation limits remain configuration-driven and will be published before billing is enabled.
-        </p>
+      <main className="mx-auto w-[min(960px,calc(100%-32px))] py-16 sm:py-24">
+        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          <div className="bg-slate-950 px-6 py-10 text-white sm:px-10 sm:py-14">
+            <span className="inline-flex items-center gap-2 rounded-full bg-emerald-400/10 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.1em] text-emerald-300"><Gift className="size-3.5" />Early access</span>
+            <h1 className="mt-5 max-w-2xl text-4xl font-bold tracking-[-0.055em] sm:text-5xl">Everything is free for creators and brands right now.</h1>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">Collab Deal OS is focusing on making brand–creator connections work well before introducing any paid plans. There is currently no subscription required to use the product.</p>
+          </div>
+          <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[1fr_320px]">
+            <div><p className="text-xs font-bold uppercase tracking-[0.1em] text-violet-700">Included for everyone</p><ul className="mt-5 grid gap-3 sm:grid-cols-2">{included.map((item) => <li className="flex items-start gap-2.5 text-sm text-slate-700" key={item}><Check className="mt-0.5 size-4 shrink-0 text-emerald-600" />{item}</li>)}</ul></div>
+            <aside className="rounded-2xl bg-slate-50 p-5"><div className="flex items-center gap-2 text-sm font-bold text-slate-950"><Link2 className="size-4 text-violet-600" />Connect first</div><p className="mt-2 text-xs leading-5 text-slate-500">Brands post real deals. Creators comment when interested. Brands can then open a private conversation.</p><div className="mt-4 flex items-center gap-2 text-sm font-bold text-slate-950"><MessageCircle className="size-4 text-blue-600" />No paid tier required</div><div className="mt-5 grid gap-2"><Link className="inline-flex min-h-11 items-center justify-center rounded-xl bg-slate-950 px-4 text-sm font-semibold text-white" href="/signup?role=creator">Join as creator</Link><Link className="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-800" href="/signup?role=brand">Join as brand</Link></div></aside>
+          </div>
+        </section>
       </main>
       <PublicFooter />
     </div>
   );
-}
-
-function PricingSection({ role }: { role: AccountType }) {
-  const copy = audienceCopy[role];
-  return (
-    <section className="mt-16" aria-labelledby={`${role}-pricing-title`}>
-      <div className="max-w-2xl">
-        <p className="text-xs font-bold uppercase tracking-[0.12em] text-violet-700">{copy.eyebrow}</p>
-        <h2 id={`${role}-pricing-title`} className="mt-2 text-2xl font-bold tracking-[-0.04em] text-slate-950 sm:text-3xl">{copy.title}</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-600">{copy.description}</p>
-      </div>
-      <div className="mt-7 grid gap-4 lg:grid-cols-3">
-        {publicPlans.map((plan) => <PlanCard key={plan.id} plan={plan} role={role} />)}
-      </div>
-    </section>
-  );
-}
-
-function PlanCard({ plan, role }: { plan: PlanDefinition; role: AccountType }) {
-  const featured = plan.id === 'PRO';
-  const price = plan.monthlyPriceInr === 0 ? '₹0' : `₹${plan.monthlyPriceInr}`;
-  return (
-    <article className={`relative flex flex-col rounded-2xl border p-6 shadow-sm ${featured ? 'border-violet-300 bg-slate-950 text-white shadow-xl' : 'border-slate-200 bg-white text-slate-950'}`}>
-      {featured ? <span className="absolute right-5 top-5 rounded-full bg-violet-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-violet-200">Most popular</span> : null}
-      <p className={`text-xs font-bold uppercase tracking-[0.1em] ${featured ? 'text-violet-300' : 'text-violet-700'}`}>{plan.name}</p>
-      <div className="mt-5 flex items-end gap-2"><strong className="text-4xl tracking-[-0.04em]">{price}</strong><span className={`pb-1 text-sm ${featured ? 'text-slate-400' : 'text-slate-500'}`}>/ month</span></div>
-      <p className={`mt-4 min-h-12 text-sm leading-6 ${featured ? 'text-slate-300' : 'text-slate-600'}`}>{planDescription(plan.id, role)}</p>
-      <ul className="my-6 grid gap-3">{plan.features.map((feature) => <li className="flex gap-2.5 text-sm" key={feature}><Check className={`mt-0.5 size-4 shrink-0 ${featured ? 'text-emerald-300' : 'text-emerald-600'}`} aria-hidden="true" />{feature}</li>)}</ul>
-      <Link className={`mt-auto inline-flex min-h-11 items-center justify-center rounded-xl px-4 text-sm font-semibold ${featured ? 'bg-white text-slate-950' : 'bg-slate-950 text-white'}`} href={`/signup?role=${role}`}>
-        {plan.id === 'FREE' ? `Start as ${role}` : `Choose ${plan.name}`}
-      </Link>
-    </article>
-  );
-}
-
-function planDescription(plan: PlanDefinition['id'], role: AccountType) {
-  if (plan === 'FREE') return role === 'creator' ? 'Explore opportunities and understand your first deals.' : 'Create your profile and structure your first collaborations.';
-  if (plan === 'PRO') return role === 'creator' ? 'For creators evaluating an active deal pipeline.' : 'For brands running an active creator campaign pipeline.';
-  return role === 'creator' ? 'For high-volume creator partnerships.' : 'For high-volume brand collaboration programs.';
 }
