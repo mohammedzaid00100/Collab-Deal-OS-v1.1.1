@@ -6,14 +6,14 @@ import { usePathname } from 'next/navigation';
 import {
   BarChart3,
   Bell,
-  Bot,
   BriefcaseBusiness,
-  CircleDollarSign,
   Compass,
   FileText,
   Gauge,
   Handshake,
   LayoutDashboard,
+  Link2,
+  MessageCircle,
   Search,
   Settings,
   UserRound,
@@ -26,28 +26,28 @@ import type { AccountType, PlanTier } from '@/types/domain';
 
 const creatorNav = [
   ['Dashboard', '/creator/dashboard', LayoutDashboard],
-  ['AI Deal Advisor', '/creator/ai-advisor', Bot],
+  ['Connect', '/creator/connect', Link2],
+  ['Messages', '/creator/messages', MessageCircle],
   ['Opportunities', '/creator/opportunities', Compass],
   ['Offers', '/creator/offers', Handshake],
   ['Analytics', '/creator/analytics', BarChart3],
-  ['Subscription', '/creator/subscription', CircleDollarSign],
   ['Settings', '/creator/settings', Settings],
 ] as const;
 
 const brandNav = [
   ['Dashboard', '/brand/dashboard', LayoutDashboard],
+  ['Connect', '/brand/connect', Link2],
+  ['Messages', '/brand/messages', MessageCircle],
   ['Campaigns', '/brand/campaigns', BriefcaseBusiness],
   ['Creator Discovery', '/brand/creators', Search],
   ['Matches', '/brand/matches', UsersRound],
   ['Offers', '/brand/offers', FileText],
   ['Analytics', '/brand/analytics', BarChart3],
-  ['Subscription / Billing', '/brand/subscription', CircleDollarSign],
-  ['AI Deal Advisor', '/brand/ai-advisor', Bot],
   ['Settings', '/brand/settings', Settings],
 ] as const;
 
-const creatorMobile = [creatorNav[0], creatorNav[2], creatorNav[1], creatorNav[3], ['Profile', '/creator/profile', UserRound]] as const;
-const brandMobile = [brandNav[0], brandNav[1], brandNav[2], brandNav[4], ['Profile', '/brand/profile', UserRound]] as const;
+const creatorMobile = [creatorNav[0], creatorNav[1], creatorNav[2], creatorNav[3], ['Profile', '/creator/profile', UserRound]] as const;
+const brandMobile = [brandNav[0], brandNav[1], brandNav[2], brandNav[3], ['Profile', '/brand/profile', UserRound]] as const;
 
 interface AppShellProps {
   role: AccountType;
@@ -57,7 +57,7 @@ interface AppShellProps {
   children: ReactNode;
 }
 
-export function AppShell({ role, displayName, email, plan, children }: AppShellProps) {
+export function AppShell({ role, displayName, email, children }: AppShellProps) {
   const pathname = usePathname();
   const navItems = role === 'creator' ? creatorNav : brandNav;
   const mobileItems = role === 'creator' ? creatorMobile : brandMobile;
@@ -77,7 +77,7 @@ export function AppShell({ role, displayName, email, plan, children }: AppShellP
         <div className="mt-auto border-t border-slate-100 pt-4">
           <div className="mb-2 flex items-center gap-3 rounded-xl px-3 py-2">
             <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-blue-100 text-sm font-bold text-violet-700">{displayName.slice(0, 1).toUpperCase()}</span>
-            <span className="min-w-0"><strong className="block truncate text-xs text-slate-900">{displayName}</strong><span className="mt-0.5 block truncate text-[11px] text-slate-400">{plan} · {email}</span></span>
+            <span className="min-w-0"><strong className="block truncate text-xs text-slate-900">{displayName}</strong><span className="mt-0.5 block truncate text-[11px] text-slate-400">{email}</span></span>
           </div>
           <LogoutButton />
         </div>
@@ -86,11 +86,11 @@ export function AppShell({ role, displayName, email, plan, children }: AppShellP
       <div className="min-w-0 lg:col-start-2">
         <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur sm:px-6 lg:px-8">
           <BrandLogo className="lg:hidden" />
-          <div className="hidden items-center gap-2 text-xs font-semibold text-slate-500 lg:flex"><Gauge className="size-4" aria-hidden="true" />Clear terms. Fair decisions.</div>
+          <div className="hidden items-center gap-2 text-xs font-semibold text-slate-500 lg:flex"><Gauge className="size-4" aria-hidden="true" />Real brands. Real creators. Clear deals.</div>
           <div className="flex items-center gap-2">
             <Link className="relative flex size-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900" href={`/${role}/notifications`} aria-label="Notifications"><Bell className="size-[19px]" /><span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-violet-600" /></Link>
             <span className="lg:hidden"><LogoutButton compact /></span>
-            <span className="hidden rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-600 sm:block">{plan} plan</span>
+            <span className="hidden rounded-full bg-emerald-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-emerald-700 sm:block">Free early access</span>
           </div>
         </header>
         <main id="app-main" className="mx-auto w-full max-w-[1420px] px-4 py-6 pb-28 sm:px-6 lg:px-8 lg:py-8 lg:pb-10">{children}</main>
