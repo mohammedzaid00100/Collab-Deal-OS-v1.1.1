@@ -11,10 +11,10 @@ drop policy if exists conversations_select_developer_admin on public.conversatio
 drop policy if exists conversation_messages_select_developer_admin on public.conversation_messages;
 drop policy if exists offers_select_developer_admin on public.offers;
 
--- Remove the internal admin helper before dropping its backing table.
-drop function if exists public.is_developer_admin();
-
--- Remove manual payout/developer-console prototype state.
+-- Drop prototype tables first because their RLS policies reference is_developer_admin().
 drop table if exists public.prototype_deal_events cascade;
 drop table if exists public.prototype_withdrawal_requests cascade;
 drop table if exists public.developer_admins cascade;
+
+-- Remove the internal admin helper after its dependent prototype policies are gone.
+drop function if exists public.is_developer_admin();
