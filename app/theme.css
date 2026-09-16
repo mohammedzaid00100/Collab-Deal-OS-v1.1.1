@@ -1,0 +1,50 @@
+/* Workspace theme overrides. The public landing/auth pages keep their own design. */
+html[data-theme='dark'] [data-app-shell] {
+  background: #020617 !important;
+  color: #e2e8f0;
+  color-scheme: dark;
+}
+
+html[data-theme='dark'] [data-app-shell] [class~='bg-white'],
+html[data-theme='dark'] [data-app-shell] [class*='bg-white/'] {
+  background-color: #0f172a !important;
+}
+
+html[data-theme='dark'] [data-app-shell] [class~='bg-slate-50'],
+html[data-theme='dark'] [data-app-shell] [class*='bg-slate-50/'],
+html[data-theme='dark'] [data-app-shell] [class~='bg-slate-100'] {
+  background-color: #111827 !important;
+}
+
+html[data-theme='dark'] [data-app-shell] [class~='border-slate-100'],
+html[data-theme='dark'] [data-app-shell] [class~='border-slate-200'],
+html[data-theme='dark'] [data-app-shell] [class~='border-slate-300'] {
+  border-color: #334155 !important;
+}
+
+html[data-theme='dark'] [data-app-shell] [class~='text-slate-950'],
+html[data-theme='dark'] [data-app-shell] [class~='text-slate-900'],
+html[data-theme='dark'] [data-app-shell] [class~='text-slate-800'],
+html[data-theme='dark'] [data-app-shell] [class~='text-slate-700'] {
+  color: #f8fafc !important;
+}
+
+html[data-theme='dark'] [data-app-shell] [class~='text-slate-600'],
+html[data-theme='dark'] [data-app-shell] [class~='text-slate-500'] {
+  color: #94a3b8 !important;
+}
+
+html[data-theme='dark'] [data-app-shell] [class~='text-slate-400'] {
+  color: #64748b !important;
+}
+
+html[data-theme='dark'] [data-app-shell] input,
+html[data-theme='dark'] [data-app-shell] textarea,
+html[data-theme='dark'] [data-app-shell] select {
+  color: #f8fafc;
+}
+
+html[data-theme='dark'] [data-app-shell] input::placeholder,
+html[data-theme='dark'] [data-app-shell] textarea::placeholder {
+  color: #64748b;
+}
