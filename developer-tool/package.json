@@ -1,0 +1,33 @@
+{
+  "name": "collab-deal-os-developer-tool",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Internal Windows operator console for the Collab Deal OS prototype.",
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable"
+  },
+  "devDependencies": {
+    "electron": "^38.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.collabdealos.developer",
+    "productName": "Collab Deal OS Developer Tool",
+    "artifactName": "Collab-Deal-OS-Developer-Tool-${version}.${ext}",
+    "files": [
+      "main.cjs"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  }
+}
