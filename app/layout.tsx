@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import './theme.css';
 import { NativeBridge } from '@/components/mobile/native-bridge';
 import { ServiceWorker } from '@/components/mobile/service-worker';
 
