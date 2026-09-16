@@ -1,2 +1,5 @@
-import { SubscriptionPage } from '@/components/billing/subscription-page';
-export default function Page() { return <SubscriptionPage role="creator" />; }
+import { redirect } from 'next/navigation';
+
+export default function Page() {
+  redirect('/creator/wallet');
+}
