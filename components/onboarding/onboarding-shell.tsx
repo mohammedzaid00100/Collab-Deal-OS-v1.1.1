@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Check } from 'lucide-react';
+import { Check, LockKeyhole } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
 
 interface OnboardingShellProps {
@@ -50,6 +50,10 @@ export function OnboardingShell({
               </li>
             ))}
           </ol>
+          <div className="mt-6 rounded-2xl border border-violet-200 bg-violet-50 p-4 text-violet-950">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.08em]"><LockKeyhole className="size-4" />Next security step</div>
+            <p className="mt-2 text-xs leading-5 text-violet-800">After the profile is completed, Collab Deal OS requires a separate payment password before the workspace can be used for wallet actions, withdrawals, or creator payments.</p>
+          </div>
         </aside>
 
         <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8 lg:p-10">
