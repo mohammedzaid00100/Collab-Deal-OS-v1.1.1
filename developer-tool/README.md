@@ -10,7 +10,7 @@ By default the app opens:
 http://localhost:3000/developer
 ```
 
-That route contains the actual developer dashboard and talks to Supabase from the Collab Deal OS web server. The EXE does **not** contain the Supabase service-role/secret key.
+That route contains the actual developer dashboard and uses the signed-in Collab Deal OS session plus the database-backed `developer_admins` allowlist. The EXE does **not** contain a Supabase service-role/secret key.
 
 For a deployed environment, set `COLLAB_DEAL_OS_DEVELOPER_URL` before launching the app, for example:
 
@@ -18,7 +18,7 @@ For a deployed environment, set `COLLAB_DEAL_OS_DEVELOPER_URL` before launching 
 $env:COLLAB_DEAL_OS_DEVELOPER_URL="https://your-domain.example/developer"
 ```
 
-Production access should also set `DEVELOPER_ADMIN_EMAILS` on the web server. Local `npm run dev` permits signed-in access for prototype review.
+Only accounts enrolled in the `developer_admins` table can open the developer dashboard or approve/reject withdrawals.
 
 ## Local run
 
@@ -35,6 +35,8 @@ cd developer-tool
 npm install
 npm start
 ```
+
+If the Electron window is not already authenticated, sign in using the developer-admin Collab Deal OS account.
 
 ## Build the Windows EXE
 
