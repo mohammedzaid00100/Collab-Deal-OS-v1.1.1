@@ -9,12 +9,11 @@ import {
   MessagesSquare,
   ShieldAlert,
   UsersRound,
-  WalletCards,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
 import { WithdrawalActions } from '@/components/developer/withdrawal-actions';
 import { requireDeveloperAccess } from '@/lib/developer/access';
-import { createSupabaseAdminClient } from '@/lib/supabase/admin';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export const metadata: Metadata = { title: 'Developer Tool' };
 export const dynamic = 'force-dynamic';
@@ -30,14 +29,14 @@ type Withdrawal = { id: string; user_id: string; account_type: 'creator' | 'bran
 
 export default async function DeveloperPage() {
   const developerUser = await requireDeveloperAccess();
-  const admin = createSupabaseAdminClient();
+  const supabase = await createSupabaseServerClient();
 
-  if (!admin) {
+  if (!supabase) {
     return <DeveloperFrame>
       <section className="mx-auto max-w-2xl rounded-3xl border border-red-900/40 bg-red-950/30 p-8 text-center">
         <ShieldAlert className="mx-auto size-10 text-red-400" />
-        <h1 className="mt-4 text-2xl font-bold text-white">Developer data access is not configured</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-400">The web server needs SUPABASE_SECRET_KEY or SUPABASE_SERVICE_ROLE_KEY. The secret stays on the server and is never packaged inside the Windows developer app.</p>
+        <h1 className="mt-4 text-2xl font-bold text-white">Developer data access is unavailable</h1>
+        <p className="mt-2 text-sm leading-6 text-slate-400">The Collab Deal OS Supabase connection is not configured for this server.</p>
       </section>
     </DeveloperFrame>;
   }
@@ -54,15 +53,15 @@ export default async function DeveloperPage() {
     withdrawalsResult,
     completedTodayResult,
   ] = await Promise.all([
-    admin.from('users').select('id,email,account_type,created_at').order('created_at', { ascending: false }).limit(100),
-    admin.from('creator_profiles').select('id,user_id,full_name,username,niche').limit(200),
-    admin.from('brand_profiles').select('id,user_id,brand_name,industry').limit(200),
-    admin.from('campaigns').select('id,brand_profile_id,title,status,budget,currency,created_at,published_at').order('created_at', { ascending: false }).limit(50),
-    admin.from('campaign_comments').select('id,campaign_id,creator_profile_id,body,created_at').order('created_at', { ascending: false }).limit(50),
-    admin.from('conversations').select('id,campaign_id,brand_profile_id,creator_profile_id,created_at,updated_at').order('updated_at', { ascending: false }).limit(50),
-    admin.from('conversation_messages').select('id,conversation_id,sender_user_id,body,created_at').order('created_at', { ascending: false }).limit(50),
-    admin.from('prototype_withdrawal_requests').select('id,user_id,account_type,amount_inr,upi_id,status,created_at,completed_at,rejected_at').order('created_at', { ascending: false }).limit(100),
-    admin.from('offers').select('id', { count: 'exact', head: true }).eq('status', 'COMPLETED').gte('completed_at', dayStart),
+    supabase.from('users').select('id,email,account_type,created_at').order('created_at', { ascending: false }).limit(100),
+    supabase.from('creator_profiles').select('id,user_id,full_name,username,niche').limit(200),
+    supabase.from('brand_profiles').select('id,user_id,brand_name,industry').limit(200),
+    supabase.from('campaigns').select('id,brand_profile_id,title,status,budget,currency,created_at,published_at').order('created_at', { ascending: false }).limit(50),
+    supabase.from('campaign_comments').select('id,campaign_id,creator_profile_id,body,created_at').order('created_at', { ascending: false }).limit(50),
+    supabase.from('conversations').select('id,campaign_id,brand_profile_id,creator_profile_id,created_at,updated_at').order('updated_at', { ascending: false }).limit(50),
+    supabase.from('conversation_messages').select('id,conversation_id,sender_user_id,body,created_at').order('created_at', { ascending: false }).limit(50),
+    supabase.from('prototype_withdrawal_requests').select('id,user_id,account_type,amount_inr,upi_id,status,created_at,completed_at,rejected_at').order('created_at', { ascending: false }).limit(100),
+    supabase.from('offers').select('id', { count: 'exact', head: true }).eq('status', 'COMPLETED').gte('completed_at', dayStart),
   ]);
 
   const users = (usersResult.data ?? []) as AppUser[];
