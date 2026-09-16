@@ -18,6 +18,7 @@ import {
   Settings,
   UserRound,
   UsersRound,
+  WalletCards,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
 import { LogoutButton } from './logout-button';
@@ -63,15 +64,15 @@ export function AppShell({ role, displayName, email, children }: AppShellProps) 
   const mobileItems = role === 'creator' ? creatorMobile : brandMobile;
 
   return (
-    <div className="min-h-svh bg-slate-50 lg:grid lg:grid-cols-[250px_minmax(0,1fr)]">
-      <a className="fixed left-3 top-3 z-50 -translate-y-20 rounded-lg bg-slate-950 px-3 py-2 text-sm font-semibold text-white focus:translate-y-0" href="#app-main">Skip to content</a>
+    <div data-app-shell className="min-h-svh bg-slate-50 lg:grid lg:grid-cols-[250px_minmax(0,1fr)]">
+      <a className="fixed left-3 top-3 z-50 -translate-y-20 rounded-lg bg-slate-950 px-3 py-2 text-sm font-semibold text-white focus:translate-y-0" style={{ color: '#fff' }} href="#app-main">Skip to content</a>
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[250px] border-r border-slate-200 bg-white px-4 py-5 lg:flex lg:flex-col">
         <BrandLogo className="px-2" />
         <span className="mx-2 mt-4 w-fit rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.09em] text-violet-700">{role} workspace</span>
         <nav className="mt-7 grid gap-1" aria-label={`${role} navigation`}>
           {navItems.map(([label, href, Icon]) => {
             const active = pathname === href || (href !== `/${role}/dashboard` && pathname.startsWith(`${href}/`));
-            return <Link className={cn('flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition', active ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950')} href={href} key={href} aria-current={active ? 'page' : undefined}><Icon className="size-[18px]" aria-hidden="true" />{label}</Link>;
+            return <Link className={cn('flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition', active ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950')} style={active ? { color: '#fff' } : undefined} href={href} key={href} aria-current={active ? 'page' : undefined}><Icon className="size-[18px]" aria-hidden="true" />{label}</Link>;
           })}
         </nav>
         <div className="mt-auto border-t border-slate-100 pt-4">
@@ -88,9 +89,10 @@ export function AppShell({ role, displayName, email, children }: AppShellProps) 
           <BrandLogo className="lg:hidden" />
           <div className="hidden items-center gap-2 text-xs font-semibold text-slate-500 lg:flex"><Gauge className="size-4" aria-hidden="true" />Real brands. Real creators. Clear deals.</div>
           <div className="flex items-center gap-2">
+            <Link className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-700" href={`/${role}/wallet`} aria-label={`${role} wallet`}><WalletCards className="size-[18px]" /><span className="hidden sm:inline">Wallet</span></Link>
             <Link className="relative flex size-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900" href={`/${role}/notifications`} aria-label="Notifications"><Bell className="size-[19px]" /><span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-violet-600" /></Link>
             <span className="lg:hidden"><LogoutButton compact /></span>
-            <span className="hidden rounded-full bg-emerald-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-emerald-700 sm:block">Free early access</span>
+            <span className="hidden rounded-full bg-amber-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-amber-700 xl:block">Prototype</span>
           </div>
         </header>
         <main id="app-main" className="mx-auto w-full max-w-[1420px] px-4 py-6 pb-28 sm:px-6 lg:px-8 lg:py-8 lg:pb-10">{children}</main>
