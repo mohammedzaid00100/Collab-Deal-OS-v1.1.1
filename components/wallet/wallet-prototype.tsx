@@ -10,6 +10,7 @@ import {
   CreditCard,
   History,
   Landmark,
+  LoaderCircle,
   LockKeyhole,
   ShieldCheck,
   WalletCards,
@@ -30,6 +31,14 @@ const EMPTY_WALLET: PrototypeWalletState = { balance: 0, transactions: [] };
 
 type Dialog = 'add' | 'withdraw' | null;
 type WithdrawStep = 'amount' | 'upi' | 'confirm' | 'password' | 'submitted';
+type UpiVerificationState = {
+  status: 'idle' | 'checking' | 'verified' | 'error';
+  message: string;
+  registeredName?: string | null;
+  verifiedUpiId?: string;
+};
+
+const EMPTY_UPI_VERIFICATION: UpiVerificationState = { status: 'idle', message: '' };
 
 export function WalletPrototype({ role }: { role: AccountType }) {
   const [wallet, setWallet] = useState<PrototypeWalletState>(EMPTY_WALLET);
@@ -38,6 +47,7 @@ export function WalletPrototype({ role }: { role: AccountType }) {
   const [withdrawStep, setWithdrawStep] = useState<WithdrawStep>('amount');
   const [amount, setAmount] = useState('');
   const [upiId, setUpiId] = useState('');
+  const [upiVerification, setUpiVerification] = useState<UpiVerificationState>(EMPTY_UPI_VERIFICATION);
   const [password, setPassword] = useState('');
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
@@ -50,7 +60,9 @@ export function WalletPrototype({ role }: { role: AccountType }) {
   }, [role]);
 
   const numericAmount = Number(amount) || 0;
-  const upiValid = /^[A-Za-z0-9._-]{2,}@[A-Za-z0-9.-]{2,}$/.test(upiId.trim());
+  const normalizedUpi = upiId.trim().toLowerCase();
+  const upiFormatValid = /^[A-Za-z0-9._-]{2,}@[A-Za-z0-9.-]{2,}$/.test(upiId.trim());
+  const upiVerified = upiVerification.status === 'verified' && upiVerification.verifiedUpiId === normalizedUpi;
   const canWithdraw = numericAmount >= MIN_WITHDRAWAL && numericAmount <= wallet.balance;
   const title = role === 'brand' ? 'Brand wallet' : 'Creator wallet';
   const pendingWithdrawals = wallet.transactions.filter((item) => item.type === 'WITHDRAWAL' && item.status === 'Pending');
@@ -64,6 +76,7 @@ export function WalletPrototype({ role }: { role: AccountType }) {
     setWithdrawStep('amount');
     setAmount('');
     setUpiId('');
+    setUpiVerification(EMPTY_UPI_VERIFICATION);
     setPassword('');
     setError('');
     setFailedAttempts(0);
@@ -77,7 +90,49 @@ export function WalletPrototype({ role }: { role: AccountType }) {
     setWithdrawStep('amount');
     setAmount('');
     setUpiId('');
+    setUpiVerification(EMPTY_UPI_VERIFICATION);
     setPassword('');
+  }
+
+  function changeUpiId(value: string) {
+    setUpiId(value);
+    setUpiVerification(EMPTY_UPI_VERIFICATION);
+  }
+
+  async function verifyUpiId() {
+    if (!upiFormatValid || upiVerification.status === 'checking') return;
+    setUpiVerification({ status: 'checking', message: 'Verifying UPI ID with the payout provider…' });
+    try {
+      const response = await fetch('/api/wallet/verify-upi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ upiId: normalizedUpi }),
+      });
+      const data = await response.json().catch(() => null) as {
+        ok?: boolean;
+        verified?: boolean;
+        upiId?: string;
+        registeredName?: string | null;
+        message?: string;
+      } | null;
+
+      if (response.ok && data?.ok && data.verified && data.upiId) {
+        setUpiVerification({
+          status: 'verified',
+          message: data.message ?? 'UPI ID verified successfully.',
+          registeredName: data.registeredName ?? null,
+          verifiedUpiId: data.upiId.toLowerCase(),
+        });
+        return;
+      }
+
+      setUpiVerification({
+        status: 'error',
+        message: data?.message ?? 'This UPI ID could not be verified. Please check it and try again.',
+      });
+    } catch {
+      setUpiVerification({ status: 'error', message: 'UPI verification is temporarily unavailable. Please try again.' });
+    }
   }
 
   function addFunds() {
@@ -97,6 +152,10 @@ export function WalletPrototype({ role }: { role: AccountType }) {
 
   async function approveWithdrawalWithPassword() {
     setError('');
+    if (!upiVerified) {
+      setError('Verify the UPI ID with the payout provider before confirming this withdrawal.');
+      return;
+    }
     if (Date.now() < lockedUntil) {
       setError('Payment password is temporarily locked after repeated failed attempts. Try again shortly.');
       return;
@@ -114,14 +173,15 @@ export function WalletPrototype({ role }: { role: AccountType }) {
       return;
     }
 
+    const beneficiary = upiVerification.registeredName ? ` · Beneficiary: ${upiVerification.registeredName}` : '';
     const next = appendPrototypeTransaction(role, makePrototypeTransaction({
       type: 'WITHDRAWAL',
       label: 'Withdrawal requested',
-      detail: `UPI: ${upiId.trim()} · waiting for Collab Deal OS payout`,
+      detail: `Verified UPI: ${normalizedUpi}${beneficiary} · waiting for Collab Deal OS payout`,
       amount: numericAmount,
       direction: 'out',
       status: 'Pending',
-      upiId: upiId.trim(),
+      upiId: normalizedUpi,
     }), 0);
     setWallet(next);
     setWithdrawStep('submitted');
@@ -143,7 +203,7 @@ export function WalletPrototype({ role }: { role: AccountType }) {
           <h1 className="mt-1 text-3xl font-bold tracking-[-0.04em] text-slate-950">{title}</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">{helper}</p>
         </div>
-        <span className="w-fit rounded-full bg-amber-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.09em] text-amber-700">Demo mode · no real funds</span>
+        <span className="w-fit rounded-full bg-amber-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.09em] text-amber-700">Demo balance · real UPI verification when provider is connected</span>
       </div>
 
       {notice ? <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800" role="status">{notice}</div> : null}
@@ -161,7 +221,7 @@ export function WalletPrototype({ role }: { role: AccountType }) {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><span className="flex size-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700"><ShieldCheck className="size-5" /></span><h2 className="mt-4 font-bold text-slate-950">Payment security</h2><p className="mt-2 text-sm leading-6 text-slate-500">Money actions require the separate Collab Deal OS payment password created when the workspace is first opened. Five failed attempts temporarily lock the prototype flow.</p></div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><span className="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><CreditCard className="size-5" /></span><h2 className="mt-4 font-bold text-slate-950">Provider-backed settlement</h2><p className="mt-2 text-sm leading-6 text-slate-500">This prototype records demo states only. Real UPI validation, payout, settlement and webhook verification will come from the future payment-provider integration.</p></div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><span className="flex size-10 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><CreditCard className="size-5" /></span><h2 className="mt-4 font-bold text-slate-950">Provider-backed UPI verification</h2><p className="mt-2 text-sm leading-6 text-slate-500">Withdrawal cannot continue from a format check alone. The entered VPA must be verified by the configured payout provider before confirmation.</p></div>
         </div>
       </section>
 
@@ -181,14 +241,14 @@ export function WalletPrototype({ role }: { role: AccountType }) {
             <div className="mt-2 flex items-center rounded-xl border border-slate-200 bg-slate-50 px-4"><CircleDollarSign className="size-4 text-slate-400" /><input id="wallet-add-amount" className="min-h-12 w-full bg-transparent px-3 text-lg font-bold text-slate-950 outline-none" inputMode="numeric" min="0" step="1" type="number" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="1000" /></div>
             <p className="mt-2 text-xs leading-5 text-slate-500">Prototype top-up only. No card, bank or UPI transaction occurs. Real add-funds will be connected to the payment provider later.</p>
             <button className="mt-6 min-h-12 w-full rounded-xl bg-slate-950 px-4 text-sm font-bold text-white disabled:opacity-40" style={{ color: '#fff' }} type="button" disabled={numericAmount <= 0} onClick={addFunds}>Add demo funds</button>
-          </> : <WithdrawalFlow step={withdrawStep} amount={amount} setAmount={setAmount} numericAmount={numericAmount} balance={wallet.balance} canWithdraw={canWithdraw} upiId={upiId} setUpiId={setUpiId} upiValid={upiValid} password={password} setPassword={setPassword} error={error} onNextAmount={() => setWithdrawStep('upi')} onNextUpi={() => setWithdrawStep('confirm')} onApprove={() => setWithdrawStep('password')} onReject={resetFlow} onSubmitPassword={approveWithdrawalWithPassword} onDone={resetFlow} />}
+          </> : <WithdrawalFlow step={withdrawStep} amount={amount} setAmount={setAmount} numericAmount={numericAmount} balance={wallet.balance} canWithdraw={canWithdraw} upiId={upiId} setUpiId={changeUpiId} upiFormatValid={upiFormatValid} upiVerified={upiVerified} verification={upiVerification} onVerifyUpi={verifyUpiId} password={password} setPassword={setPassword} error={error} onNextAmount={() => setWithdrawStep('upi')} onNextUpi={() => setWithdrawStep('confirm')} onApprove={() => setWithdrawStep('password')} onReject={resetFlow} onSubmitPassword={approveWithdrawalWithPassword} onDone={resetFlow} />}
         </div>
       </div> : null}
     </div>
   );
 }
 
-function WithdrawalFlow({ step, amount, setAmount, numericAmount, balance, canWithdraw, upiId, setUpiId, upiValid, password, setPassword, error, onNextAmount, onNextUpi, onApprove, onReject, onSubmitPassword, onDone }: {
+function WithdrawalFlow({ step, amount, setAmount, numericAmount, balance, canWithdraw, upiId, setUpiId, upiFormatValid, upiVerified, verification, onVerifyUpi, password, setPassword, error, onNextAmount, onNextUpi, onApprove, onReject, onSubmitPassword, onDone }: {
   step: WithdrawStep;
   amount: string;
   setAmount: (value: string) => void;
@@ -197,7 +257,10 @@ function WithdrawalFlow({ step, amount, setAmount, numericAmount, balance, canWi
   canWithdraw: boolean;
   upiId: string;
   setUpiId: (value: string) => void;
-  upiValid: boolean;
+  upiFormatValid: boolean;
+  upiVerified: boolean;
+  verification: UpiVerificationState;
+  onVerifyUpi: () => void;
   password: string;
   setPassword: (value: string) => void;
   error: string;
@@ -220,14 +283,22 @@ function WithdrawalFlow({ step, amount, setAmount, numericAmount, balance, canWi
     <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.09em] text-slate-400"><span className="rounded-full bg-violet-100 px-2 py-1 text-violet-700">2</span>UPI destination</div>
     <label className="mt-4 block text-sm font-semibold text-slate-700" htmlFor="wallet-upi">Enter your UPI ID</label>
     <div className="mt-2 flex items-center rounded-xl border border-slate-200 bg-slate-50 px-4"><Landmark className="size-4 text-slate-400" /><input id="wallet-upi" className="min-h-12 w-full bg-transparent px-3 text-slate-950 outline-none" value={upiId} onChange={(event) => setUpiId(event.target.value)} placeholder="name@bank" autoCapitalize="none" /></div>
-    <p className="mt-2 text-xs leading-5 text-slate-500">Prototype checks the UPI format only. Actual UPI ownership/availability must be verified by the payment provider in production.</p>
-    <button className="mt-6 min-h-12 w-full rounded-xl bg-slate-950 px-4 text-sm font-bold text-white disabled:opacity-40" style={{ color: '#fff' }} type="button" disabled={!upiValid} onClick={onNextUpi}>Continue</button>
+    <p className="mt-2 text-xs leading-5 text-slate-500">Collab Deal OS does not accept a UPI ID just because its format looks correct. Verify it with the payout provider before continuing.</p>
+
+    <button className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-4 text-sm font-bold text-violet-800 disabled:cursor-not-allowed disabled:opacity-40" type="button" disabled={!upiFormatValid || verification.status === 'checking'} onClick={onVerifyUpi}>
+      {verification.status === 'checking' ? <><LoaderCircle className="size-4 animate-spin" />Verifying with provider…</> : <><ShieldCheck className="size-4" />Verify UPI ID</>}
+    </button>
+
+    {verification.status === 'verified' ? <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4"><div className="flex gap-3"><CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-600" /><div><p className="text-sm font-bold text-emerald-950">UPI ID verified</p><p className="mt-1 text-xs leading-5 text-emerald-800">{verification.registeredName ? `Registered beneficiary: ${verification.registeredName}. ` : ''}{verification.message}</p></div></div></div> : null}
+    {verification.status === 'error' ? <p className="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium leading-6 text-red-700" role="alert">{verification.message}</p> : null}
+
+    <button className="mt-4 min-h-12 w-full rounded-xl bg-slate-950 px-4 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-40" style={{ color: '#fff' }} type="button" disabled={!upiVerified} onClick={onNextUpi}>Continue with verified UPI</button>
   </>;
 
   if (step === 'confirm') return <>
     <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.09em] text-slate-400"><span className="rounded-full bg-violet-100 px-2 py-1 text-violet-700">3</span>Confirmation</div>
-    <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4"><div className="flex justify-between gap-4 text-sm"><span className="text-slate-500">Withdrawal amount</span><strong className="text-slate-950">₹{numericAmount.toLocaleString('en-IN')}</strong></div><div className="mt-3 flex justify-between gap-4 text-sm"><span className="text-slate-500">UPI ID</span><strong className="break-all text-right text-slate-950">{upiId}</strong></div></div>
-    <p className="mt-4 text-sm leading-6 text-slate-600">Check the amount and destination carefully. The next step asks for your Collab Deal OS payment password.</p>
+    <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4"><div className="flex justify-between gap-4 text-sm"><span className="text-slate-500">Withdrawal amount</span><strong className="text-slate-950">₹{numericAmount.toLocaleString('en-IN')}</strong></div><div className="mt-3 flex justify-between gap-4 text-sm"><span className="text-slate-500">Verified UPI ID</span><strong className="break-all text-right text-slate-950">{upiId}</strong></div>{verification.registeredName ? <div className="mt-3 flex justify-between gap-4 text-sm"><span className="text-slate-500">Registered beneficiary</span><strong className="text-right text-slate-950">{verification.registeredName}</strong></div> : null}</div>
+    <p className="mt-4 text-sm leading-6 text-slate-600">Check the amount and verified destination carefully. The next step asks for your Collab Deal OS payment password.</p>
     <div className="mt-6 grid gap-2 sm:grid-cols-2"><button className="min-h-12 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700" type="button" onClick={onReject}>Reject withdrawal</button><button className="min-h-12 rounded-xl bg-slate-950 px-4 text-sm font-bold text-white" style={{ color: '#fff' }} type="button" onClick={onApprove}>Approve withdrawal</button></div>
   </>;
 
