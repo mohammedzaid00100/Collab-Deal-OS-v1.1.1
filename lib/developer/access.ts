@@ -9,14 +9,8 @@ export async function requireDeveloperAccess() {
   const user = data.user;
   if (error || !user) redirect('/login');
 
-  const configured = (process.env.DEVELOPER_ADMIN_EMAILS ?? '')
-    .split(',')
-    .map((value) => value.trim().toLowerCase())
-    .filter(Boolean);
-  const email = user.email?.trim().toLowerCase() ?? '';
-  const allowed = process.env.NODE_ENV !== 'production' || (email && configured.includes(email));
-
-  if (!allowed) redirect('/');
+  const { data: adminResult, error: adminError } = await supabase.rpc('is_developer_admin');
+  if (adminError || adminResult !== true) redirect('/');
   return user;
 }
 
@@ -24,13 +18,8 @@ export async function canUseDeveloperApi() {
   const supabase = await createSupabaseServerClient();
   if (!supabase) return false;
   const { data, error } = await supabase.auth.getUser();
-  const user = data.user;
-  if (error || !user) return false;
+  if (error || !data.user) return false;
 
-  const configured = (process.env.DEVELOPER_ADMIN_EMAILS ?? '')
-    .split(',')
-    .map((value) => value.trim().toLowerCase())
-    .filter(Boolean);
-  const email = user.email?.trim().toLowerCase() ?? '';
-  return process.env.NODE_ENV !== 'production' || Boolean(email && configured.includes(email));
+  const { data: adminResult, error: adminError } = await supabase.rpc('is_developer_admin');
+  return !adminError && adminResult === true;
 }
