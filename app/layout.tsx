@@ -11,25 +11,27 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
   ),
   title: {
-    default: 'Collab Deal OS · Fair creator-brand deals',
+    default: 'Collab Deal OS · Creator-brand collaboration marketplace',
     template: '%s · Collab Deal OS',
   },
   description:
-    'AI-powered deal intelligence for creators and brands to discover, evaluate, and improve collaborations.',
+    'A creator-brand collaboration marketplace for discovering deals, negotiating in one place, and managing the path to payment.',
   openGraph: {
     title: 'Collab Deal OS',
-    description: 'Fair deals. Strong partnerships.',
+    description: 'Real brands. Real creators. Clear deals.',
     type: 'website',
     images: [{ url: '/og.png', width: 1728, height: 941, alt: 'Collab Deal OS' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Collab Deal OS',
-    description: 'Fair deals. Strong partnerships.',
+    description: 'Real brands. Real creators. Clear deals.',
     images: ['/og.png'],
   },
   icons: { icon: '/favicon.svg' },
 };
+
+const themeScript = `(() => { try { const saved = localStorage.getItem('collab-deal-os-theme'); document.documentElement.dataset.theme = saved === 'dark' ? 'dark' : 'light'; } catch (_) { document.documentElement.dataset.theme = 'light'; } })();`;
 
 export default function RootLayout({
   children,
@@ -37,7 +39,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
       <body className="antialiased"><NativeBridge /><ServiceWorker />{children}</body>
     </html>
   );
