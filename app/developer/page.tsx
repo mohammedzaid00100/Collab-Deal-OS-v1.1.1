@@ -26,6 +26,7 @@ type Comment = { id: string; campaign_id: string; creator_profile_id: string; bo
 type Conversation = { id: string; campaign_id: string; brand_profile_id: string; creator_profile_id: string; created_at: string; updated_at: string };
 type Message = { id: string; conversation_id: string; sender_user_id: string; body: string; created_at: string };
 type Withdrawal = { id: string; user_id: string; account_type: 'creator' | 'brand'; amount_inr: number; upi_id: string; status: 'PENDING' | 'COMPLETED' | 'REJECTED'; created_at: string; completed_at: string | null; rejected_at: string | null };
+type DealEvent = { id: string; conversation_id: string; campaign_id: string; creator_profile_id: string; creator_amount_inr: number | string; platform_fee_inr: number | string; brand_total_inr: number | string; created_at: string };
 
 export default async function DeveloperPage() {
   const developerUser = await requireDeveloperAccess();
@@ -51,17 +52,19 @@ export default async function DeveloperPage() {
     conversationsResult,
     messagesResult,
     withdrawalsResult,
+    dealEventsResult,
     completedTodayResult,
   ] = await Promise.all([
     supabase.from('users').select('id,email,account_type,created_at').order('created_at', { ascending: false }).limit(100),
     supabase.from('creator_profiles').select('id,user_id,full_name,username,niche').limit(200),
     supabase.from('brand_profiles').select('id,user_id,brand_name,industry').limit(200),
-    supabase.from('campaigns').select('id,brand_profile_id,title,status,budget,currency,created_at,published_at').order('created_at', { ascending: false }).limit(50),
-    supabase.from('campaign_comments').select('id,campaign_id,creator_profile_id,body,created_at').order('created_at', { ascending: false }).limit(50),
-    supabase.from('conversations').select('id,campaign_id,brand_profile_id,creator_profile_id,created_at,updated_at').order('updated_at', { ascending: false }).limit(50),
-    supabase.from('conversation_messages').select('id,conversation_id,sender_user_id,body,created_at').order('created_at', { ascending: false }).limit(50),
-    supabase.from('prototype_withdrawal_requests').select('id,user_id,account_type,amount_inr,upi_id,status,created_at,completed_at,rejected_at').order('created_at', { ascending: false }).limit(100),
-    supabase.from('offers').select('id', { count: 'exact', head: true }).eq('status', 'COMPLETED').gte('completed_at', dayStart),
+    supabase.from('campaigns').select('id,brand_profile_id,title,status,budget,currency,created_at,published_at').order('created_at', { ascending: false }).limit(100),
+    supabase.from('campaign_comments').select('id,campaign_id,creator_profile_id,body,created_at').order('created_at', { ascending: false }).limit(100),
+    supabase.from('conversations').select('id,campaign_id,brand_profile_id,creator_profile_id,created_at,updated_at').order('updated_at', { ascending: false }).limit(100),
+    supabase.from('conversation_messages').select('id,conversation_id,sender_user_id,body,created_at').order('created_at', { ascending: false }).limit(100),
+    supabase.from('prototype_withdrawal_requests').select('id,user_id,account_type,amount_inr,upi_id,status,created_at,completed_at,rejected_at').order('created_at', { ascending: false }).limit(200),
+    supabase.from('prototype_deal_events').select('id,conversation_id,campaign_id,creator_profile_id,creator_amount_inr,platform_fee_inr,brand_total_inr,created_at').order('created_at', { ascending: false }).limit(100),
+    supabase.from('prototype_deal_events').select('id', { count: 'exact', head: true }).gte('created_at', dayStart),
   ]);
 
   const users = (usersResult.data ?? []) as AppUser[];
@@ -72,6 +75,7 @@ export default async function DeveloperPage() {
   const conversations = (conversationsResult.data ?? []) as Conversation[];
   const messages = (messagesResult.data ?? []) as Message[];
   const withdrawals = (withdrawalsResult.data ?? []) as Withdrawal[];
+  const dealEvents = (dealEventsResult.data ?? []) as DealEvent[];
 
   const creatorById = new Map(creators.map((item) => [item.id, item]));
   const brandById = new Map(brands.map((item) => [item.id, item]));
@@ -88,13 +92,13 @@ export default async function DeveloperPage() {
       <div>
         <p className="text-xs font-bold uppercase tracking-[0.14em] text-violet-400">Collab Deal OS · Internal operations</p>
         <h1 className="mt-2 text-4xl font-bold tracking-[-0.05em] text-white">Developer Tool</h1>
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">Live prototype visibility across marketplace activity, creator interest, private deal conversations and the manual withdrawal queue.</p>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">Live prototype visibility across marketplace activity, creator interest, private deal conversations, completed demo deals and manual withdrawal operations.</p>
       </div>
       <div className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3 text-xs text-slate-400">Signed in as <strong className="text-slate-200">{developerUser.email ?? 'developer'}</strong></div>
     </div>
 
     <section className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <Metric icon={BadgeIndianRupee} label="Completed deals today" value={completedTodayResult.count ?? 0} detail="Completed structured offers" />
+      <Metric icon={BadgeIndianRupee} label="Completed deals today" value={completedTodayResult.count ?? 0} detail="Investor-prototype Pay Creator completions" />
       <Metric icon={BriefcaseBusiness} label="Deals uploaded today" value={campaignsToday} detail={`${campaigns.length} recent campaign records loaded`} />
       <Metric icon={MessageCircle} label="Creator comments today" value={commentsToday} detail={`${comments.length} recent comments loaded`} />
       <Metric icon={MessagesSquare} label="DM messages today" value={messagesToday} detail={`${conversations.length} recent conversations`} />
@@ -122,6 +126,16 @@ export default async function DeveloperPage() {
     </section>
 
     <div className="mt-8 grid gap-6 xl:grid-cols-2">
+      <Panel title="Completed prototype deals" eyebrow="Deal completions" icon={BadgeIndianRupee}>
+        {dealEvents.length ? dealEvents.slice(0, 12).map((event) => {
+          const conversation = conversationById.get(event.conversation_id);
+          const brand = conversation ? brandById.get(conversation.brand_profile_id) : undefined;
+          const creator = creatorById.get(event.creator_profile_id);
+          const campaign = campaignById.get(event.campaign_id);
+          return <Link className="block rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3 transition hover:border-violet-700" href={`/developer/conversations/${event.conversation_id}`} key={event.id}><p className="text-sm font-bold text-white">{brand?.brand_name ?? 'Brand'} → {creator?.full_name ?? 'Creator'}</p><p className="mt-1 text-xs text-slate-500">{campaign?.title ?? 'Deal'} · Creator ₹{Number(event.creator_amount_inr).toLocaleString('en-IN')} · Fee ₹{Number(event.platform_fee_inr).toLocaleString('en-IN')} · Total ₹{Number(event.brand_total_inr).toLocaleString('en-IN')}</p><p className="mt-1.5 text-[10px] text-slate-600">{formatDate(event.created_at)}</p></Link>;
+        }) : <Empty text="No prototype creator payments have been completed yet." />}
+      </Panel>
+
       <Panel title="Recent brand deals" eyebrow="Campaign marketplace" icon={BriefcaseBusiness}>
         {campaigns.length ? campaigns.slice(0, 12).map((campaign) => <Row key={campaign.id} title={campaign.title} meta={`${brandById.get(campaign.brand_profile_id)?.brand_name ?? 'Brand'} · ${campaign.status} · ₹${campaign.budget.toLocaleString('en-IN')}`} time={campaign.created_at} />) : <Empty text="No brand campaigns have been uploaded yet." />}
       </Panel>
