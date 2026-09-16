@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { canUseDeveloperApi } from '@/lib/developer/access';
-import { createSupabaseAdminClient } from '@/lib/supabase/admin';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await canUseDeveloperApi())) {
     return NextResponse.json({ ok: false, message: 'Developer access required.' }, { status: 403 });
   }
 
-  const admin = createSupabaseAdminClient();
-  if (!admin) return NextResponse.json({ ok: false, message: 'Supabase admin access is not configured.' }, { status: 503 });
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return NextResponse.json({ ok: false, message: 'Supabase is not configured.' }, { status: 503 });
 
   const { id } = await params;
   const body = await request.json().catch(() => null) as { action?: 'complete' | 'reject' } | null;
@@ -21,7 +21,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     ? { status: 'COMPLETED', completed_at: now, rejected_at: null, operator_note: 'Payout marked completed in Collab Deal OS Developer Tool.' }
     : { status: 'REJECTED', rejected_at: now, completed_at: null, operator_note: 'Withdrawal rejected in Collab Deal OS Developer Tool.' };
 
-  const { data, error } = await admin
+  const { data, error } = await supabase
     .from('prototype_withdrawal_requests')
     .update(update)
     .eq('id', id)
