@@ -21,6 +21,7 @@ import {
   WalletCards,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
+import { PaymentPasswordGate } from '@/components/wallet/payment-password-gate';
 import { LogoutButton } from './logout-button';
 import { cn } from '@/lib/utils';
 import type { AccountType, PlanTier } from '@/types/domain';
@@ -65,6 +66,7 @@ export function AppShell({ role, displayName, email, children }: AppShellProps) 
 
   return (
     <div data-app-shell className="min-h-svh bg-slate-50 lg:grid lg:grid-cols-[250px_minmax(0,1fr)]">
+      <PaymentPasswordGate role={role} />
       <a className="fixed left-3 top-3 z-50 -translate-y-20 rounded-lg bg-slate-950 px-3 py-2 text-sm font-semibold text-white focus:translate-y-0" style={{ color: '#fff' }} href="#app-main">Skip to content</a>
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[250px] border-r border-slate-200 bg-white px-4 py-5 lg:flex lg:flex-col">
         <BrandLogo className="px-2" />
