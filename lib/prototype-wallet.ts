@@ -15,11 +15,22 @@ export type PrototypeTransaction = {
   status: PrototypeTransactionStatus;
   createdAt: string;
   upiId?: string;
+  serverRequestId?: string;
 };
 
 export type PrototypeWalletState = {
   balance: number;
   transactions: PrototypeTransaction[];
+};
+
+export type SharedPrototypeWithdrawal = {
+  id: string;
+  amount_inr: number;
+  upi_id: string;
+  status: 'PENDING' | 'COMPLETED' | 'REJECTED';
+  created_at: string;
+  completed_at?: string | null;
+  rejected_at?: string | null;
 };
 
 const keyFor = (role: AccountType) => `collab-deal-os:prototype-wallet:${role}`;
@@ -98,6 +109,66 @@ export function completePrototypeWithdrawal(role: AccountType, transactionId: st
     balance: current.balance - target.amount,
     transactions: current.transactions.map((item) => item.id === transactionId ? { ...item, status: 'Completed' as const } : item),
   };
+  savePrototypeWallet(role, next);
+  return next;
+}
+
+export function reconcilePrototypeWithdrawals(role: AccountType, withdrawals: SharedPrototypeWithdrawal[]) {
+  const current = loadPrototypeWallet(role);
+  let balance = current.balance;
+  const transactions = [...current.transactions];
+
+  for (const request of withdrawals) {
+    const mappedStatus: PrototypeTransactionStatus = request.status === 'COMPLETED'
+      ? 'Completed'
+      : request.status === 'REJECTED'
+        ? 'Rejected'
+        : 'Pending';
+    const existingIndex = transactions.findIndex((item) => item.serverRequestId === request.id);
+    const label = mappedStatus === 'Completed'
+      ? 'Withdrawal completed'
+      : mappedStatus === 'Rejected'
+        ? 'Withdrawal rejected'
+        : 'Withdrawal requested';
+    const detail = mappedStatus === 'Pending'
+      ? `UPI: ${request.upi_id} · operator review pending`
+      : mappedStatus === 'Completed'
+        ? `UPI: ${request.upi_id} · payout marked successful by Collab Deal OS`
+        : `UPI: ${request.upi_id} · request rejected by Collab Deal OS`;
+
+    if (existingIndex === -1) {
+      if (mappedStatus === 'Completed') balance = Math.max(0, balance - request.amount_inr);
+      transactions.unshift({
+        id: `withdrawal-${request.id}`,
+        serverRequestId: request.id,
+        type: 'WITHDRAWAL',
+        label,
+        detail,
+        amount: request.amount_inr,
+        direction: 'out',
+        status: mappedStatus,
+        createdAt: request.created_at,
+        upiId: request.upi_id,
+      });
+      continue;
+    }
+
+    const existing = transactions[existingIndex];
+    if (existing.status !== 'Completed' && mappedStatus === 'Completed') {
+      balance = Math.max(0, balance - request.amount_inr);
+    }
+    transactions[existingIndex] = {
+      ...existing,
+      label,
+      detail,
+      status: mappedStatus,
+      amount: request.amount_inr,
+      upiId: request.upi_id,
+      serverRequestId: request.id,
+    };
+  }
+
+  const next = { balance, transactions } satisfies PrototypeWalletState;
   savePrototypeWallet(role, next);
   return next;
 }
