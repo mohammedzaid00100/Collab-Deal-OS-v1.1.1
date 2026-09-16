@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft, MessagesSquare, ShieldAlert } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
 import { requireDeveloperAccess } from '@/lib/developer/access';
-import { createSupabaseAdminClient } from '@/lib/supabase/admin';
+import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export const metadata: Metadata = { title: 'Developer conversation' };
 export const dynamic = 'force-dynamic';
@@ -13,12 +13,12 @@ type Message = { id: string; sender_user_id: string; body: string; created_at: s
 
 export default async function DeveloperConversationPage({ params }: { params: Promise<{ id: string }> }) {
   await requireDeveloperAccess();
-  const admin = createSupabaseAdminClient();
+  const supabase = await createSupabaseServerClient();
   const { id } = await params;
 
-  if (!admin) return <State title="Developer data access is not configured" />;
+  if (!supabase) return <State title="Developer data access is not configured" />;
 
-  const { data: conversationData, error } = await admin
+  const { data: conversationData, error } = await supabase
     .from('conversations')
     .select('id,campaign_id,brand_profile_id,creator_profile_id,created_at,updated_at')
     .eq('id', id)
@@ -27,10 +27,10 @@ export default async function DeveloperConversationPage({ params }: { params: Pr
   const conversation = conversationData as Conversation;
 
   const [brandResult, creatorResult, campaignResult, messagesResult] = await Promise.all([
-    admin.from('brand_profiles').select('brand_name,user_id').eq('id', conversation.brand_profile_id).maybeSingle(),
-    admin.from('creator_profiles').select('full_name,username,user_id').eq('id', conversation.creator_profile_id).maybeSingle(),
-    admin.from('campaigns').select('title,status,budget,currency').eq('id', conversation.campaign_id).maybeSingle(),
-    admin.from('conversation_messages').select('id,sender_user_id,body,created_at').eq('conversation_id', id).order('created_at', { ascending: true }),
+    supabase.from('brand_profiles').select('brand_name,user_id').eq('id', conversation.brand_profile_id).maybeSingle(),
+    supabase.from('creator_profiles').select('full_name,username,user_id').eq('id', conversation.creator_profile_id).maybeSingle(),
+    supabase.from('campaigns').select('title,status,budget,currency').eq('id', conversation.campaign_id).maybeSingle(),
+    supabase.from('conversation_messages').select('id,sender_user_id,body,created_at').eq('conversation_id', id).order('created_at', { ascending: true }),
   ]);
 
   const brand = brandResult.data as { brand_name?: string; user_id?: string } | null;
