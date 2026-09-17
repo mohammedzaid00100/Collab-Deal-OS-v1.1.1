@@ -24,6 +24,12 @@ export function GoogleButton({ accountType, onError }: GoogleButtonProps) {
     }
 
     setLoading(true);
+
+    // OAuth providers may rebuild the callback query string. Keep the role in a
+    // short-lived same-site cookie as a second source of truth so creator and
+    // brand onboarding can never collapse into the same workspace.
+    document.cookie = `collab-deal-os-role=${accountType}; Path=/; Max-Age=600; SameSite=Lax`;
+
     const native = Capacitor.isNativePlatform();
     const redirectTo = `${window.location.origin}/auth/${native ? 'mobile-callback' : 'callback'}?role=${accountType}`;
     const { data, error } = await supabase.auth.signInWithOAuth({
