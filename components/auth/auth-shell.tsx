@@ -11,8 +11,8 @@ interface AuthShellProps {
 }
 
 const valuePoints = [
-  [BadgeIndianRupee, 'Deterministic pricing before AI explanation'],
-  [GitCompareArrows, 'Structured revisions—not open-ended chat'],
+  [BadgeIndianRupee, 'Clear deal value before negotiation'],
+  [GitCompareArrows, 'Direct messaging with structured offers'],
   [ShieldCheck, 'Private, role-aware deal data'],
 ] as const;
 
@@ -26,14 +26,14 @@ export function AuthShell({ eyebrow, title, description, children }: AuthShellPr
 
         <div className="relative z-10 my-auto max-w-md py-12">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-300">
-            Deal intelligence, made clear
+            Brand–creator deals, made clear
           </p>
           <h2 className="mt-5 text-4xl font-bold leading-tight tracking-[-0.045em]">
             Better terms start with a better understanding.
           </h2>
           <p className="mt-5 text-[15px] leading-7 text-slate-300">
             Collab Deal OS gives both sides the same structured facts—fit, scope,
-            rights, value, and a clear revision history.
+            value, messages, and a clear deal history.
           </p>
 
           <div className="mt-10 grid gap-4">
@@ -55,7 +55,9 @@ export function AuthShell({ eyebrow, title, description, children }: AuthShellPr
 
       <section className="flex min-h-svh flex-col px-5 py-6 sm:px-10 lg:px-16 lg:py-10">
         <div className="flex items-center justify-between lg:justify-end">
-          <BrandLogo className="lg:hidden" />
+          <div className="lg:hidden">
+            <BrandLogo />
+          </div>
           <Link className="text-sm font-semibold text-slate-600 hover:text-violet-700" href="/">
             Back to home
           </Link>
