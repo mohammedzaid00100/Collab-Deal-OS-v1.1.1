@@ -31,7 +31,7 @@ export default function Home() {
 
         <div className="eyebrow">
           <span className="eyebrow-dot" />
-          AI-powered deal intelligence
+          Real deals. Direct connections.
         </div>
 
         <h1 id="hero-title">
