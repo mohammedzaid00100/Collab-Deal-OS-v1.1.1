@@ -195,19 +195,30 @@ export const creatorOnboardingSchema = z
     { message: 'Name the other platform', path: ['otherPlatformName'] },
   );
 
-export const brandOnboardingSchema = z.object({
-  brandName: z.string().trim().min(2, 'Enter your brand name').max(120),
-  website: websiteUrl,
-  industry: z.string().min(1, 'Choose your industry'),
-  description: z.string().trim().min(20, 'Add a short brand description').max(800),
-  location: z.string().trim().min(2, 'Enter your location').max(100),
-  targetAudience: z.string().trim().min(10, 'Describe your target audience').max(500),
-  typicalBudget: money.min(1_000, 'Enter a typical budget of at least ₹1,000'),
-  targetCreatorNiche: z.string().min(1, 'Choose a target niche'),
-  targetCreatorLocation: z.string().trim().min(2, 'Enter a target location').max(100),
-  preferredPlatforms: z.array(z.string()).min(1, 'Choose at least one platform'),
-  campaignObjectives: z.array(z.string()).min(1, 'Choose at least one objective'),
-});
+export const brandOnboardingSchema = z
+  .object({
+    brandName: z.string().trim().min(2, 'Enter your brand name').max(120),
+    website: websiteUrl,
+    industry: z.string().min(1, 'Choose your industry'),
+    customIndustry: z.string().trim().max(100, 'Keep the industry name under 100 characters').optional(),
+    description: z.string().trim().min(20, 'Add a short brand description').max(800),
+    location: z.string().trim().min(2, 'Enter your location').max(100),
+    targetAudience: z.string().trim().min(10, 'Describe your target audience').max(500),
+    typicalBudget: money.min(1_000, 'Enter a typical budget of at least ₹1,000'),
+    targetCreatorNiche: z.string().min(1, 'Choose a target niche'),
+    targetCreatorLocation: z.string().trim().min(2, 'Enter a target location').max(100),
+    preferredPlatforms: z.array(z.string()).min(1, 'Choose at least one platform'),
+    campaignObjectives: z.array(z.string()).min(1, 'Choose at least one objective'),
+  })
+  .superRefine((data, ctx) => {
+    if (data.industry === 'Other' && (!data.customIndustry || data.customIndustry.trim().length < 2)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['customIndustry'],
+        message: 'Tell us your industry or niche',
+      });
+    }
+  });
 
 export type CreatorOnboardingInput = z.infer<typeof creatorOnboardingSchema>;
 export type BrandOnboardingInput = z.infer<typeof brandOnboardingSchema>;
