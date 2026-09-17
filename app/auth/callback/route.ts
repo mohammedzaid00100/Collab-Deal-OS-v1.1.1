@@ -31,9 +31,17 @@ export async function GET(request: NextRequest) {
   }
 
   if (role) {
-    const { error: roleError } = await supabase.rpc('claim_account_role', { desired_role: role });
-    if (roleError) return NextResponse.redirect(new URL('/login?error=account_unavailable', url.origin));
+    const { data: claimedRole, error: roleError } = await supabase.rpc('claim_account_role', { desired_role: role });
+    if (roleError) {
+      return NextResponse.redirect(new URL(`/login?role=${role}&error=account_unavailable`, url.origin));
+    }
+
+    if (claimedRole !== role) {
+      await supabase.auth.signOut();
+      return NextResponse.redirect(new URL(`/login?role=${role}&error=role_mismatch`, url.origin));
+    }
   }
+
   if (isSafeInternalPath(next)) return NextResponse.redirect(new URL(next, url.origin));
 
   const { data, error: accountError } = await supabase
