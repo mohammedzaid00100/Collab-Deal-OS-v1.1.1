@@ -21,13 +21,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: 'Enter your Collab Deal OS payment password.' }, { status: 400 });
   }
 
-  const { data: verification, error: verificationError } = await supabase.rpc('verify_payment_password', { candidate: paymentPassword });
-  if (verificationError || !verification || typeof verification !== 'object') {
-    return NextResponse.json({ ok: false, message: 'Payment password verification is temporarily unavailable.' }, { status: 503 });
+  const { data: deletion, error: deletionError } = await supabase.rpc('delete_current_account_with_password', { candidate: paymentPassword });
+  if (deletionError || !deletion || typeof deletion !== 'object') {
+    return NextResponse.json({ ok: false, message: 'Account deletion is temporarily unavailable.' }, { status: 503 });
   }
 
-  const result = verification as { valid?: boolean; reason?: string; remaining_attempts?: number };
-  if (result.valid !== true) {
+  const result = deletion as {
+    deleted?: boolean;
+    valid?: boolean;
+    reason?: string;
+    remaining_attempts?: number;
+  };
+
+  if (result.deleted !== true) {
     if (result.reason === 'LOCKED') {
       return NextResponse.json({ ok: false, message: 'Payment password verification is temporarily locked after repeated failed attempts. Try again in about a minute.' }, { status: 423 });
     }
@@ -36,11 +42,6 @@ export async function POST(request: Request) {
     }
     const remaining = typeof result.remaining_attempts === 'number' ? ` ${result.remaining_attempts} attempt${result.remaining_attempts === 1 ? '' : 's'} remaining.` : '';
     return NextResponse.json({ ok: false, message: `Incorrect payment password.${remaining}` }, { status: 403 });
-  }
-
-  const { data: purged, error: purgeError } = await supabase.rpc('purge_current_account_data');
-  if (purgeError || purged !== true) {
-    return NextResponse.json({ ok: false, message: 'Could not remove the Collab Deal OS account data.' }, { status: 500 });
   }
 
   const { error: deleteAuthError } = await admin.auth.admin.deleteUser(user.id);
