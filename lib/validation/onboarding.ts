@@ -12,18 +12,19 @@ function parseUrl(value: string, addHttpsWhenMissing = false) {
   }
 
   try {
-    return new URL(candidate);
+    const parsed = new URL(candidate);
+    if (!parsed.hostname || parsed.username || parsed.password) return null;
+    return parsed;
   } catch {
     return null;
   }
 }
 
 export function normalizeWebsiteUrl(value: string) {
-  const trimmed = value.trim();
-  if (!trimmed) return trimmed;
-  if (/^https:\/\//i.test(trimmed)) return trimmed;
-  if (/^http:\/\//i.test(trimmed)) return `https://${trimmed.slice(7)}`;
-  return `https://${trimmed}`;
+  const parsed = parseUrl(value, true);
+  if (!parsed) return '';
+  parsed.protocol = 'https:';
+  return parsed.toString();
 }
 
 const httpsUrl = z
@@ -108,6 +109,48 @@ export const industryOptions = [
   'Books & Publishing',
   'Sustainability & Environment',
   'Nonprofit & Social Impact',
+  'Advertising & Marketing',
+  'Creator Economy & Influencer Marketing',
+  'Events & Experiences',
+  'Hospitality & Restaurants',
+  'Cafes & Bakeries',
+  'Consumer Electronics',
+  'Mobile Apps & Digital Products',
+  'SaaS & B2B Software',
+  'AI & Machine Learning',
+  'Telecommunications',
+  'Banking & Payments',
+  'Insurance',
+  'Investing & Wealth',
+  'Healthcare & Clinics',
+  'Medicine & Pharmaceuticals',
+  'Skincare & Cosmetics',
+  'Jewellery & Accessories',
+  'Footwear',
+  'Grocery & FMCG',
+  'Restaurants & Quick Service',
+  'Beverages',
+  'Hotels & Resorts',
+  'Airlines & Transportation',
+  'Logistics & Delivery',
+  'Construction & Infrastructure',
+  'Architecture & Interiors',
+  'Manufacturing',
+  'Agriculture & Farming',
+  'Energy & Utilities',
+  'Legal Services',
+  'Recruitment & HR',
+  'Consulting',
+  'Cybersecurity',
+  'Web3 & Blockchain',
+  'News & Journalism',
+  'Film & Television',
+  'Podcasts & Audio',
+  'Comics & Animation',
+  'Kids & Toys',
+  'Dating & Relationships',
+  'Spirituality & Wellness',
+  'Government & Public Sector',
   'Other',
 ] as const;
 
@@ -169,7 +212,7 @@ export const brandOnboardingSchema = z.object({
 export type CreatorOnboardingInput = z.infer<typeof creatorOnboardingSchema>;
 export type BrandOnboardingInput = z.infer<typeof brandOnboardingSchema>;
 
-// Creators and brands use the same category vocabulary so campaign targeting stays consistent.
+// Creators and brands deliberately share one category vocabulary.
 export const creatorNiches = industryOptions;
 
 export const socialPlatforms = ['Instagram', 'YouTube', 'TikTok', 'Facebook'] as const;
