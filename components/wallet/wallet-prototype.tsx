@@ -72,7 +72,7 @@ export function WalletPrototype({ role }: { role: AccountType }) {
 
   const helper = useMemo(() => role === 'brand'
     ? 'Add demo funds before paying creators. For this prototype, wallet actions are simulated locally. Razorpay will replace the demo payment layer in the MVP.'
-    : 'Creator earnings appear here in the prototype. Withdrawals use a demo UPI check now; Razorpay verification and payouts will be connected in the MVP.', [role]);
+    : 'Add demo funds or review creator earnings in this prototype. Withdrawals use a demo UPI check now; Razorpay verification and payouts will be connected in the MVP.', [role]);
 
   function resetFlow() {
     setDialog(null);
@@ -205,7 +205,7 @@ export function WalletPrototype({ role }: { role: AccountType }) {
           <strong className="mt-1 block text-5xl font-bold tracking-[-0.05em]">{loaded ? `₹${wallet.balance.toLocaleString('en-IN')}` : '—'}</strong>
           {pendingWithdrawalAmount > 0 ? <p className="mt-2 text-xs text-amber-200">₹{pendingWithdrawalAmount.toLocaleString('en-IN')} currently pending withdrawal.</p> : null}
           <div className="mt-7 flex flex-wrap gap-2">
-            {role === 'brand' ? <button className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-4 text-sm font-bold text-slate-950" type="button" onClick={() => openDialog('add')}><ArrowDownToLine className="size-4" />Add funds</button> : null}
+            <button className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-4 text-sm font-bold text-slate-950" type="button" onClick={() => openDialog('add')}><ArrowDownToLine className="size-4" />Add funds</button>
             <button className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 text-sm font-bold text-white" style={{ color: '#fff' }} type="button" onClick={() => openDialog('withdraw')}><ArrowUpFromLine className="size-4" />Withdraw funds</button>
           </div>
         </div>
