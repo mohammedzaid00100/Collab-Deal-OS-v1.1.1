@@ -9,12 +9,17 @@ interface AccountCallbackRow {
   onboarding_complete: boolean;
 }
 
+function parseRole(value: string | null | undefined): AccountType | null {
+  return value === 'creator' || value === 'brand' ? value : null;
+}
+
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
   const next = url.searchParams.get('next');
-  const requestedRole = url.searchParams.get('role');
-  const role: AccountType | null = requestedRole === 'creator' || requestedRole === 'brand' ? requestedRole : null;
+  const queryRole = parseRole(url.searchParams.get('role'));
+  const cookieRole = parseRole(request.cookies.get('collab-deal-os-role')?.value);
+  const requestedRole = queryRole ?? cookieRole;
   const supabase = await createSupabaseServerClient();
 
   if (!supabase) {
@@ -30,36 +35,54 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL('/login?error=authentication_failed', url.origin));
   }
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const metadataRole = parseRole(user?.user_metadata?.account_type as string | undefined);
+  const role = requestedRole ?? metadataRole;
+
   if (role) {
     const { data: claimedRole, error: roleError } = await supabase.rpc('claim_account_role', { desired_role: role });
     if (roleError) {
-      return NextResponse.redirect(new URL(`/login?role=${role}&error=account_unavailable`, url.origin));
+      return clearRoleCookie(NextResponse.redirect(new URL(`/login?role=${role}&error=account_unavailable`, url.origin)));
     }
 
     if (claimedRole !== role) {
       await supabase.auth.signOut();
-      return NextResponse.redirect(new URL(`/login?role=${role}&error=role_mismatch`, url.origin));
+      return clearRoleCookie(NextResponse.redirect(new URL(`/login?role=${role}&error=role_mismatch`, url.origin)));
     }
   }
 
-  if (isSafeInternalPath(next)) return NextResponse.redirect(new URL(next, url.origin));
+  if (isSafeInternalPath(next)) {
+    return clearRoleCookie(NextResponse.redirect(new URL(next, url.origin)));
+  }
 
   const { data, error: accountError } = await supabase
     .from('account_state')
     .select('account_type,onboarding_complete')
+    .eq('id', user?.id ?? '')
     .maybeSingle();
   const account = data as AccountCallbackRow | null;
 
   if (accountError) {
-    return NextResponse.redirect(new URL('/login?error=account_unavailable', url.origin));
+    return clearRoleCookie(NextResponse.redirect(new URL('/login?error=account_unavailable', url.origin)));
   }
 
   if (!account?.account_type) {
-    return NextResponse.redirect(new URL('/signup?error=role_required', url.origin));
+    return clearRoleCookie(NextResponse.redirect(new URL('/signup?error=role_required', url.origin)));
   }
 
-  return NextResponse.redirect(new URL(accountHome({
+  return clearRoleCookie(NextResponse.redirect(new URL(accountHome({
     accountType: account.account_type,
     onboardingComplete: account.onboarding_complete,
-  }), url.origin));
+  }), url.origin)));
+}
+
+function clearRoleCookie(response: NextResponse) {
+  response.cookies.set('collab-deal-os-role', '', {
+    path: '/',
+    maxAge: 0,
+    sameSite: 'lax',
+  });
+  return response;
 }
