@@ -4,6 +4,7 @@ import { ServiceState } from '@/components/ui/service-state';
 import { requireAppAccount } from '@/lib/auth/protected-page';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import type { AccountType } from '@/types/domain';
+import { AccountClosureCard } from './account-closure-card';
 import { PreferencesForm } from './preferences-form';
 import { ThemeToggle } from './theme-toggle';
 
@@ -32,5 +33,6 @@ export async function SettingsPage({ role }: { role: AccountType }) {
         </section>
       </div>
     </div>
+    <AccountClosureCard role={role} />
   </AppShell>;
 }
