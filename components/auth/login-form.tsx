@@ -34,9 +34,9 @@ export function LoginForm({ accountType }: { accountType: AccountType }) {
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword(values);
-    if (error) {
-      setErrorMessage(error.message);
+    const { data: signInData, error } = await supabase.auth.signInWithPassword(values);
+    if (error || !signInData.user) {
+      setErrorMessage(error?.message ?? 'Sign in failed.');
       return;
     }
 
@@ -55,6 +55,7 @@ export function LoginForm({ accountType }: { accountType: AccountType }) {
     const { data, error: accountError } = await supabase
       .from('account_state')
       .select('account_type,onboarding_complete')
+      .eq('id', signInData.user.id)
       .maybeSingle();
 
     if (accountError) {
