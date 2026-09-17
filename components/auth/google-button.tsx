@@ -34,7 +34,16 @@ export function GoogleButton({ accountType, onError }: GoogleButtonProps) {
     const redirectTo = `${window.location.origin}/auth/${native ? 'mobile-callback' : 'callback'}?role=${accountType}`;
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo, skipBrowserRedirect: native },
+      options: {
+        redirectTo,
+        skipBrowserRedirect: native,
+        // Always let the person choose which Google account to use. This is
+        // important when the same browser is used to test a Brand account and
+        // a separate Creator account.
+        queryParams: {
+          prompt: 'select_account',
+        },
+      },
     });
 
     if (error) {
