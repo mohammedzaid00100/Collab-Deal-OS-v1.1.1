@@ -18,8 +18,8 @@ import {
 const steps = ['Profile setup', 'Audience & content', 'Portfolio & links', 'Review & submit'] as const;
 const stepCopy = [
   ['Tell us who you are', 'This is the profile brands will use to understand your work and creator fit.'],
-  ['Add your real audience metrics', 'Enter your current numbers manually. Collab Deal OS never guesses followers from a social URL.'],
-  ['Share your work', 'Add links that help brands evaluate your content. Your Instagram profile is mandatory.'],
+  ['Add your real audience metrics', 'Enter current numbers for the platforms you actually use. Unused platforms can stay at zero.'],
+  ['Share your work', 'Add at least one social profile so brands can review your work. You do not need accounts on every platform.'],
   ['Review your creator profile', 'Confirm the information below before finishing setup. You can update it later in Settings.'],
 ] as const;
 
@@ -76,8 +76,14 @@ export function CreatorOnboardingForm() {
   const values = getValues();
 
   async function goNext() {
+    setSubmitError(null);
     const valid = await trigger(stepFields[step], { shouldFocus: true });
     if (valid) setStep((current) => Math.min(current + 1, steps.length - 1));
+  }
+
+  function goBack() {
+    setSubmitError(null);
+    setStep((current) => Math.max(0, current - 1));
   }
 
   function onAvatarChange(file: File | undefined) {
@@ -125,7 +131,7 @@ export function CreatorOnboardingForm() {
       ...(data.otherPlatformName
         ? [socialRow(data.otherPlatformName.toUpperCase(), data.otherPlatformUrl, data.otherPlatformFollowers, 'followers')]
         : []),
-    ];
+    ].filter((row) => Boolean(row.profile_url));
 
     const { error } = await supabase.rpc('complete_creator_onboarding', {
       profile_data: {
@@ -165,7 +171,7 @@ export function CreatorOnboardingForm() {
       title={stepCopy[step][0]}
       description={stepCopy[step][1]}
     >
-      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <form onSubmit={handleSubmit(onSubmit)} onChange={() => submitError && setSubmitError(null)} noValidate>
         {step === 0 ? <ProfileStep register={register} errors={errors} avatar={avatar} onAvatarChange={onAvatarChange} /> : null}
         {step === 1 ? <MetricsStep register={register} errors={errors} /> : null}
         {step === 2 ? <LinksStep register={register} errors={errors} /> : null}
@@ -179,7 +185,7 @@ export function CreatorOnboardingForm() {
         ) : null}
 
         <div className="mt-8 flex flex-col-reverse gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:justify-between">
-          <Button className={step === 0 ? 'invisible' : ''} variant="secondary" type="button" onClick={() => setStep((current) => Math.max(0, current - 1))}>
+          <Button className={step === 0 ? 'invisible' : ''} variant="secondary" type="button" onClick={goBack}>
             <ChevronLeft className="size-4" aria-hidden="true" />
             Back
           </Button>
@@ -230,7 +236,7 @@ function MetricsStep({ register, errors }: { register: RegisterProps; errors: Er
   const numberRegister = (name: FieldPath<CreatorOnboardingInput>) => register(name, { valueAsNumber: true });
   return (
     <div className="grid gap-6">
-      <div className="rounded-xl border border-violet-200 bg-violet-50/60 p-4 text-sm leading-6 text-violet-900"><strong>Creator-declared metrics</strong><p className="mt-1 text-violet-800/80">Enter the numbers shown in your platform insights today. They remain labeled Creator Declared until an official API verifies them.</p></div>
+      <div className="rounded-xl border border-violet-200 bg-violet-50/60 p-4 text-sm leading-6 text-violet-900"><strong>Creator-declared metrics</strong><p className="mt-1 text-violet-800/80">Enter numbers only for the platforms you use. Unused platform fields can stay at zero and will not block setup.</p></div>
       <div className="grid gap-5 sm:grid-cols-2">
         <FieldShell label="Instagram followers" name="instagramFollowers" error={errors.instagramFollowers?.message}><TextInput id="instagramFollowers" type="number" min="0" {...numberRegister('instagramFollowers')} /></FieldShell>
         <FieldShell label="Facebook followers" name="facebookFollowers" error={errors.facebookFollowers?.message}><TextInput id="facebookFollowers" type="number" min="0" {...numberRegister('facebookFollowers')} /></FieldShell>
@@ -250,12 +256,13 @@ function MetricsStep({ register, errors }: { register: RegisterProps; errors: Er
 function LinksStep({ register, errors }: { register: RegisterProps; errors: ErrorsProps }) {
   return (
     <div className="grid gap-5">
-      <FieldShell label="Instagram profile URL" name="instagramUrl" hint="Mandatory. Follower counts are still entered manually and are never inferred from this URL." error={errors.instagramUrl?.message}><TextInput id="instagramUrl" type="url" placeholder="https://instagram.com/your_handle" {...register('instagramUrl')} /></FieldShell>
+      <div className="rounded-xl border border-violet-200 bg-violet-50/60 p-4 text-sm leading-6 text-violet-900">Add at least one social profile below. Instagram, Facebook, YouTube, TikTok, or another platform can be your only connected profile.</div>
+      <FieldShell label="Instagram profile URL" name="instagramUrl" hint="Add this only if you use Instagram." error={errors.instagramUrl?.message}><TextInput id="instagramUrl" type="url" placeholder="https://instagram.com/your_handle" {...register('instagramUrl')} /></FieldShell>
       <div className="grid gap-5 sm:grid-cols-2">
-        <FieldShell label="Facebook URL" name="facebookUrl" optional error={errors.facebookUrl?.message}><TextInput id="facebookUrl" type="url" {...register('facebookUrl')} /></FieldShell>
-        <FieldShell label="YouTube URL" name="youtubeUrl" optional error={errors.youtubeUrl?.message}><TextInput id="youtubeUrl" type="url" {...register('youtubeUrl')} /></FieldShell>
-        <FieldShell label="TikTok URL" name="tiktokUrl" optional error={errors.tiktokUrl?.message}><TextInput id="tiktokUrl" type="url" {...register('tiktokUrl')} /></FieldShell>
-        <FieldShell label="Other platform URL" name="otherPlatformUrl" optional error={errors.otherPlatformUrl?.message}><TextInput id="otherPlatformUrl" type="url" {...register('otherPlatformUrl')} /></FieldShell>
+        <FieldShell label="Facebook URL" name="facebookUrl" error={errors.facebookUrl?.message}><TextInput id="facebookUrl" type="url" {...register('facebookUrl')} /></FieldShell>
+        <FieldShell label="YouTube URL" name="youtubeUrl" error={errors.youtubeUrl?.message}><TextInput id="youtubeUrl" type="url" {...register('youtubeUrl')} /></FieldShell>
+        <FieldShell label="TikTok URL" name="tiktokUrl" error={errors.tiktokUrl?.message}><TextInput id="tiktokUrl" type="url" {...register('tiktokUrl')} /></FieldShell>
+        <FieldShell label="Other platform URL" name="otherPlatformUrl" error={errors.otherPlatformUrl?.message}><TextInput id="otherPlatformUrl" type="url" {...register('otherPlatformUrl')} /></FieldShell>
         <FieldShell label="Portfolio URL" name="portfolioUrl" optional error={errors.portfolioUrl?.message}><TextInput id="portfolioUrl" type="url" {...register('portfolioUrl')} /></FieldShell>
         <FieldShell label="Media kit URL" name="mediaKitUrl" optional error={errors.mediaKitUrl?.message}><TextInput id="mediaKitUrl" type="url" {...register('mediaKitUrl')} /></FieldShell>
       </div>
@@ -264,16 +271,31 @@ function LinksStep({ register, errors }: { register: RegisterProps; errors: Erro
 }
 
 function ReviewStep({ values, avatar }: { values: CreatorOnboardingInput; avatar: File | null }) {
+  const socialSummary = getSocialSummary(values);
   const items = [
     ['Profile', `${values.fullName || '—'} · @${values.username || '—'}`],
     ['Creator fit', `${values.niche || '—'} · ${values.location || '—'}`],
     ['Audience', `${values.primaryAudienceRegion || '—'} · ${values.primaryContentFormat || '—'}`],
-    ['Instagram', `${values.instagramFollowers.toLocaleString('en-IN')} followers · Creator Declared`],
+    ['Social audience', socialSummary],
     ['Performance', `${values.averageViews.toLocaleString('en-IN')} avg. views · ${values.engagementRate}% engagement`],
     ['Expected rate', `₹${values.expectedRateLow.toLocaleString('en-IN')} – ₹${values.expectedRateHigh.toLocaleString('en-IN')}`],
     ['Profile photo', avatar?.name ?? 'Not added'],
   ];
   return <dl className="grid overflow-hidden rounded-2xl border border-slate-200">{items.map(([label, value]) => <div className="grid gap-1 border-b border-slate-100 px-4 py-3 last:border-0 sm:grid-cols-[150px_1fr]" key={label}><dt className="text-xs font-bold uppercase tracking-[0.06em] text-slate-500">{label}</dt><dd className="m-0 text-sm font-medium text-slate-800">{value}</dd></div>)}</dl>;
+}
+
+function getSocialSummary(values: CreatorOnboardingInput) {
+  const connected = [
+    values.instagramUrl ? `Instagram · ${values.instagramFollowers.toLocaleString('en-IN')} followers` : null,
+    values.facebookUrl ? `Facebook · ${values.facebookFollowers.toLocaleString('en-IN')} followers` : null,
+    values.youtubeUrl ? `YouTube · ${values.youtubeSubscribers.toLocaleString('en-IN')} subscribers` : null,
+    values.tiktokUrl ? `TikTok · ${values.tiktokFollowers.toLocaleString('en-IN')} followers` : null,
+    values.otherPlatformUrl && values.otherPlatformName
+      ? `${values.otherPlatformName} · ${values.otherPlatformFollowers.toLocaleString('en-IN')} followers`
+      : null,
+  ].filter(Boolean);
+
+  return connected.join(' · ') || 'No social profile added';
 }
 
 function socialRow(platform: string, profileUrl: string | undefined, audienceCount: number, metricLabel: string) {
