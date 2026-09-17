@@ -33,6 +33,7 @@ export function SignupForm({ accountType }: { accountType: AccountType }) {
       return;
     }
 
+    document.cookie = `collab-deal-os-role=${accountType}; Path=/; Max-Age=600; SameSite=Lax`;
     const emailRedirectTo = `${window.location.origin}/auth/callback?role=${accountType}`;
     const { data, error } = await supabase.auth.signUp({
       email: values.email,
@@ -45,7 +46,13 @@ export function SignupForm({ accountType }: { accountType: AccountType }) {
       return;
     }
 
-    if (data.session) {
+    if (data.session && data.user) {
+      const { data: claimedRole, error: roleError } = await supabase.rpc('claim_account_role', { desired_role: accountType });
+      if (roleError || claimedRole !== accountType) {
+        await supabase.auth.signOut();
+        setMessage({ tone: 'error', text: `This account could not be opened as a ${accountType}. Use the account's original role or a different email.` });
+        return;
+      }
       router.replace(`/onboarding/${accountType}`);
       router.refresh();
       return;
@@ -53,7 +60,7 @@ export function SignupForm({ accountType }: { accountType: AccountType }) {
 
     setMessage({
       tone: 'success',
-      text: 'Check your email to verify your account. Your role will be saved when you return.',
+      text: `Check your email to verify your ${accountType} account. Your selected role will be preserved when you return.`,
     });
   }
 
