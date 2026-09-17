@@ -213,7 +213,7 @@ function ProfileStep({ register, errors, avatar, onAvatarChange }: { register: R
       </label>
       <div className="grid gap-5 sm:grid-cols-2">
         <FieldShell label="Full name" name="fullName" error={errors.fullName?.message}><TextInput id="fullName" autoComplete="name" {...register('fullName')} /></FieldShell>
-        <FieldShell label="Username" name="username" hint="Letters, numbers, and underscores only." error={errors.username?.message}><TextInput id="username" autoComplete="username" placeholder="your_handle" {...register('username')} /></FieldShell>
+        <FieldShell label="Username" name="username" hint="Letters, numbers, periods, and underscores." error={errors.username?.message}><TextInput id="username" autoComplete="username" placeholder="zaid.frame" {...register('username')} /></FieldShell>
       </div>
       <FieldShell label="Bio" name="bio" error={errors.bio?.message}><TextArea id="bio" placeholder="Describe your content, audience, and the partnerships you create best." {...register('bio')} /></FieldShell>
       <div className="grid gap-5 sm:grid-cols-2">
