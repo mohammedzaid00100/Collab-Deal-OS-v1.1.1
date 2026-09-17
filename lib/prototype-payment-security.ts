@@ -21,7 +21,7 @@ export async function hasPrototypePaymentPassword(_role: AccountType) {
 export async function savePrototypePaymentPassword(_role: AccountType, password: string) {
   const client = createSupabaseBrowserClient();
   if (!client) throw new Error('Payment security is unavailable.');
-  const { data, error } = await client.rpc('set_payment_password', { new_password: password });
+  const { data, error } = await client.rpc('create_payment_password', { new_password: password });
   if (error || data !== true) throw new Error(error?.message ?? 'Could not save payment password.');
 }
 
