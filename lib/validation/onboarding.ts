@@ -70,18 +70,6 @@ const money = z
   .min(0, 'Cannot be negative')
   .max(1_000_000_000, 'Amount is too large');
 
-const instagramUrl = z
-  .string()
-  .trim()
-  .refine((value) => {
-    const parsed = parseUrl(value);
-    if (!parsed) return false;
-    const host = parsed.hostname.replace(/^www\./, '');
-    return parsed.protocol === 'https:'
-      && (host === 'instagram.com' || host.endsWith('.instagram.com'))
-      && parsed.pathname.split('/').filter(Boolean).length > 0;
-  }, 'Use a valid https://instagram.com profile URL');
-
 export const industryOptions = [
   'Beauty & Personal Care',
   'Fashion & Apparel',
@@ -168,7 +156,7 @@ export const creatorOnboardingSchema = z
     location: z.string().trim().min(2, 'Enter your location').max(100),
     primaryAudienceRegion: z.string().trim().min(2, 'Enter your main audience region').max(100),
     primaryContentFormat: z.string().min(1, 'Choose a content format'),
-    instagramUrl,
+    instagramUrl: optionalPlatformUrl(['instagram.com'], 'Instagram'),
     instagramFollowers: count,
     facebookUrl: optionalPlatformUrl(['facebook.com', 'fb.com'], 'Facebook'),
     facebookFollowers: count,
@@ -190,10 +178,31 @@ export const creatorOnboardingSchema = z
     message: 'Maximum expected rate must be at least the minimum rate',
     path: ['expectedRateHigh'],
   })
-  .refine(
-    (data) => !data.otherPlatformFollowers || Boolean(data.otherPlatformName?.trim()),
-    { message: 'Name the other platform', path: ['otherPlatformName'] },
-  );
+  .superRefine((data, ctx) => {
+    const hasSocialProfile = Boolean(
+      data.instagramUrl?.trim()
+      || data.facebookUrl?.trim()
+      || data.youtubeUrl?.trim()
+      || data.tiktokUrl?.trim()
+      || data.otherPlatformUrl?.trim(),
+    );
+
+    if (!hasSocialProfile) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['instagramUrl'],
+        message: 'Add at least one social media profile URL',
+      });
+    }
+
+    if ((data.otherPlatformFollowers > 0 || data.otherPlatformUrl?.trim()) && !data.otherPlatformName?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['otherPlatformName'],
+        message: 'Name the other platform',
+      });
+    }
+  });
 
 export const brandOnboardingSchema = z
   .object({
