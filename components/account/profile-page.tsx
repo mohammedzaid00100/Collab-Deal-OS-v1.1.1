@@ -12,9 +12,16 @@ export async function ProfilePage({ role }: { role: AccountType }) {
   const client = await createSupabaseServerClient();
   const { data, error } = await client!.from(role === 'creator' ? 'creator_profiles' : 'brand_profiles').select('*').eq('user_id', account.id).single();
   if (error) throw new Error('Profile is temporarily unavailable.');
+
+  const accountLinks = [
+    ['Settings', `/${role}/settings`],
+    ['Analytics', `/${role}/analytics`],
+    ['Wallet', `/${role}/wallet`],
+  ] as const;
+
   return <AppShell role={role} displayName={account.displayName ?? role} email={account.email} plan={account.plan}>
     <h1 className="text-3xl font-bold tracking-tight text-slate-950">Your {role} profile</h1><p className="mt-3 text-sm text-slate-500">Keep your collaboration profile clear and current.</p>
-    <nav aria-label="Account navigation" className="my-6 flex flex-wrap gap-2">{[['Settings', 'settings'], ['Subscription', 'subscription'], ['Analytics', 'analytics'], ['AI Advisor', 'ai-advisor']].map(([label, route]) => <Link key={route} className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700" href={`/${role}/${route}`}>{label}</Link>)}</nav>
+    <nav aria-label="Account navigation" className="my-6 flex flex-wrap gap-2">{accountLinks.map(([label, href]) => <Link key={href} className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-violet-200 hover:text-violet-700" href={href}>{label}</Link>)}</nav>
     <ProfileEditor initial={{ name: role === 'creator' ? data.full_name : data.brand_name,
       description: role === 'creator' ? data.bio : data.description,
       location: data.location, category: role === 'creator' ? data.niche : data.industry }} />
