@@ -12,6 +12,8 @@ import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import {
   brandOnboardingSchema,
   creatorNiches,
+  industryOptions,
+  normalizeWebsiteUrl,
   socialPlatforms,
   type BrandOnboardingInput,
 } from '@/lib/validation/onboarding';
@@ -101,7 +103,7 @@ export function BrandOnboardingForm() {
       profile_data: {
         brand_name: data.brandName,
         logo_path: logoPath,
-        website: data.website,
+        website: normalizeWebsiteUrl(data.website),
         industry: data.industry,
         description: data.description,
         location: data.location,
@@ -149,8 +151,8 @@ function BrandProfileStep({ register, errors, logo, onLogoChange }: { register: 
     <label className="flex cursor-pointer items-center gap-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 transition hover:border-blue-300 hover:bg-blue-50/40"><span className="flex size-12 items-center justify-center rounded-xl bg-white text-blue-700 shadow-sm"><Upload className="size-5" aria-hidden="true" /></span><span className="min-w-0"><strong className="block text-sm text-slate-900">Brand logo</strong><span className="mt-1 block truncate text-xs text-slate-500">{logo?.name ?? 'PNG, JPG, or WebP up to 5 MB'}</span></span><input className="sr-only" type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => onLogoChange(event.target.files?.[0])} /></label>
     <div className="grid gap-5 sm:grid-cols-2">
       <FieldShell label="Brand name" name="brandName" error={errors.brandName?.message}><TextInput id="brandName" {...register('brandName')} /></FieldShell>
-      <FieldShell label="Website" name="website" error={errors.website?.message}><TextInput id="website" type="url" placeholder="https://yourbrand.com" {...register('website')} /></FieldShell>
-      <FieldShell label="Industry" name="industry" error={errors.industry?.message}><SelectInput id="industry" {...register('industry')}><option value="">Select an industry</option>{['Beauty & Personal Care', 'Fashion', 'Food & Beverage', 'Health & Fitness', 'Technology', 'Travel & Hospitality', 'Gaming', 'Consumer Services'].map((value) => <option key={value}>{value}</option>)}</SelectInput></FieldShell>
+      <FieldShell label="Website" name="website" hint="You can enter yourbrand.com; https:// is added automatically." error={errors.website?.message}><TextInput id="website" type="text" inputMode="url" placeholder="yourbrand.com" {...register('website')} /></FieldShell>
+      <FieldShell label="Industry" name="industry" error={errors.industry?.message}><SelectInput id="industry" {...register('industry')}><option value="">Select an industry</option>{industryOptions.map((value) => <option value={value} key={value}>{value}</option>)}</SelectInput></FieldShell>
       <FieldShell label="Location" name="location" error={errors.location?.message}><TextInput id="location" placeholder="Bengaluru, India" {...register('location')} /></FieldShell>
     </div>
     <FieldShell label="Brand description" name="description" error={errors.description?.message}><TextArea id="description" placeholder="What your brand makes, believes, and wants creators to understand." {...register('description')} /></FieldShell>
@@ -162,7 +164,7 @@ function PreferencesStep({ register, errors }: { register: BrandRegister; errors
   return <div className="grid gap-6">
     <div className="grid gap-5 sm:grid-cols-2">
       <FieldShell label="Typical campaign budget (₹)" name="typicalBudget" error={errors.typicalBudget?.message}><TextInput id="typicalBudget" type="number" min="0" {...register('typicalBudget', { valueAsNumber: true })} /></FieldShell>
-      <FieldShell label="Target creator niche" name="targetCreatorNiche" error={errors.targetCreatorNiche?.message}><SelectInput id="targetCreatorNiche" {...register('targetCreatorNiche')}><option value="">Select a niche</option>{creatorNiches.map((value) => <option key={value}>{value}</option>)}</SelectInput></FieldShell>
+      <FieldShell label="Target creator industry / niche" name="targetCreatorNiche" error={errors.targetCreatorNiche?.message}><SelectInput id="targetCreatorNiche" {...register('targetCreatorNiche')}><option value="">Select an industry / niche</option>{creatorNiches.map((value) => <option value={value} key={value}>{value}</option>)}</SelectInput></FieldShell>
       <FieldShell label="Target creator location" name="targetCreatorLocation" error={errors.targetCreatorLocation?.message}><TextInput id="targetCreatorLocation" placeholder="India" {...register('targetCreatorLocation')} /></FieldShell>
     </div>
     <ChoiceGroup title="Preferred platforms" error={errors.preferredPlatforms?.message}>{socialPlatforms.map((platform) => <label className="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-slate-200 px-3 text-sm font-medium text-slate-700 has-[:checked]:border-blue-300 has-[:checked]:bg-blue-50" key={platform}><input type="checkbox" value={platform.toUpperCase()} className="size-4 accent-blue-600" {...register('preferredPlatforms')} />{platform}</label>)}</ChoiceGroup>
@@ -178,6 +180,7 @@ function BrandReview({ values, logo }: { values: BrandOnboardingInput; logo: Fil
   const items = [
     ['Brand', values.brandName || '—'],
     ['Industry', values.industry || '—'],
+    ['Website', values.website ? normalizeWebsiteUrl(values.website) : '—'],
     ['Location', values.location || '—'],
     ['Typical budget', `₹${values.typicalBudget.toLocaleString('en-IN')}`],
     ['Creator fit', `${values.targetCreatorNiche || '—'} · ${values.targetCreatorLocation || '—'}`],
