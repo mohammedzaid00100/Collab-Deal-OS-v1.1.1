@@ -6,6 +6,7 @@ const errors: Record<string, string> = {
   authentication_failed: 'We could not complete authentication. Please try again.',
   role_required: 'Choose Creator or Brand before continuing so we can open the correct workspace.',
   account_unavailable: 'Your account record is temporarily unavailable. Please try again.',
+  role_mismatch: 'This sign-in already belongs to the other Collab Deal OS workspace type. Choose the role that account was created with, or use a different account.',
 };
 
 export function AuthQueryNotice({ error, password }: { error?: string; password?: string }) {
