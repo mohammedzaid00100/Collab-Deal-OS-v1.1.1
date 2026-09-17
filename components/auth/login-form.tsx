@@ -40,11 +40,18 @@ export function LoginForm({ accountType }: { accountType: AccountType }) {
       return;
     }
 
-    const { error: roleError } = await supabase.rpc('claim_account_role', { desired_role: accountType });
+    const { data: claimedRole, error: roleError } = await supabase.rpc('claim_account_role', { desired_role: accountType });
     if (roleError) {
       setErrorMessage('Your account role could not be loaded. Please try again.');
       return;
     }
+
+    if (claimedRole !== accountType) {
+      await supabase.auth.signOut();
+      setErrorMessage(`This account is already registered as a ${claimedRole ?? 'different role'}. Choose Continue as ${claimedRole ?? 'the original role'} or use a different account.`);
+      return;
+    }
+
     const { data, error: accountError } = await supabase
       .from('account_state')
       .select('account_type,onboarding_complete')
@@ -56,8 +63,13 @@ export function LoginForm({ accountType }: { accountType: AccountType }) {
     }
 
     const account = data as AccountRouteRow | null;
-    const role = account?.account_type ?? accountType;
-    router.replace(account?.onboarding_complete ? `/${role}/dashboard` : `/onboarding/${role}`);
+    if (account?.account_type && account.account_type !== accountType) {
+      await supabase.auth.signOut();
+      setErrorMessage(`This account belongs to the ${account.account_type} workspace. Choose Continue as ${account.account_type} or use a different account.`);
+      return;
+    }
+
+    router.replace(account?.onboarding_complete ? `/${accountType}/dashboard` : `/onboarding/${accountType}`);
     router.refresh();
   }
 
