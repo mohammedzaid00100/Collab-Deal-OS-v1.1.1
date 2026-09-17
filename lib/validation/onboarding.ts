@@ -162,7 +162,7 @@ export const creatorOnboardingSchema = z
       .trim()
       .min(3, 'Use at least 3 characters')
       .max(30)
-      .regex(/^[a-zA-Z0-9_]+$/, 'Use only letters, numbers, and underscores'),
+      .regex(/^[a-zA-Z0-9._]+$/, 'Use only letters, numbers, periods, and underscores'),
     bio: z.string().trim().min(20, 'Tell brands a little more about your work').max(500),
     niche: z.string().min(1, 'Choose your niche'),
     location: z.string().trim().min(2, 'Enter your location').max(100),
