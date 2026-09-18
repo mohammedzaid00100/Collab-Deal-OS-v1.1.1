@@ -396,18 +396,96 @@ html[data-theme='dark'] .prose-policy h1,
 html[data-theme='dark'] .prose-policy h2 { color: #F3F4F8; }
 html[data-theme='dark'] .prose-policy section p { color: #9CA1BA; }
 
-/* ─── Premium FAB Rotating Glow Border ──────────────────────────────── */
-@keyframes fab-rotate-glow {
-  0% {
-    transform: rotate(0deg);
+/* ─── Premium FAB Rotating Glowing Border ────────────────────────────── */
+@property --fab-border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes fab-rotate-border {
+  from {
+    --fab-border-angle: 0deg;
   }
-  100% {
-    transform: rotate(360deg);
+  to {
+    --fab-border-angle: 360deg;
   }
 }
 
-.animate-fab-rotate {
-  animation: fab-rotate-glow 3.5s linear infinite;
+.fab-border-glow-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  pointer-events: auto;
 }
+
+/* Layer 2: Soft blurred atmospheric outer glow */
+.fab-border-glow-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from var(--fab-border-angle),
+    transparent 0deg,
+    transparent 120deg,
+    rgba(6, 182, 212, 0.25) 170deg,
+    #06B6D4 220deg,
+    #3B82F6 260deg,
+    #8B5CF6 295deg,
+    #EC4899 330deg,
+    #F43F5E 350deg,
+    transparent 360deg
+  );
+  filter: blur(12px);
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 0;
+  animation: fab-rotate-border 4s linear infinite;
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.fab-border-glow-wrapper:hover::after {
+  opacity: 0.9;
+  filter: blur(15px);
+}
+
+/* Layer 1: Crisp 1.5px-2px travelling neon border */
+.fab-border-glow-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 9999px;
+  padding: 1.75px;
+  background: conic-gradient(
+    from var(--fab-border-angle),
+    transparent 0deg,
+    transparent 130deg,
+    rgba(6, 182, 212, 0.15) 175deg,
+    #06B6D4 220deg,
+    #3B82F6 260deg,
+    #8B5CF6 295deg,
+    #EC4899 330deg,
+    #F43F5E 350deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+  animation: fab-rotate-border 4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fab-border-glow-wrapper::before,
+  .fab-border-glow-wrapper::after {
+    animation: none !important;
+    --fab-border-angle: 140deg;
+  }
+}
+
 
 

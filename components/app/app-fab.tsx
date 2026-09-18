@@ -163,37 +163,7 @@ export function AppFab({ role }: AppFabProps) {
       )}
 
       {/* Main Floating Action Button with Premium Rotating Glowing Border */}
-      <div className="relative group z-50 inline-flex items-center justify-center">
-        {/* Ambient Pulsing Glow Aura */}
-        <div
-          className="absolute -inset-1 rounded-full opacity-65 blur-md transition-all duration-300 group-hover:opacity-95 group-hover:blur-lg"
-          style={{
-            background: 'conic-gradient(from 0deg, #4F46E5, #D97706, #EC4899, #8B5CF6, #06B6D4, #4F46E5)',
-          }}
-          aria-hidden="true"
-        >
-          <div
-            className="size-full rounded-full animate-fab-rotate"
-            style={{
-              background: 'conic-gradient(from 0deg, #4F46E5, #D97706, #EC4899, #8B5CF6, #06B6D4, #4F46E5)',
-            }}
-          />
-        </div>
-
-        {/* Crisp Rotating Border Frame */}
-        <div
-          className="absolute -inset-[2.5px] rounded-full overflow-hidden"
-          aria-hidden="true"
-        >
-          <div
-            className="absolute -inset-[200%] animate-fab-rotate"
-            style={{
-              background: 'conic-gradient(from 0deg, #4F46E5 0%, #D97706 25%, #EC4899 50%, #8B5CF6 75%, #4F46E5 100%)',
-            }}
-          />
-        </div>
-
-        {/* Inner Solid Button */}
+      <div className="relative fab-border-glow-wrapper z-50">
         <button
           type="button"
           onClick={() => setOpen(!open)}
