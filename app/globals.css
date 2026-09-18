@@ -394,7 +394,20 @@ html[data-theme='dark'] .button { border-color: #2D334D; box-shadow: 3px 3px 0 #
 html[data-theme='dark'] .button--dark { background: #F3F4F8; color: #0C0D14; border-color: #F3F4F8; }
 html[data-theme='dark'] .prose-policy h1,
 html[data-theme='dark'] .prose-policy h2 { color: #F3F4F8; }
-html[data-theme='dark'] .policy-lead,
 html[data-theme='dark'] .prose-policy section p { color: #9CA1BA; }
+
+/* ─── Premium FAB Rotating Glow Border ──────────────────────────────── */
+@keyframes fab-rotate-glow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-fab-rotate {
+  animation: fab-rotate-glow 3.5s linear infinite;
+}
 
 

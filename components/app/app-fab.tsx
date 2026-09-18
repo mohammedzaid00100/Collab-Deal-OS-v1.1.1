@@ -162,23 +162,57 @@ export function AppFab({ role }: AppFabProps) {
         </div>
       )}
 
-      {/* Main Floating Action Button */}
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        aria-expanded={open}
-        aria-haspopup="menu"
-        aria-label={open ? 'Close quick actions' : 'Open quick actions'}
-        className={cn(
-          'relative z-50 flex h-14 items-center gap-2 rounded-full border-2 border-[#0D0C1D] px-4 font-bold text-white shadow-[4px_4px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0_#0D0C1D] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_#0D0C1D] dark:border-[#2D334D] dark:shadow-[4px_4px_0_#000000]',
-          open ? 'bg-[#0D0C1D] dark:bg-[#F3F4F8] dark:text-[#0D0C1D]' : 'bg-[#4F46E5] dark:bg-[#6366F1]',
-        )}
-      >
-        <span className="flex size-6 items-center justify-center transition-transform duration-200">
-          {open ? <X className="size-5" /> : <Plus className="size-5 stroke-[2.5]" />}
-        </span>
-        <span className="pr-1 text-sm tracking-tight">{open ? 'Close' : 'Quick Actions'}</span>
-      </button>
+      {/* Main Floating Action Button with Premium Rotating Glowing Border */}
+      <div className="relative group z-50 inline-flex items-center justify-center">
+        {/* Ambient Pulsing Glow Aura */}
+        <div
+          className="absolute -inset-1 rounded-full opacity-65 blur-md transition-all duration-300 group-hover:opacity-95 group-hover:blur-lg"
+          style={{
+            background: 'conic-gradient(from 0deg, #4F46E5, #D97706, #EC4899, #8B5CF6, #06B6D4, #4F46E5)',
+          }}
+          aria-hidden="true"
+        >
+          <div
+            className="size-full rounded-full animate-fab-rotate"
+            style={{
+              background: 'conic-gradient(from 0deg, #4F46E5, #D97706, #EC4899, #8B5CF6, #06B6D4, #4F46E5)',
+            }}
+          />
+        </div>
+
+        {/* Crisp Rotating Border Frame */}
+        <div
+          className="absolute -inset-[2.5px] rounded-full overflow-hidden"
+          aria-hidden="true"
+        >
+          <div
+            className="absolute -inset-[200%] animate-fab-rotate"
+            style={{
+              background: 'conic-gradient(from 0deg, #4F46E5 0%, #D97706 25%, #EC4899 50%, #8B5CF6 75%, #4F46E5 100%)',
+            }}
+          />
+        </div>
+
+        {/* Inner Solid Button */}
+        <button
+          type="button"
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          aria-haspopup="menu"
+          aria-label={open ? 'Close quick actions' : 'Open quick actions'}
+          className={cn(
+            'relative z-10 flex h-14 items-center gap-2 rounded-full px-4 font-bold transition-all hover:translate-x-[0.5px] hover:translate-y-[0.5px] active:translate-x-[1.5px] active:translate-y-[1.5px]',
+            open
+              ? 'bg-[#0D0C1D] text-white dark:bg-[#F3F4F8] dark:text-[#0D0C1D]'
+              : 'bg-[#0D0C1D] text-white dark:bg-[#11131E] dark:text-[#F3F4F8]',
+          )}
+        >
+          <span className="flex size-6 items-center justify-center transition-transform duration-200">
+            {open ? <X className="size-5" /> : <Plus className="size-5 stroke-[2.5]" />}
+          </span>
+          <span className="pr-1 text-sm tracking-tight">{open ? 'Close' : 'Quick Actions'}</span>
+        </button>
+      </div>
     </div>
   );
 }
