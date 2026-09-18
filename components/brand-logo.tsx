@@ -5,20 +5,29 @@ interface BrandLogoProps {
   href?: string;
   showName?: boolean;
   className?: string;
+  imgClassName?: string;
 }
 
 export function BrandLogo({
   href = '/',
   showName = true,
   className,
+  imgClassName,
 }: BrandLogoProps) {
   const mark = (
     <>
       <span className="brand-mark" aria-hidden="true">
-        <span className="brand-mark__link brand-mark__link--left" />
-        <span className="brand-mark__link brand-mark__link--right" />
+        <img
+          src="/brand-logo.png"
+          alt="Collab Deal OS logo"
+          width={50}
+          height={24}
+          className={cn('brand-mark-img', imgClassName)}
+          loading="eager"
+          decoding="async"
+        />
       </span>
-      {showName ? <span className="text-slate-950 dark:text-white">Collab Deal OS</span> : null}
+      {showName ? <span>Collab Deal OS</span> : null}
     </>
   );
 
@@ -34,3 +43,4 @@ export function BrandLogo({
     <span className={cn('wordmark text-slate-950 dark:text-white', className)}>{mark}</span>
   );
 }
+

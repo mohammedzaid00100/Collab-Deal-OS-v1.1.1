@@ -116,18 +116,22 @@ body {
   color: #0D0C1D;
 }
 
-.brand-mark { position: relative; display: inline-block; width: 31px; height: 24px; }
-.brand-mark__link {
-  position: absolute;
-  top: 4px;
-  width: 20px;
-  height: 16px;
-  border: 3.5px solid;
-  border-radius: 999px;
-  transform: rotate(-34deg);
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  flex-shrink: 0;
 }
-.brand-mark__link--left { left: 0; border-color: #4F46E5; }
-.brand-mark__link--right { right: 0; border-color: #D97706; }
+
+.brand-mark-img {
+  height: 24px;
+  width: auto;
+  max-width: none;
+  object-fit: contain;
+  display: block;
+}
+
 
 .header-actions { display: flex; align-items: center; gap: 22px; }
 .text-link { color: #5A5870; font-size: 14px; font-weight: 650; }

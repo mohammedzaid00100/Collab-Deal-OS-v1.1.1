@@ -1,12 +1,27 @@
-// Rasterize the existing symbol; keep artwork centralized in favicon.svg.
+// Rasterize the brand logo into PWA icons
 import sharp from 'sharp';
-import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-const symbol = await readFile(new URL('../public/favicon.svg', import.meta.url));
+
+const logoPath = fileURLToPath(new URL('../public/brand-logo.png', import.meta.url));
+
 for (const size of [192, 512]) {
-  const inset = Math.round(size * 0.16);
-  const foreground = await sharp(symbol).resize(size - inset * 2, size - inset * 2).png().toBuffer();
-  await sharp({ create: { width: size, height: size, channels: 4, background: '#ffffff' } })
-    .composite([{ input: foreground, gravity: 'centre' }]).png()
+  const targetW = Math.round(size * 0.88);
+  const targetH = Math.round(targetW * (335 / 695));
+  const resizedLogo = await sharp(logoPath)
+    .resize(targetW, targetH, { fit: 'contain' })
+    .toBuffer();
+  
+  await sharp({
+    create: {
+      width: size,
+      height: size,
+      channels: 4,
+      background: { r: 255, g: 255, b: 255, alpha: 0 },
+    },
+  })
+    .composite([{ input: resizedLogo, gravity: 'centre' }])
+    .png()
     .toFile(fileURLToPath(new URL(`../public/icon-${size}.png`, import.meta.url)));
 }
+console.log('PWA icons updated successfully.');
+
