@@ -1,12 +1,15 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
+
 /* ─── Neo-Brutal Design Tokens ─────────────────────────────────────── */
-:root {
-  --nb-bg:         #F5F2EA;
+:root,
+html[data-theme='light'] {
+  --nb-bg:         #F8F9FA;
   --nb-surface:    #FFFFFF;
   --nb-ink:        #0D0C1D;
-  --nb-muted:      #5A5870;
-  --nb-line:       #E0DACE;
+  --nb-muted:      #525866;
+  --nb-line:       #E2E4E9;
   --nb-primary:    #4F46E5;
   --nb-primary-fg: #FFFFFF;
   --nb-amber:      #D97706;
@@ -22,20 +25,21 @@
 
   /* Legacy compat */
   --ink:          #0D0C1D;
-  --muted:        #5A5870;
-  --line:         #E0DACE;
+  --muted:        #525866;
+  --line:         #E2E4E9;
   --surface:      #FFFFFF;
-  --surface-soft: #F5F2EA;
+  --surface-soft: #F8F9FA;
   --purple:       #4F46E5;
   --blue:         #D97706;
 }
 
-html[data-theme='dark'] {
-  --nb-bg:         #0C0D14;
-  --nb-surface:    #171927;
+html[data-theme='dark'],
+.dark {
+  --nb-bg:         #0B0C14;
+  --nb-surface:    #161826;
   --nb-ink:        #F3F4F8;
   --nb-muted:      #9CA1BA;
-  --nb-line:       #2D334D;
+  --nb-line:       #262A3D;
   --nb-primary:    #6366F1;
   --nb-primary-fg: #FFFFFF;
   --nb-amber:      #F59E0B;
@@ -52,9 +56,9 @@ html[data-theme='dark'] {
   /* Legacy compat */
   --ink:          #F3F4F8;
   --muted:        #9CA1BA;
-  --line:         #2D334D;
-  --surface:      #171927;
-  --surface-soft: #0C0D14;
+  --line:         #262A3D;
+  --surface:      #161826;
+  --surface-soft: #0B0C14;
   --purple:       #6366F1;
   --blue:         #F59E0B;
 }
@@ -88,7 +92,7 @@ body {
 .landing-shell {
   min-height: 100svh;
   overflow: hidden;
-  background: #F5F2EA;
+  background: var(--nb-bg);
 }
 
 .site-header {

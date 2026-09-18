@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   icons: { icon: '/favicon.svg' },
 };
 
-const themeScript = `(() => { try { const saved = localStorage.getItem('collab-deal-os-theme'); document.documentElement.dataset.theme = saved === 'dark' ? 'dark' : 'light'; } catch (_) { document.documentElement.dataset.theme = 'light'; } })();`;
+const themeScript = `(() => { try { const saved = localStorage.getItem('collab-deal-os-theme'); const t = saved === 'dark' ? 'dark' : 'light'; document.documentElement.dataset.theme = t; if (t === 'dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); } catch (_) { document.documentElement.dataset.theme = 'light'; document.documentElement.classList.remove('dark'); } })();`;
 
 export default function RootLayout({
   children,

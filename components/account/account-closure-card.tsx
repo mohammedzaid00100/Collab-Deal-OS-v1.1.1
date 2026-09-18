@@ -48,16 +48,16 @@ export function AccountClosureCard({ role }: { role: AccountType }) {
   }
 
   return <>
-    <section className="mt-6 rounded-2xl border border-red-200 bg-red-50/60 p-6">
+    <section className="mt-6 rounded-[10px] border-2 border-red-300 bg-red-50/70 p-6 shadow-[3px_3px_0_#DC2626] dark:border-red-900/60 dark:bg-red-950/20 dark:shadow-[3px_3px_0_#000000]">
       <div className="flex items-start gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-700"><Trash2 className="size-4" /></span>
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-[8px] border border-red-300 bg-red-100 text-red-700 dark:border-red-800 dark:bg-red-900/40 dark:text-red-300"><Trash2 className="size-4" /></span>
         <div className="min-w-0 flex-1">
-          <h2 className="font-bold text-red-950">Danger zone</h2>
-          <p className="mt-2 text-sm leading-6 text-red-800">Permanently deleting this {role} account requires the same Collab Deal OS payment password used for protected wallet actions.</p>
-          {notice ? <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800" role="status">{notice}</p> : null}
+          <h2 className="font-bold text-red-950 dark:text-red-200">Danger zone</h2>
+          <p className="mt-2 text-sm leading-6 text-red-800 dark:text-red-300/80">Permanently deleting this {role} account requires the same Collab Deal OS payment password used for protected wallet actions.</p>
+          {notice ? <p className="mt-3 rounded-[8px] border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-300" role="status">{notice}</p> : null}
 
-          {!open ? <button className="mt-4 min-h-11 rounded-xl border border-red-300 bg-white px-4 text-sm font-bold text-red-700" type="button" onClick={() => setOpen(true)}>Delete account</button> : <div className="mt-4 rounded-2xl border border-red-200 bg-white p-4">
-            <p className="text-sm font-bold text-red-950">This cannot be undone.</p>
+          {!open ? <button className="mt-4 min-h-11 rounded-[8px] border-2 border-red-500 bg-white px-4 text-sm font-bold text-red-700 shadow-[2px_2px_0_#DC2626] transition-all hover:translate-x-[1px] hover:translate-y-[1px] dark:border-red-700 dark:bg-[#161826] dark:text-red-400 dark:shadow-[2px_2px_0_#000000]" type="button" onClick={() => setOpen(true)}>Delete account</button> : <div className="mt-4 rounded-[8px] border-2 border-red-300 bg-white p-4 dark:border-red-900 dark:bg-[#161826]">
+            <p className="text-sm font-bold text-red-950 dark:text-red-200">This cannot be undone.</p>
             <p className="mt-1 text-xs leading-5 text-red-800">Your Collab Deal OS account, profile, and associated product data will be removed and you will be signed out.</p>
 
             <label className="mt-4 grid gap-2 text-sm font-semibold text-slate-700">Payment password<div className="flex items-center rounded-xl border border-slate-200 bg-slate-50 px-4"><LockKeyhole className="size-4 text-slate-400" /><input className="min-h-12 w-full bg-transparent px-3 text-slate-950 outline-none" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Enter the same payment password" autoComplete="current-password" /></div></label>

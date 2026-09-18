@@ -11,12 +11,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-[#4F46E5] text-white border-2 border-[#0D0C1D] shadow-[3px_3px_0_#0D0C1D] hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+    'bg-[#4F46E5] text-white border-2 border-[#0D0C1D] shadow-[3px_3px_0_#0D0C1D] hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none dark:border-[#262A3D] dark:bg-[#6366F1] dark:shadow-[3px_3px_0_#000000]',
   secondary:
-    'bg-white text-[#0D0C1D] border-2 border-[#0D0C1D] shadow-[3px_3px_0_#0D0C1D] hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
-  ghost: 'bg-transparent text-[#5A5870] hover:bg-[#E0DACE] hover:text-[#0D0C1D]',
+    'bg-white text-slate-900 border-2 border-[#0D0C1D] shadow-[3px_3px_0_#0D0C1D] hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none dark:border-[#262A3D] dark:bg-[#161826] dark:text-white dark:shadow-[3px_3px_0_#000000]',
+  ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-[#1F2235] dark:hover:text-white',
   danger:
-    'bg-[#DC2626] text-white border-2 border-[#0D0C1D] shadow-[3px_3px_0_#0D0C1D] hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+    'bg-[#DC2626] text-white border-2 border-[#0D0C1D] shadow-[3px_3px_0_#0D0C1D] hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none dark:border-[#262A3D] dark:shadow-[3px_3px_0_#000000]',
 };
 
 export function Button({

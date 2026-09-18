@@ -34,20 +34,20 @@ export function FieldShell({
   return (
     <div className="grid gap-2">
       <div className="flex items-center justify-between gap-3">
-        <label className="text-sm font-semibold text-[#0D0C1D]" htmlFor={name}>
+        <label className="text-sm font-semibold text-slate-900 dark:text-slate-100" htmlFor={name}>
           {label}
         </label>
         {optional ? (
-          <span className="text-xs text-[#5A5870]">Optional</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">Optional</span>
         ) : null}
       </div>
       {control}
       {error ? (
-        <p className="text-xs font-medium text-[#DC2626]" id={`${name}-error`} role="alert">
+        <p className="text-xs font-medium text-red-600 dark:text-red-400" id={`${name}-error`} role="alert">
           {error}
         </p>
       ) : hint ? (
-        <p className="text-xs leading-5 text-[#5A5870]" id={`${name}-hint`}>
+        <p className="text-xs leading-5 text-slate-600 dark:text-slate-400" id={`${name}-hint`}>
           {hint}
         </p>
       ) : null}
@@ -59,7 +59,7 @@ export function TextInput({ className, ...props }: InputHTMLAttributes<HTMLInput
   return (
     <input
       className={cn(
-        'min-h-11 w-full rounded-[8px] border-2 border-[#0D0C1D] bg-white px-3.5 text-base text-[#0D0C1D] outline-none transition-shadow placeholder:text-[#5A5870] focus:border-[#4F46E5] focus:shadow-[3px_3px_0_#4F46E5] disabled:bg-[#F5F2EA] sm:text-[15px]',
+        'min-h-11 w-full rounded-[8px] border-2 border-[#0D0C1D] bg-white px-3.5 text-base text-slate-900 outline-none transition-shadow placeholder:text-slate-400 focus:border-[#4F46E5] focus:shadow-[3px_3px_0_#4F46E5] disabled:bg-slate-100 dark:border-[#262A3D] dark:bg-[#161826] dark:text-white dark:placeholder:text-slate-500 dark:focus:border-[#6366F1] dark:focus:shadow-[3px_3px_0_#6366F1] dark:disabled:bg-slate-900 sm:text-[15px]',
         className,
       )}
       {...props}
@@ -71,7 +71,7 @@ export function TextArea({ className, ...props }: TextareaHTMLAttributes<HTMLTex
   return (
     <textarea
       className={cn(
-        'min-h-28 w-full resize-y rounded-[8px] border-2 border-[#0D0C1D] bg-white px-3.5 py-3 text-base text-[#0D0C1D] outline-none transition-shadow placeholder:text-[#5A5870] focus:border-[#4F46E5] focus:shadow-[3px_3px_0_#4F46E5] sm:text-[15px]',
+        'min-h-28 w-full resize-y rounded-[8px] border-2 border-[#0D0C1D] bg-white px-3.5 py-3 text-base text-slate-900 outline-none transition-shadow placeholder:text-slate-400 focus:border-[#4F46E5] focus:shadow-[3px_3px_0_#4F46E5] dark:border-[#262A3D] dark:bg-[#161826] dark:text-white dark:placeholder:text-slate-500 sm:text-[15px]',
         className,
       )}
       {...props}
@@ -83,7 +83,7 @@ export function SelectInput({ className, children, ...props }: SelectHTMLAttribu
   return (
     <select
       className={cn(
-        'min-h-11 w-full rounded-[8px] border-2 border-[#0D0C1D] bg-white px-3.5 text-base text-[#0D0C1D] outline-none transition-shadow focus:border-[#4F46E5] focus:shadow-[3px_3px_0_#4F46E5] sm:text-[15px]',
+        'min-h-11 w-full rounded-[8px] border-2 border-[#0D0C1D] bg-white px-3.5 text-base text-slate-900 outline-none transition-shadow focus:border-[#4F46E5] focus:shadow-[3px_3px_0_#4F46E5] dark:border-[#262A3D] dark:bg-[#161826] dark:text-white sm:text-[15px]',
         className,
       )}
       {...props}

@@ -34,7 +34,17 @@ export default async function BrandDashboardPage() {
   const name = profile?.brand_name ?? account.displayName ?? 'Brand';
 
   return <AppShell role="brand" displayName={name} email={account.email} plan={account.plan}>
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-bold uppercase tracking-[0.1em] text-[#4F46E5]">Brand workspace</p><h1 className="mt-1 text-2xl font-bold tracking-[-0.04em] text-[#0D0C1D] sm:text-3xl">Welcome back, {name}</h1><p className="mt-2 text-sm text-[#5A5870]">Build campaigns, compare creator fit, and keep every offer structured.</p></div><div className="flex flex-wrap gap-2"><Link className="inline-flex min-h-11 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-white px-4 text-sm font-semibold text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D]" href="/brand/offers">Review offers</Link><Link className="inline-flex min-h-11 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-[#4F46E5] px-4 text-sm font-semibold text-white shadow-[3px_3px_0_#0D0C1D] transition-all hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D]" href="/brand/campaigns/new"><FilePlus2 className="size-4" />Create campaign</Link></div></div>
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#4F46E5] dark:text-[#818CF8]">Brand workspace</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-3xl">Welcome back, {name}</h1>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Build campaigns, compare creator fit, and keep every offer structured.</p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Link className="inline-flex min-h-11 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-white px-4 text-sm font-semibold text-slate-900 shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:text-white dark:shadow-[2px_2px_0_#000000]" href="/brand/offers">Review offers</Link>
+        <Link className="inline-flex min-h-11 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-[#4F46E5] px-4 text-sm font-semibold text-white shadow-[3px_3px_0_#0D0C1D] transition-all hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#6366F1] dark:shadow-[3px_3px_0_#000000]" href="/brand/campaigns/new"><FilePlus2 className="size-4" />Create campaign</Link>
+      </div>
+    </div>
 
     <section className="mt-7 grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Brand summary">
       <BrandMetric icon={BriefcaseBusiness} label="Active campaigns" value={campaigns.count ?? 0} detail="Published campaigns" />
@@ -44,12 +54,39 @@ export default async function BrandDashboardPage() {
     </section>
 
     <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
-      <section className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] sm:p-6"><div className="flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#D97706]">Creator matches</p><h2 className="mt-1 text-lg font-bold tracking-[-0.03em] text-[#0D0C1D]">Strongest creator fit</h2></div><Link className="text-sm font-semibold text-[#4F46E5] hover:underline" href="/brand/creators">Discover creators</Link></div><div className="mt-5"><EmptyState icon={UsersRound} title="No creator matches yet" description="Create and publish a campaign. The matching engine will score niche, audience, size, engagement, budget, and platform fit." actionLabel="Create your first campaign" actionHref="/brand/campaigns/new" /></div></section>
-      <aside className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] sm:p-6"><p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#4F46E5]">Campaign activity</p><h2 className="mt-1 text-lg font-bold tracking-[-0.03em] text-[#0D0C1D]">Next best action</h2><div className="mt-5 rounded-[10px] border-2 border-[#0D0C1D] bg-[#1E1B4B] p-5 text-white shadow-[3px_3px_0_#0D0C1D]"><span className="flex size-10 items-center justify-center rounded-[8px] border border-white/20 bg-white/10 text-[#A5B4FC]"><BriefcaseBusiness className="size-5" /></span><h3 className="mt-5 font-bold">Create a structured campaign</h3><p className="mt-2 text-sm leading-6 text-[#C7D2FE]">Clear deliverables, rights, budget, and audience criteria produce better matches and cleaner offers.</p><Link className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white" href="/brand/campaigns/new">Start campaign<ArrowRight className="size-4" /></Link></div></aside>
+      <section className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] sm:p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#D97706] dark:text-[#F59E0B]">Creator matches</p>
+            <h2 className="mt-1 text-lg font-bold tracking-[-0.03em] text-slate-950 dark:text-white">Strongest creator fit</h2>
+          </div>
+          <Link className="text-sm font-semibold text-[#4F46E5] hover:underline dark:text-[#818CF8]" href="/brand/creators">Discover creators</Link>
+        </div>
+        <div className="mt-5">
+          <EmptyState icon={UsersRound} title="No creator matches yet" description="Create and publish a campaign. The matching engine will score niche, audience, size, engagement, budget, and platform fit." actionLabel="Create your first campaign" actionHref="/brand/campaigns/new" />
+        </div>
+      </section>
+      <aside className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] sm:p-6">
+        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#4F46E5] dark:text-[#818CF8]">Campaign activity</p>
+        <h2 className="mt-1 text-lg font-bold tracking-[-0.03em] text-slate-950 dark:text-white">Next best action</h2>
+        <div className="mt-5 rounded-[10px] border-2 border-[#0D0C1D] bg-[#1E1B4B] p-5 text-white shadow-[3px_3px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#111326] dark:shadow-[3px_3px_0_#000000]">
+          <span className="flex size-10 items-center justify-center rounded-[8px] border border-white/20 bg-white/10 text-[#A5B4FC]"><BriefcaseBusiness className="size-5" /></span>
+          <h3 className="mt-5 font-bold">Create a structured campaign</h3>
+          <p className="mt-2 text-sm leading-6 text-[#C7D2FE]">Clear deliverables, rights, budget, and audience criteria produce better matches and cleaner offers.</p>
+          <Link className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white hover:underline" href="/brand/campaigns/new">Start campaign<ArrowRight className="size-4" /></Link>
+        </div>
+      </aside>
     </div>
   </AppShell>;
 }
 
 function BrandMetric({ icon: Icon, label, value, detail }: { icon: typeof BriefcaseBusiness; label: string; value: number; detail: string }) {
-  return <div className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-4 shadow-[4px_4px_0_#0D0C1D]"><div className="flex items-center justify-between"><span className="text-xs font-semibold text-[#5A5870]">{label}</span><Icon className="size-4 text-[#4F46E5]" /></div><strong className="mt-3 block text-2xl font-bold tracking-[-0.04em] text-[#0D0C1D]">{value}</strong><span className="mt-1 block text-[11px] text-[#5A5870]">{detail}</span></div>;
+  return <div className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-4 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000]">
+    <div className="flex items-center justify-between">
+      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">{label}</span>
+      <Icon className="size-4 text-[#4F46E5] dark:text-[#818CF8]" />
+    </div>
+    <strong className="mt-3 block text-2xl font-bold tracking-[-0.04em] text-slate-950 dark:text-white">{value}</strong>
+    <span className="mt-1 block text-[11px] text-slate-500 dark:text-slate-400">{detail}</span>
+  </div>;
 }

@@ -18,7 +18,7 @@ const valuePoints = [
 
 export function AuthShell({ eyebrow, title, description, children }: AuthShellProps) {
   return (
-    <main className="min-h-svh bg-[#F5F2EA] lg:grid lg:grid-cols-[minmax(0,0.82fr)_minmax(560px,1.18fr)]">
+    <main className="min-h-svh bg-white transition-colors dark:bg-[#0B0C14] lg:grid lg:grid-cols-[minmax(0,0.82fr)_minmax(560px,1.18fr)]">
       <aside className="relative hidden overflow-hidden bg-[#1E1B4B] px-12 py-10 text-white lg:flex lg:flex-col">
         <div className="absolute -left-32 top-20 size-96 rounded-full bg-[#4F46E5]/20 blur-3xl" />
         <div className="absolute -right-28 bottom-12 size-80 rounded-full bg-[#D97706]/15 blur-3xl" />
@@ -28,7 +28,7 @@ export function AuthShell({ eyebrow, title, description, children }: AuthShellPr
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#A5B4FC]">
             Brand–creator deals, made clear
           </p>
-          <h2 className="mt-5 text-4xl font-bold leading-tight tracking-[-0.045em]">
+          <h2 className="mt-5 text-4xl font-bold leading-tight tracking-[-0.045em] text-white">
             Better terms start with a better understanding.
           </h2>
           <p className="mt-5 text-[15px] leading-7 text-[#C7D2FE]">
@@ -48,29 +48,29 @@ export function AuthShell({ eyebrow, title, description, children }: AuthShellPr
           </div>
         </div>
 
-        <p className="relative z-10 text-xs text-white/30">
+        <p className="relative z-10 text-xs text-white/40">
           Neutral by design. Built for creators and brands.
         </p>
       </aside>
 
-      <section className="flex min-h-svh flex-col bg-[#F5F2EA] px-5 py-6 sm:px-10 lg:px-16 lg:py-10">
+      <section className="flex min-h-svh flex-col bg-white px-5 py-6 transition-colors dark:bg-[#0B0C14] sm:px-10 lg:px-16 lg:py-10">
         <div className="flex items-center justify-between lg:justify-end">
           <div className="lg:hidden">
             <BrandLogo />
           </div>
-          <Link className="text-sm font-semibold text-[#5A5870] hover:text-[#0D0C1D]" href="/">
+          <Link className="text-sm font-semibold text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white" href="/">
             Back to home
           </Link>
         </div>
 
         <div className="mx-auto my-auto w-full max-w-[520px] py-12">
-          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#4F46E5]">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#4F46E5] dark:text-[#818CF8]">
             {eyebrow}
           </p>
-          <h1 className="mt-3 text-3xl font-bold tracking-[-0.04em] text-[#0D0C1D] sm:text-[2.2rem]">
+          <h1 className="mt-3 text-3xl font-bold tracking-[-0.04em] text-slate-950 sm:text-[2.2rem] dark:text-white">
             {title}
           </h1>
-          <p className="mt-3 text-[15px] leading-6 text-[#5A5870]">{description}</p>
+          <p className="mt-3 text-[15px] leading-6 text-slate-600 dark:text-slate-300">{description}</p>
           <div className="mt-8">{children}</div>
         </div>
       </section>

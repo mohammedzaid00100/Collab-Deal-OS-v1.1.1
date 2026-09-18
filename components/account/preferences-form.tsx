@@ -19,5 +19,41 @@ export function PreferencesForm({ userId, initialEmail, initialAnalytics }: { us
     } catch { setStatus('Preferences could not be saved. Please retry.'); }
     finally { setPending(false); }
   }
-  return <section className="rounded-2xl border border-slate-200 bg-white p-6"><h2 className="text-lg font-bold text-slate-950">Notifications and privacy</h2><div className="my-6 space-y-5"><label className="flex min-h-12 gap-3"><input className="mt-1 size-5 accent-violet-600" type="checkbox" checked={email} onChange={(event) => setEmail(event.target.checked)} /><span><strong className="text-sm">Email notifications</strong><span className="mt-1 block text-sm leading-6 text-slate-500">Receive deal, comment, message, payment-status, and account updates. Authentication and payment-provider messages are handled separately.</span></span></label><label className="flex min-h-12 gap-3"><input className="mt-1 size-5 accent-violet-600" type="checkbox" checked={analytics} onChange={(event) => setAnalytics(event.target.checked)} /><span><strong className="text-sm">Help improve the product</strong><span className="mt-1 block text-sm leading-6 text-slate-500">Share limited feature-use events. We exclude email addresses, private messages, profile content, and deal terms from analytics.</span></span></label></div><Button loading={pending} onClick={save}>Save preferences</Button>{status ? <p className="mt-4 text-sm text-slate-600" role="status">{status}</p> : null}</section>;
+  return (
+    <section className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-6 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000]">
+      <h2 className="text-lg font-bold text-slate-950 dark:text-white">Notifications and privacy</h2>
+      <div className="my-6 space-y-5">
+        <label className="flex min-h-12 cursor-pointer gap-3">
+          <input
+            className="mt-1 size-5 accent-[#4F46E5]"
+            type="checkbox"
+            checked={email}
+            onChange={(event) => setEmail(event.target.checked)}
+          />
+          <span>
+            <strong className="text-sm text-slate-950 dark:text-white">Email notifications</strong>
+            <span className="mt-1 block text-sm leading-6 text-slate-600 dark:text-slate-400">
+              Receive deal, comment, message, payment-status, and account updates. Authentication and payment-provider messages are handled separately.
+            </span>
+          </span>
+        </label>
+        <label className="flex min-h-12 cursor-pointer gap-3">
+          <input
+            className="mt-1 size-5 accent-[#4F46E5]"
+            type="checkbox"
+            checked={analytics}
+            onChange={(event) => setAnalytics(event.target.checked)}
+          />
+          <span>
+            <strong className="text-sm text-slate-950 dark:text-white">Help improve the product</strong>
+            <span className="mt-1 block text-sm leading-6 text-slate-600 dark:text-slate-400">
+              Share limited feature-use events. We exclude email addresses, private messages, profile content, and deal terms from analytics.
+            </span>
+          </span>
+        </label>
+      </div>
+      <Button loading={pending} onClick={save}>Save preferences</Button>
+      {status ? <p className="mt-4 text-sm font-medium text-emerald-600 dark:text-emerald-400" role="status">{status}</p> : null}
+    </section>
+  );
 }

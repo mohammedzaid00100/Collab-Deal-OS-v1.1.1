@@ -18,19 +18,19 @@ export function BrandLogo({
         <span className="brand-mark__link brand-mark__link--left" />
         <span className="brand-mark__link brand-mark__link--right" />
       </span>
-      {showName ? <span>Collab Deal OS</span> : null}
+      {showName ? <span className="text-slate-950 dark:text-white">Collab Deal OS</span> : null}
     </>
   );
 
   return href ? (
     <Link
-      className={cn('wordmark', className)}
+      className={cn('wordmark text-slate-950 dark:text-white', className)}
       href={href}
       aria-label="Collab Deal OS home"
     >
       {mark}
     </Link>
   ) : (
-    <span className={cn('wordmark', className)}>{mark}</span>
+    <span className={cn('wordmark text-slate-950 dark:text-white', className)}>{mark}</span>
   );
 }
