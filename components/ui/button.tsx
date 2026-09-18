@@ -11,11 +11,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    'bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-[0_8px_22px_rgb(79_70_229/18%)] hover:from-violet-700 hover:to-blue-700',
+    'bg-[#4F46E5] text-white border-2 border-[#0D0C1D] shadow-[3px_3px_0_#0D0C1D] hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
   secondary:
-    'border border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50',
-  ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-  danger: 'bg-red-600 text-white hover:bg-red-700',
+    'bg-white text-[#0D0C1D] border-2 border-[#0D0C1D] shadow-[3px_3px_0_#0D0C1D] hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+  ghost: 'bg-transparent text-[#5A5870] hover:bg-[#E0DACE] hover:text-[#0D0C1D]',
+  danger:
+    'bg-[#DC2626] text-white border-2 border-[#0D0C1D] shadow-[3px_3px_0_#0D0C1D] hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
 };
 
 export function Button({
@@ -29,7 +30,7 @@ export function Button({
   return (
     <button
       className={cn(
-        'inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 disabled:cursor-not-allowed disabled:opacity-55',
+        'inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] px-4 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#4F46E5]/30 disabled:cursor-not-allowed disabled:opacity-55',
         variants[variant],
         className,
       )}

@@ -1,50 +1,117 @@
-/* Workspace theme overrides. The public landing/auth pages keep their own design. */
-html[data-theme='dark'] [data-app-shell] {
-  background: #020617 !important;
-  color: #e2e8f0;
+/* Workspace & App Theme Overrides for Dark Mode */
+
+html[data-theme='dark'] {
+  background-color: #0C0D14 !important;
+  color: #F3F4F8 !important;
   color-scheme: dark;
 }
 
+html[data-theme='dark'] body {
+  background-color: #0C0D14 !important;
+  color: #F3F4F8 !important;
+}
+
+/* App Shell Base */
+html[data-theme='dark'] [data-app-shell] {
+  background-color: #0C0D14 !important;
+  color: #F3F4F8 !important;
+}
+
+/* Sidebar & Header */
+html[data-theme='dark'] [data-app-shell] aside,
+html[data-theme='dark'] [data-app-shell] header {
+  background-color: #121420 !important;
+  border-color: #2D334D !important;
+  color: #F3F4F8 !important;
+}
+
+/* Cards & Surfaces */
 html[data-theme='dark'] [data-app-shell] [class~='bg-white'],
-html[data-theme='dark'] [data-app-shell] [class*='bg-white/'] {
-  background-color: #0f172a !important;
+html[data-theme='dark'] [data-app-shell] [class*='bg-white/'],
+html[data-theme='dark'] [class~='bg-white'] {
+  background-color: #171927 !important;
 }
 
 html[data-theme='dark'] [data-app-shell] [class~='bg-slate-50'],
 html[data-theme='dark'] [data-app-shell] [class*='bg-slate-50/'],
-html[data-theme='dark'] [data-app-shell] [class~='bg-slate-100'] {
-  background-color: #111827 !important;
+html[data-theme='dark'] [data-app-shell] [class~='bg-slate-100'],
+html[data-theme='dark'] [data-app-shell] [class*='bg-slate-100/'],
+html[data-theme='dark'] [class~='bg-slate-50'] {
+  background-color: #1E2134 !important;
 }
 
-html[data-theme='dark'] [data-app-shell] [class~='border-slate-100'],
-html[data-theme='dark'] [data-app-shell] [class~='border-slate-200'],
-html[data-theme='dark'] [data-app-shell] [class~='border-slate-300'] {
-  border-color: #334155 !important;
+/* Borders */
+html[data-theme='dark'] [class~='border-slate-100'],
+html[data-theme='dark'] [class~='border-slate-200'],
+html[data-theme='dark'] [class~='border-slate-300'],
+html[data-theme='dark'] [class*='border-[#0D0C1D]'] {
+  border-color: #2D334D !important;
 }
 
-html[data-theme='dark'] [data-app-shell] [class~='text-slate-950'],
-html[data-theme='dark'] [data-app-shell] [class~='text-slate-900'],
-html[data-theme='dark'] [data-app-shell] [class~='text-slate-800'],
-html[data-theme='dark'] [data-app-shell] [class~='text-slate-700'] {
-  color: #f8fafc !important;
+/* Neo-Brutal Offset Shadows in Dark Mode */
+html[data-theme='dark'] [class*='shadow-['] {
+  box-shadow: 3px 3px 0 #000000 !important;
 }
 
-html[data-theme='dark'] [data-app-shell] [class~='text-slate-600'],
-html[data-theme='dark'] [data-app-shell] [class~='text-slate-500'] {
-  color: #94a3b8 !important;
+/* Typography */
+html[data-theme='dark'] [class*='text-slate-950'],
+html[data-theme='dark'] [class*='text-slate-900'],
+html[data-theme='dark'] [class*='text-slate-800'],
+html[data-theme='dark'] [class*='text-slate-700'],
+html[data-theme='dark'] [class*='text-[#0D0C1D]'] {
+  color: #F3F4F8 !important;
 }
 
-html[data-theme='dark'] [data-app-shell] [class~='text-slate-400'] {
-  color: #64748b !important;
+html[data-theme='dark'] [class*='text-slate-600'],
+html[data-theme='dark'] [class*='text-slate-500'],
+html[data-theme='dark'] [class*='text-[#5A5870]'] {
+  color: #9CA1BA !important;
 }
 
-html[data-theme='dark'] [data-app-shell] input,
-html[data-theme='dark'] [data-app-shell] textarea,
-html[data-theme='dark'] [data-app-shell] select {
-  color: #f8fafc;
+html[data-theme='dark'] [class*='text-slate-400'] {
+  color: #727790 !important;
 }
 
-html[data-theme='dark'] [data-app-shell] input::placeholder,
-html[data-theme='dark'] [data-app-shell] textarea::placeholder {
-  color: #64748b;
+/* Role pill / badges */
+html[data-theme='dark'] [data-app-shell] aside span[class*='border-2'] {
+  background-color: #1E2134 !important;
+  color: #F3F4F8 !important;
+  border-color: #2D334D !important;
+}
+
+/* Inputs & Forms */
+html[data-theme='dark'] input,
+html[data-theme='dark'] textarea,
+html[data-theme='dark'] select {
+  background-color: #171927 !important;
+  border-color: #2D334D !important;
+  color: #F3F4F8 !important;
+}
+
+html[data-theme='dark'] input::placeholder,
+html[data-theme='dark'] textarea::placeholder {
+  color: #727790 !important;
+}
+
+/* Empty State */
+html[data-theme='dark'] [class*='border-dashed'] {
+  background-color: #121420 !important;
+  border-color: #2D334D !important;
+}
+
+/* Nav Link Active vs Inactive */
+html[data-theme='dark'] [data-app-shell] aside nav a[aria-current='page'] {
+  background-color: #6366F1 !important;
+  color: #FFFFFF !important;
+  border-color: #6366F1 !important;
+  box-shadow: 2px 2px 0 #000000 !important;
+}
+
+html[data-theme='dark'] [data-app-shell] aside nav a:not([aria-current='page']) {
+  color: #9CA1BA !important;
+}
+
+html[data-theme='dark'] [data-app-shell] aside nav a:not([aria-current='page']):hover {
+  background-color: #1E2134 !important;
+  color: #F3F4F8 !important;
 }
