@@ -161,7 +161,7 @@ export async function POST(request: Request) {
       }, { status: remaining > 0 ? 400 : 423 });
     }
 
-    const resetToken = randomBytes(32).toString('hex');
+    const resetToken = Buffer.from(randomBytes(32)).toString('hex');
     const resetTokenHash = digest(secret, user.id, resetToken);
     const resetTokenExpiresAt = new Date(Date.now() + RESET_TTL_MINUTES * 60_000).toISOString();
     const { error: verifyError } = await admin.from('payment_password_resets').update({

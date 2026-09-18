@@ -94,7 +94,6 @@ export function AppShell({ role, displayName, email, children }: AppShellProps) 
             <Link className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-violet-700" href={`/${role}/wallet`} aria-label={`${role} wallet`}><WalletCards className="size-[18px]" /><span className="hidden sm:inline">Wallet</span></Link>
             <Link className="relative flex size-10 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900" href={`/${role}/notifications`} aria-label="Notifications"><Bell className="size-[19px]" /><span className="absolute right-2.5 top-2.5 size-1.5 rounded-full bg-violet-600" /></Link>
             <span className="lg:hidden"><LogoutButton compact /></span>
-            <span className="hidden rounded-full bg-amber-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-amber-700 xl:block">Prototype</span>
           </div>
         </header>
         <main id="app-main" className="mx-auto w-full max-w-[1420px] px-4 py-6 pb-28 sm:px-6 lg:px-8 lg:py-8 lg:pb-10">{children}</main>
