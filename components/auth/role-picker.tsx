@@ -24,21 +24,23 @@ const roleOptions = [
 
 export function RolePicker({ mode }: RolePickerProps) {
   return (
-    <div className="grid gap-3" aria-label="Choose your account type">
-      {roleOptions.map(({ role, title, description, Icon, iconClass }) => (
+    <div className="grid gap-4" aria-label="Choose your account type">
+      {roleOptions.map(({ role, title, description, Icon }) => (
         <Link
-          className="group flex min-h-28 items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
+          className="group flex min-h-28 items-center gap-4 rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] transition-all hover:-translate-y-0.5 hover:bg-[#FBF9F5] hover:shadow-[6px_6px_0_#0D0C1D] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] dark:hover:bg-[#1C1E30]"
           href={`/${mode}?role=${role}`}
           key={role}
         >
-          <span className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${iconClass}`}>
-            <Icon className="size-5" aria-hidden="true" />
+          <span className="flex size-14 shrink-0 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-[#EEF2FF] text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#1E1F3B] dark:text-[#818CF8] dark:shadow-[2px_2px_0_#000000]">
+            <Icon className="size-6" aria-hidden="true" />
           </span>
           <span className="min-w-0 flex-1">
-            <strong className="block text-[15px] text-slate-900">{title}</strong>
-            <span className="mt-1 block text-sm leading-5 text-slate-500">{description}</span>
+            <strong className="block text-base font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">{title}</strong>
+            <span className="mt-1 block text-xs font-medium leading-5 text-[#5A5870] dark:text-[#9CA1BA]">{description}</span>
           </span>
-          <ArrowRight className="size-5 shrink-0 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-violet-600" aria-hidden="true" />
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-[6px] border-2 border-[#0D0C1D] bg-[#F5F2EA] text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all group-hover:bg-[#4F46E5] group-hover:text-white dark:border-[#383E5E] dark:bg-[#1E2134] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_#000000] dark:group-hover:bg-[#6366F1] dark:group-hover:text-white">
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+          </span>
         </Link>
       ))}
     </div>

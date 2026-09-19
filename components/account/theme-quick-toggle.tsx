@@ -50,7 +50,7 @@ export function ThemeQuickToggle({ className }: { className?: string }) {
   return (
     <button
       className={cn(
-        'flex size-10 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-white text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-white dark:bg-[#171927] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_rgba(255,255,255,0.2)]',
+        'flex size-10 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-white text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-[#2D334D] dark:bg-[#171927] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_#000000]',
         className,
       )}
       type="button"

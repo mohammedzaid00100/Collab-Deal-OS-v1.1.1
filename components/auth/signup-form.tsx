@@ -67,7 +67,7 @@ export function SignupForm({ accountType }: { accountType: AccountType }) {
   return (
     <div>
       <GoogleButton accountType={accountType} onError={(text) => setMessage({ tone: 'error', text })} />
-      <div className="my-5 flex items-center gap-3 text-xs text-slate-400 before:h-px before:flex-1 before:bg-slate-200 after:h-px after:flex-1 after:bg-slate-200">
+      <div className="my-5 flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-[#5A5870] before:h-0.5 before:flex-1 before:bg-[#0D0C1D] after:h-0.5 after:flex-1 after:bg-[#0D0C1D] dark:text-[#9CA1BA] dark:before:bg-[#383E5E] dark:after:bg-[#383E5E]">
         or use email
       </div>
 
@@ -83,23 +83,23 @@ export function SignupForm({ accountType }: { accountType: AccountType }) {
           <TextInput id="confirmPassword" type="password" autoComplete="new-password" aria-invalid={Boolean(errors.confirmPassword)} {...register('confirmPassword')} />
         </FieldShell>
 
-        <label className="flex cursor-pointer items-start gap-3 text-sm leading-5 text-slate-600">
-          <input className="mt-0.5 size-4 rounded border-slate-300 accent-violet-600" type="checkbox" {...register('acceptTerms')} />
+        <label className="flex cursor-pointer items-start gap-3 text-sm font-medium leading-5 text-[#5A5870] dark:text-[#9CA1BA]">
+          <input className="mt-0.5 size-4 rounded border-2 border-[#0D0C1D] accent-[#4F46E5] dark:border-[#383E5E]" type="checkbox" {...register('acceptTerms')} />
           <span>
-            I agree to the <Link className="font-semibold text-violet-700" href="/terms">Terms</Link> and <Link className="font-semibold text-violet-700" href="/privacy">Privacy Policy</Link>.
-            {errors.acceptTerms ? <span className="mt-1 block text-xs font-medium text-red-600">{errors.acceptTerms.message}</span> : null}
+            I agree to the <Link className="font-bold text-[#4F46E5] hover:underline dark:text-[#818CF8]" href="/terms">Terms</Link> and <Link className="font-bold text-[#4F46E5] hover:underline dark:text-[#818CF8]" href="/privacy">Privacy Policy</Link>.
+            {errors.acceptTerms ? <span className="mt-1 block text-xs font-bold text-red-600 dark:text-red-400">{errors.acceptTerms.message}</span> : null}
           </span>
         </label>
 
         {message ? <AuthMessage {...message} /> : null}
-        <Button className="mt-1 w-full" type="submit" loading={isSubmitting}>
+        <Button className="mt-2 w-full" type="submit" loading={isSubmitting}>
           Create {accountType} account
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-slate-500">
+      <p className="mt-6 text-center text-sm font-medium text-[#5A5870] dark:text-[#9CA1BA]">
         Already have an account?{' '}
-        <Link className="font-semibold text-violet-700 hover:text-violet-800" href={`/login?role=${accountType}`}>
+        <Link className="font-bold text-[#4F46E5] hover:underline dark:text-[#818CF8]" href={`/login?role=${accountType}`}>
           Sign in
         </Link>
       </p>
@@ -110,8 +110,15 @@ export function SignupForm({ accountType }: { accountType: AccountType }) {
 function AuthMessage({ tone, text }: { tone: 'error' | 'success'; text: string }) {
   const Icon = tone === 'error' ? CircleAlert : CircleCheck;
   return (
-    <div className={`flex gap-2.5 rounded-xl border p-3 text-sm leading-5 ${tone === 'error' ? 'border-red-200 bg-red-50 text-red-700' : 'border-emerald-200 bg-emerald-50 text-emerald-700'}`} role={tone === 'error' ? 'alert' : 'status'}>
-      <Icon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+    <div
+      className={`flex items-center gap-2.5 rounded-[8px] border-2 p-3.5 text-xs font-bold leading-5 ${
+        tone === 'error'
+          ? 'border-red-500 bg-red-50 text-red-700 shadow-[2px_2px_0_#DC2626] dark:border-red-900 dark:bg-red-950/40 dark:text-red-300'
+          : 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-[2px_2px_0_#059669] dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300'
+      }`}
+      role={tone === 'error' ? 'alert' : 'status'}
+    >
+      <Icon className="size-4 shrink-0" aria-hidden="true" />
       <span>{text}</span>
     </div>
   );
