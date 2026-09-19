@@ -43,16 +43,18 @@ export function OffersBrowser({ role, offers }: { role: AccountType; offers: Off
               )}
             >
               {label}
-              <span
-                className={cn(
-                  'rounded-[4px] px-1.5 py-0.5 text-[10px] font-bold',
-                  isSelected
-                    ? 'bg-white/20 text-white'
-                    : 'border border-[#0D0C1D]/30 bg-white text-[#0D0C1D] dark:border-[#383E5E] dark:bg-[#1E2134] dark:text-[#9CA1BA]'
-                )}
-              >
-                {count}
-              </span>
+              {count > 0 ? (
+                <span
+                  className={cn(
+                    'rounded-[4px] px-1.5 py-0.5 text-[10px] font-bold',
+                    isSelected
+                      ? 'bg-white/20 text-white'
+                      : 'border border-[#0D0C1D]/30 bg-white text-[#0D0C1D] dark:border-[#383E5E] dark:bg-[#1E2134] dark:text-[#9CA1BA]'
+                  )}
+                >
+                  {count}
+                </span>
+              ) : null}
             </button>
           );
         })}
