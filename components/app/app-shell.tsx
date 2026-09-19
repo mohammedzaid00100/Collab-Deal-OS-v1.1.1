@@ -68,7 +68,10 @@ export function AppShell({ role, displayName, email, children }: AppShellProps) 
       <a className="fixed left-3 top-3 z-50 -translate-y-20 rounded-lg bg-[#0D0C1D] px-3 py-2 text-sm font-semibold text-white focus:translate-y-0 dark:bg-[#F3F4F8] dark:text-[#0D0C1D]" href="#app-main">Skip to content</a>
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[250px] border-r-2 border-[#0D0C1D] bg-white px-4 py-5 transition-colors dark:border-[#262A3D] dark:bg-[#11131E] lg:flex lg:flex-col">
         <BrandLogo className="px-2" />
-        <span className="mx-2 mt-4 w-fit rounded-[6px] border-2 border-[#0D0C1D] bg-slate-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.09em] text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#1F2235] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_#000000]">{role} workspace</span>
+        <span className="mx-2 mt-4 inline-flex w-fit items-center gap-1.5 rounded-[8px] border-2 border-[#0D0C1D] bg-[#EEF2FF] px-3 py-1 text-xs font-bold uppercase tracking-[0.06em] text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#1E1F3B] dark:text-[#A5B4FC] dark:shadow-[2px_2px_0_#000000]">
+          <span className="size-1.5 rounded-full bg-[#4F46E5] dark:bg-[#818CF8]" aria-hidden="true" />
+          {role} workspace
+        </span>
         <nav className="mt-7 grid gap-1" aria-label={`${role} navigation`}>
           {navItems.map(([label, href, Icon]) => {
             const active = pathname === href || (href !== `/${role}/dashboard` && pathname.startsWith(`${href}/`));
