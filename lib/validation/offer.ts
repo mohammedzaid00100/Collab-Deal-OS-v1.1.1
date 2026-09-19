@@ -44,7 +44,7 @@ export function toOfferTerms(data: OfferInput) {
     usage_duration_days: data.usageDurationDays ?? null,
     paid_ad_rights: data.paidAdRights,
     exclusivity: data.exclusivity,
-    exclusivity_duration_days: data.exclusivityDurationDays ?? null,
+    exclusivity_duration_days: data.exclusivity ? (data.exclusivityDurationDays ?? null) : null,
     deadline: new Date(data.deadline).toISOString(),
     territory: data.territory || null,
     notes: data.notes || null,
