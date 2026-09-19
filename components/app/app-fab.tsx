@@ -7,6 +7,7 @@ import {
   BarChart3,
   FilePlus2,
   Handshake,
+  LayoutDashboard,
   Link2,
   MessageCircle,
   Moon,
@@ -79,6 +80,7 @@ export function AppFab({ role }: AppFabProps) {
   }
 
   const creatorItems = [
+    { label: 'Dashboard', href: '/creator/dashboard', icon: LayoutDashboard },
     { label: 'Browse Deals', href: '/creator/connect', icon: Radio, highlight: true },
     { label: 'Messages', href: '/creator/messages', icon: MessageCircle },
     { label: 'Active Offers', href: '/creator/offers', icon: Handshake },
@@ -87,6 +89,7 @@ export function AppFab({ role }: AppFabProps) {
   ];
 
   const brandItems = [
+    { label: 'Dashboard', href: '/brand/dashboard', icon: LayoutDashboard },
     { label: 'New Campaign', href: '/brand/campaigns/new', icon: FilePlus2, highlight: true },
     { label: 'Connect Marketplace', href: '/brand/connect', icon: Link2 },
     { label: 'Messages', href: '/brand/messages', icon: MessageCircle },
@@ -96,6 +99,7 @@ export function AppFab({ role }: AppFabProps) {
 
   const items = role === 'creator' ? creatorItems : brandItems;
   const isDark = theme === 'dark';
+
 
   return (
     <div className="fixed bottom-6 right-6 z-50" ref={menuRef}>
@@ -125,17 +129,21 @@ export function AppFab({ role }: AppFabProps) {
           <div className="grid gap-1">
             {items.map((item) => {
               const Icon = item.icon;
+              const isActive = pathname === item.href || (item.href !== `/${role}/dashboard` && pathname.startsWith(`${item.href}/`));
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   role="menuitem"
+                  aria-current={isActive ? 'page' : undefined}
                   onClick={() => setOpen(false)}
                   className={cn(
                     'flex items-center gap-3 rounded-[8px] px-3 py-2 text-sm font-semibold transition-all',
                     item.highlight
                       ? 'border border-[#0D0C1D] bg-[#4F46E5] text-white shadow-[2px_2px_0_#0D0C1D] hover:bg-[#4338CA] dark:border-[#2D334D] dark:bg-[#6366F1] dark:shadow-[2px_2px_0_#000]'
-                      : 'text-[#0D0C1D] hover:bg-[#F5F2EA] dark:text-[#F3F4F8] dark:hover:bg-[#222538]',
+                      : isActive
+                        ? 'border border-[#0D0C1D] bg-[#F5F2EA] text-[#0D0C1D] font-bold shadow-[2px_2px_0_#0D0C1D] dark:border-[#2D334D] dark:bg-[#222538] dark:text-white dark:shadow-[2px_2px_0_#000]'
+                        : 'text-[#0D0C1D] hover:bg-[#F5F2EA] dark:text-[#F3F4F8] dark:hover:bg-[#222538]',
                   )}
                 >
                   <Icon className="size-4 shrink-0" aria-hidden="true" />
