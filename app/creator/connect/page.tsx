@@ -45,19 +45,96 @@ export default async function CreatorConnectPage() {
   if (brandResult.error) throw new Error('Brand information is temporarily unavailable.');
   const brands = new Map(((brandResult.data ?? []) as BrandRow[]).map((brand) => [brand.id, brand]));
 
-  return <AppShell role="creator" displayName={account.displayName ?? 'Creator'} email={account.email} plan={account.plan}>
-    <div><p className="text-xs font-bold uppercase tracking-[0.1em] text-violet-700">Connect</p><h1 className="mt-1 text-2xl font-bold tracking-[-0.035em] text-slate-950 sm:text-3xl">Live brand deals</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Every item here is a real published deal from a registered brand account. Open one, review the terms, and comment if you are interested.</p></div>
+  return (
+    <AppShell role="creator" displayName={account.displayName ?? 'Creator'} email={account.email} plan={account.plan}>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#4F46E5] dark:text-[#818CF8]">Connect</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-[-0.04em] text-[#0D0C1D] sm:text-3xl dark:text-[#F3F4F8]">Live brand deals</h1>
+        <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-[#5A5870] dark:text-[#9CA1BA]">
+          Every item here is a real published deal from a registered brand account. Open one, review the terms, and comment if you are interested.
+        </p>
+      </div>
 
-    {deals.length ? <section className="mt-7 grid gap-4 lg:grid-cols-2" aria-label="Published deals">{deals.map((deal) => {
-      const brand = brands.get(deal.brand_profile_id);
-      return <article className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md" key={deal.id}>
-        <div className="flex items-start justify-between gap-4"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-emerald-700"><Radio className="size-3" />Live deal</span><span className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{deal.platform} · {deal.deal_type.replaceAll('_', ' ')}</span></div><h2 className="mt-3 text-lg font-bold tracking-[-0.025em] text-slate-950">{deal.title}</h2><p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-500">{deal.description}</p></div><Link className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 transition-colors group-hover:bg-slate-950 focus-visible:bg-slate-950" href={`/creator/connect/${deal.id}`} aria-label={`Open ${deal.title}`}><ArrowRight className="size-4 stroke-slate-500 transition-colors group-hover:stroke-white group-focus-visible:stroke-white" /></Link></div>
-        <div className="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 sm:grid-cols-3"><Data icon={Building2} label="Brand" value={brand?.brand_name ?? 'Brand'} /><Data icon={BadgeIndianRupee} label="Deal value" value={formatInr(Number(deal.budget) + Number(deal.product_value))} /><Data icon={Radio} label="Creator niche" value={deal.target_creator_niche} /></div>
-        {brand ? <p className="mt-4 text-[11px] text-slate-400">{brand.industry} · {brand.location} · Posted {formatDate(deal.created_at)}</p> : null}
-      </article>;
-    })}</section> : <section className="mt-7 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><EmptyState icon={Radio} title="No live deals yet" description="Published deals from real brand accounts will appear here as soon as brands post them." /></section>}
-  </AppShell>;
+      {deals.length ? (
+        <section className="mt-7 grid gap-4 lg:grid-cols-2" aria-label="Published deals">
+          {deals.map((deal) => {
+            const brand = brands.get(deal.brand_profile_id);
+            return (
+              <article
+                className="group flex flex-col justify-between rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] transition-all hover:-translate-y-0.5 hover:bg-[#FBF9F5] hover:shadow-[6px_6px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] dark:hover:border-[#6366F1] dark:hover:bg-[#1C1E30]"
+                key={deal.id}
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="inline-flex items-center gap-1.5 rounded-[6px] border-2 border-[#0D0C1D] bg-[#ECFDF5] px-2.5 py-0.5 text-xs font-bold uppercase tracking-[0.06em] text-[#059669] shadow-[1.5px_1.5px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#064E3B]/40 dark:text-[#34D399] dark:shadow-[1.5px_1.5px_0_#000000]">
+                          <Radio className="size-3" />
+                          Live deal
+                        </span>
+                        <span className="rounded-[6px] border border-[#0D0C1D] bg-[#F5F2EA] px-2 py-0.5 text-xs font-semibold uppercase tracking-[0.06em] text-[#0D0C1D] shadow-[1px_1px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#1E2134] dark:text-[#9CA1BA] dark:shadow-none">
+                          {deal.platform} · {deal.deal_type.replaceAll('_', ' ')}
+                        </span>
+                      </div>
+                      <h2 className="mt-3 text-lg font-bold tracking-[-0.03em] text-[#0D0C1D] transition-colors group-hover:text-[#4F46E5] dark:text-[#F3F4F8] dark:group-hover:text-[#818CF8]">
+                        {deal.title}
+                      </h2>
+                      <p className="mt-2 line-clamp-3 text-sm leading-6 text-[#5A5870] dark:text-[#9CA1BA]">
+                        {deal.description}
+                      </p>
+                    </div>
+                    <Link
+                      className="flex size-10 shrink-0 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-[#F5F2EA] text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all group-hover:bg-[#4F46E5] group-hover:text-white active:translate-x-[1px] active:translate-y-[1px] active:shadow-none dark:border-[#383E5E] dark:bg-[#1E2134] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_#000000] dark:group-hover:bg-[#6366F1] dark:group-hover:text-white"
+                      href={`/creator/connect/${deal.id}`}
+                      aria-label={`Open ${deal.title}`}
+                    >
+                      <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                  </div>
+
+                  <div className="mt-5 grid grid-cols-2 gap-3 border-t-2 border-[#0D0C1D] pt-4 dark:border-[#383E5E] sm:grid-cols-3">
+                    <Data icon={Building2} label="Brand" value={brand?.brand_name ?? 'Brand'} />
+                    <Data icon={BadgeIndianRupee} label="Deal value" value={formatInr(Number(deal.budget) + Number(deal.product_value))} />
+                    <Data icon={Radio} label="Creator niche" value={deal.target_creator_niche} />
+                  </div>
+                </div>
+
+                {brand ? (
+                  <p className="mt-4 border-t border-dashed border-[#0D0C1D]/20 pt-3 text-xs font-medium text-[#5A5870] dark:border-[#383E5E] dark:text-[#9CA1BA]">
+                    {brand.industry} · {brand.location} · Posted {formatDate(deal.created_at)}
+                  </p>
+                ) : null}
+              </article>
+            );
+          })}
+        </section>
+      ) : (
+        <section className="mt-7 rounded-[10px] border-2 border-dashed border-[#0D0C1D] bg-white p-6 shadow-[4px_4px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#121422] dark:shadow-[4px_4px_0_#000000]">
+          <EmptyState
+            icon={Radio}
+            title="No live deals yet"
+            description="Published deals from real brand accounts will appear here as soon as brands post them."
+          />
+        </section>
+      )}
+    </AppShell>
+  );
 }
 
-function Data({ icon: Icon, label, value }: { icon: typeof Building2; label: string; value: string }) { return <div className="min-w-0"><span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.07em] text-slate-400"><Icon className="size-3" />{label}</span><strong className="mt-1 block truncate text-xs text-slate-800">{value}</strong></div>; }
-function formatDate(value: string) { return new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium' }).format(new Date(value)); }
+function Data({ icon: Icon, label, value }: { icon: typeof Building2; label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.08em] text-[#5A5870] dark:text-[#9CA1BA]">
+        <Icon className="size-3.5 text-[#4F46E5] dark:text-[#818CF8]" />
+        {label}
+      </span>
+      <strong className="mt-1 block truncate text-sm font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">
+        {value}
+      </strong>
+    </div>
+  );
+}
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium' }).format(new Date(value));
+}
