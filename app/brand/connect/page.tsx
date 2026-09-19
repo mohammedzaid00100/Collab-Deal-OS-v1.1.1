@@ -59,9 +59,76 @@ export default async function BrandConnectPage() {
       <Summary label="Creator comments" value={Object.values(commentCounts).reduce((sum, count) => sum + count, 0)} />
     </section>
 
-    {deals.length ? <section className="mt-6 grid gap-4" aria-label="Your deals">{deals.map((deal) => <article className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-violet-200 hover:shadow-md" key={deal.id}>
-      <div className="flex items-start gap-4"><span className={`mt-1 flex size-10 shrink-0 items-center justify-center rounded-xl ${deal.status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}><Radio className="size-5" /></span><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.08em] ${deal.status === 'PUBLISHED' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>{deal.status}</span><span className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{deal.platform}</span></div><h2 className="mt-3 text-lg font-bold text-slate-950">{deal.title}</h2><p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-500">{deal.description}</p><div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-slate-500"><span>{formatInr(Number(deal.budget) + Number(deal.product_value))} total value</span><span className="inline-flex items-center gap-1"><MessageSquareText className="size-3.5" />{commentCounts[deal.id] ?? 0} comments</span><span>Created {formatDate(deal.created_at)}</span></div></div><Link className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition group-hover:bg-slate-950 group-hover:text-white" href={`/brand/connect/${deal.id}`} aria-label={`Open ${deal.title}`}><ArrowRight className="size-4 text-slate-500 transition-colors group-hover:text-white" /></Link></div>
-    </article>)}</section> : <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"><EmptyState icon={Radio} title="No deals yet" description="Create your first deal, publish it, and it will appear in creators’ Connect feed." actionLabel="Add New Deal" actionHref="/brand/campaigns/new" /></section>}
+    {deals.length ? (
+      <section className="mt-6 grid gap-4" aria-label="Your deals">
+        {deals.map((deal) => (
+          <Link
+            key={deal.id}
+            href={`/brand/connect/${deal.id}`}
+            aria-label={`Open ${deal.title}`}
+            className="group block cursor-pointer rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] transition-all hover:-translate-y-0.5 hover:bg-[#FBF9F5] hover:shadow-[6px_6px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] dark:hover:border-[#6366F1] dark:hover:bg-[#1C1E30]"
+          >
+            <div className="flex items-start gap-4">
+              <span
+                className={`mt-1 flex size-10 shrink-0 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] ${
+                  deal.status === 'PUBLISHED'
+                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+                    : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                } shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:shadow-none`}
+              >
+                <Radio className="size-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                      deal.status === 'PUBLISHED'
+                        ? 'border border-emerald-600 bg-emerald-50 text-emerald-800 dark:border-emerald-500 dark:bg-emerald-950/40 dark:text-emerald-300'
+                        : 'border border-slate-300 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                    }`}
+                  >
+                    {deal.status}
+                  </span>
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    {deal.platform}
+                  </span>
+                </div>
+                <h2 className="mt-3 text-lg font-bold text-slate-950 transition-colors group-hover:text-[#4F46E5] dark:text-white dark:group-hover:text-[#818CF8]">
+                  {deal.title}
+                </h2>
+                <p className="mt-1 line-clamp-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                  {deal.description}
+                </p>
+                <div className="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium text-slate-600 dark:text-slate-400">
+                  <span>{formatInr(Number(deal.budget) + Number(deal.product_value))} total value</span>
+                  <span className="inline-flex items-center gap-1">
+                    <MessageSquareText className="size-3.5" />
+                    {commentCounts[deal.id] ?? 0} comments
+                  </span>
+                  <span>Created {formatDate(deal.created_at)}</span>
+                </div>
+              </div>
+              <span
+                className="flex size-10 shrink-0 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-[#F5F2EA] text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all group-hover:bg-[#4F46E5] group-hover:text-white dark:border-[#262A3D] dark:bg-[#11131E] dark:text-slate-300 dark:shadow-[2px_2px_0_#000000] dark:group-hover:bg-[#6366F1] dark:group-hover:text-white"
+                aria-hidden="true"
+              >
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </div>
+          </Link>
+        ))}
+      </section>
+    ) : (
+      <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <EmptyState
+          icon={Radio}
+          title="No deals yet"
+          description="Create your first deal, publish it, and it will appear in creators’ Connect feed."
+          actionLabel="Add New Deal"
+          actionHref="/brand/campaigns/new"
+        />
+      </section>
+    )}
   </AppShell>;
 }
 
