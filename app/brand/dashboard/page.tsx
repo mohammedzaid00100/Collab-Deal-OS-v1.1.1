@@ -36,7 +36,7 @@ export default async function BrandDashboardPage() {
   return <AppShell role="brand" displayName={name} email={account.email} plan={account.plan}>
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#4F46E5] dark:text-[#818CF8]">Brand workspace</p>
+        <p className="text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8]">Brand workspace</p>
         <h1 className="mt-1 text-2xl font-bold tracking-[-0.04em] text-slate-950 dark:text-white sm:text-3xl">Welcome back, {name}</h1>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Build campaigns, compare creator fit, and keep every offer structured.</p>
       </div>
@@ -57,7 +57,7 @@ export default async function BrandDashboardPage() {
       <section className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] sm:p-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#D97706] dark:text-[#F59E0B]">Creator matches</p>
+            <p className="text-xs font-semibold text-[#D97706] dark:text-[#F59E0B]">Creator matches</p>
             <h2 className="mt-1 text-lg font-bold tracking-[-0.03em] text-slate-950 dark:text-white">Strongest creator fit</h2>
           </div>
           <Link className="text-sm font-semibold text-[#4F46E5] hover:underline dark:text-[#818CF8]" href="/brand/creators">Discover creators</Link>
@@ -67,7 +67,7 @@ export default async function BrandDashboardPage() {
         </div>
       </section>
       <aside className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] sm:p-6">
-        <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#4F46E5] dark:text-[#818CF8]">Campaign activity</p>
+        <p className="text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8]">Campaign activity</p>
         <h2 className="mt-1 text-lg font-bold tracking-[-0.03em] text-slate-950 dark:text-white">Next best action</h2>
         <div className="mt-5 rounded-[10px] border-2 border-[#0D0C1D] bg-[#EEF2FF] p-5 shadow-[3px_3px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#1C1E30] dark:shadow-[3px_3px_0_#000000]">
           <span className="flex size-10 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-white text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#11131E] dark:text-[#818CF8] dark:shadow-[2px_2px_0_#000000]"><BriefcaseBusiness className="size-5" /></span>
