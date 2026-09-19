@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, MessageSquareText, Plus, Radio } from 'lucide-react';
+import { ArrowRight, BriefcaseBusiness, MessageSquareText, Plus, Radio } from 'lucide-react';
 import { AppShell } from '@/components/app/app-shell';
 import { EmptyState } from '@/components/app/empty-state';
 import { ServiceState } from '@/components/ui/service-state';
@@ -49,14 +49,25 @@ export default async function BrandConnectPage() {
 
   return <AppShell role="brand" displayName={account.displayName ?? 'Brand'} email={account.email} plan={account.plan}>
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div><p className="text-xs font-bold uppercase tracking-[0.1em] text-violet-700">Connect</p><h1 className="mt-1 text-2xl font-bold tracking-[-0.035em] text-slate-950 sm:text-3xl">Your collaboration deals</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Publish deals, see which creators are interested, then start a direct conversation with the right person.</p></div>
-      <Link className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md" style={{ color: '#fff' }} href="/brand/campaigns/new"><Plus className="size-4" />Add New Deal</Link>
+      <div>
+        <p className="text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8]">Connect</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-[-0.04em] text-[#0D0C1D] sm:text-3xl dark:text-[#F3F4F8]">Your collaboration deals</h1>
+        <p className="mt-2 max-w-2xl text-sm text-[#5A5870] dark:text-[#9CA1BA]">Publish deals, see which creators are interested, then start a direct conversation with the right person.</p>
+      </div>
+      <Link
+        className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-[#4F46E5] px-4 text-sm font-semibold text-white shadow-[3px_3px_0_#0D0C1D] transition-all hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#6366F1] dark:shadow-[3px_3px_0_#000000]"
+        style={{ color: '#fff' }}
+        href="/brand/campaigns/new"
+      >
+        <Plus className="size-4" />
+        Add New Deal
+      </Link>
     </div>
 
     <section className="mt-7 grid gap-3 sm:grid-cols-3">
-      <Summary label="All deals" value={deals.length} />
-      <Summary label="Live deals" value={deals.filter((deal) => deal.status === 'PUBLISHED').length} />
-      <Summary label="Creator comments" value={Object.values(commentCounts).reduce((sum, count) => sum + count, 0)} />
+      <Summary icon={BriefcaseBusiness} label="All deals" value={deals.length} detail="Total campaigns created" />
+      <Summary icon={Radio} label="Live deals" value={deals.filter((deal) => deal.status === 'PUBLISHED').length} detail="Active in marketplace" />
+      <Summary icon={MessageSquareText} label="Creator comments" value={Object.values(commentCounts).reduce((sum, count) => sum + count, 0)} detail="Total creator applications" />
     </section>
 
     {deals.length ? (
@@ -132,5 +143,32 @@ export default async function BrandConnectPage() {
   </AppShell>;
 }
 
-function Summary({ label, value }: { label: string; value: number }) { return <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><strong className="text-2xl font-bold text-slate-950">{value}</strong><span className="mt-1 block text-xs text-slate-500">{label}</span></div>; }
+function Summary({
+  icon: Icon,
+  label,
+  value,
+  detail,
+}: {
+  icon: typeof Radio;
+  label: string;
+  value: number;
+  detail: string;
+}) {
+  return (
+    <div className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-4 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000]">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold text-[#5A5870] dark:text-[#9CA1BA]">{label}</span>
+        <span className="flex size-8 items-center justify-center rounded-[6px] border-2 border-[#0D0C1D] bg-[#EEF2FF] text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#1E1F3B] dark:text-[#818CF8] dark:shadow-[2px_2px_0_#000000]">
+          <Icon className="size-4" aria-hidden="true" />
+        </span>
+      </div>
+      <strong className="mt-2 block text-2xl font-bold tracking-[-0.04em] text-[#0D0C1D] dark:text-[#F3F4F8] sm:text-3xl">
+        {value}
+      </strong>
+      <span className="mt-1 block text-xs text-[#5A5870] dark:text-[#9CA1BA]">{detail}</span>
+    </div>
+  );
+}
+
 function formatDate(value: string) { return new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium' }).format(new Date(value)); }
+
