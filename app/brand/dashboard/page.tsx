@@ -69,11 +69,11 @@ export default async function BrandDashboardPage() {
       <aside className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] sm:p-6">
         <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#4F46E5] dark:text-[#818CF8]">Campaign activity</p>
         <h2 className="mt-1 text-lg font-bold tracking-[-0.03em] text-slate-950 dark:text-white">Next best action</h2>
-        <div className="mt-5 rounded-[10px] border-2 border-[#0D0C1D] bg-[#1E1B4B] p-5 text-white shadow-[3px_3px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#111326] dark:shadow-[3px_3px_0_#000000]">
-          <span className="flex size-10 items-center justify-center rounded-[8px] border border-white/20 bg-white/10 text-[#A5B4FC]"><BriefcaseBusiness className="size-5" /></span>
-          <h3 className="mt-5 font-bold">Create a structured campaign</h3>
-          <p className="mt-2 text-sm leading-6 text-[#C7D2FE]">Clear deliverables, rights, budget, and audience criteria produce better matches and cleaner offers.</p>
-          <Link className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white hover:underline" href="/brand/campaigns/new">Start campaign<ArrowRight className="size-4" /></Link>
+        <div className="mt-5 rounded-[10px] border-2 border-[#0D0C1D] bg-[#EEF2FF] p-5 shadow-[3px_3px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#1C1E30] dark:shadow-[3px_3px_0_#000000]">
+          <span className="flex size-10 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-white text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#11131E] dark:text-[#818CF8] dark:shadow-[2px_2px_0_#000000]"><BriefcaseBusiness className="size-5" /></span>
+          <h3 className="mt-5 font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">Create a structured campaign</h3>
+          <p className="mt-2 text-sm leading-6 text-[#5A5870] dark:text-[#9CA1BA]">Clear deliverables, rights, budget, and audience criteria produce better matches and cleaner offers.</p>
+          <Link className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#4F46E5] hover:underline dark:text-[#818CF8]" href="/brand/campaigns/new">Start campaign<ArrowRight className="size-4" /></Link>
         </div>
       </aside>
     </div>
