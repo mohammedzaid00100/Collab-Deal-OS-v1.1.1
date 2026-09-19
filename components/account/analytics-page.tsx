@@ -1,3 +1,4 @@
+import { Activity, BadgeCheck, Bot, Handshake, Percent } from 'lucide-react';
 import { AppShell } from '@/components/app/app-shell';
 import { ServiceState } from '@/components/ui/service-state';
 import { requireAppAccount } from '@/lib/auth/protected-page';
@@ -18,7 +19,84 @@ export async function AnalyticsPage({ role }: { role: AccountType }) {
   if (offers.error || acceptedOffers.error || decidedOffers.error || analyses.error || activity.error) throw new Error('Analytics are temporarily unavailable.');
   const accepted = acceptedOffers.count ?? 0;
   const decided = decidedOffers.count ?? 0;
-  const metrics = [['Visible offers', String(offers.count ?? 0)], ['Accepted deals', accepted.toString()],
-    ['Acceptance rate', decided ? `${Math.round(accepted / decided * 100)}%` : '—'], ['Completed AI evaluations', String(analyses.count ?? 0)]];
-  return <AppShell role={role} displayName={account.displayName ?? role} email={account.email} plan={account.plan}><h1 className="text-3xl font-bold tracking-tight text-slate-950">Your collaboration activity</h1><p className="mt-3 text-sm leading-6 text-slate-500">Based on the offers and evaluations in your account. Acceptance rate compares accepted and rejected deals; pending offers are excluded.</p><section className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{metrics.map(([label, value]) => <div key={label} className="rounded-2xl border border-slate-200 bg-white p-5"><p className="text-xs font-semibold text-slate-500">{label}</p><p className="mt-4 text-3xl font-bold text-slate-950">{value}</p></div>)}</section><section className="mt-7 rounded-2xl border border-slate-200 bg-white p-5"><h2 className="text-lg font-bold">Recent activity</h2>{activity.data.length ? <ol className="mt-5 divide-y divide-slate-100">{activity.data.map((event) => <li className="flex flex-wrap justify-between gap-3 py-4 text-sm" key={event.id}><span className="capitalize text-slate-700">{event.event_type.toLowerCase().replaceAll('_', ' ')}</span><time className="text-xs text-slate-400" dateTime={event.created_at}>{new Date(event.created_at).toLocaleDateString('en-IN')}</time></li>)}</ol> : <p className="py-8 text-sm text-slate-500">Your activity will appear after you create or evaluate a deal.</p>}</section></AppShell>;
+  const metrics = [
+    { label: 'Visible offers', value: String(offers.count ?? 0), detail: 'All active & history', icon: Handshake },
+    { label: 'Accepted deals', value: accepted.toString(), detail: 'Closed & in-progress', icon: BadgeCheck },
+    { label: 'Acceptance rate', value: decided ? `${Math.round(accepted / decided * 100)}%` : '—', detail: 'Accepted vs rejected', icon: Percent },
+    { label: 'Completed AI evaluations', value: String(analyses.count ?? 0), detail: 'Deal score checks', icon: Bot },
+  ];
+
+  return (
+    <AppShell role={role} displayName={account.displayName ?? role} email={account.email} plan={account.plan}>
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#4F46E5] dark:text-[#818CF8]">Performance & Insights</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-[-0.04em] text-[#0D0C1D] dark:text-[#F3F4F8] sm:text-3xl">
+          Your collaboration activity
+        </h1>
+        <p className="mt-2 text-sm font-medium leading-6 text-[#5A5870] dark:text-[#9CA1BA]">
+          Based on the offers and evaluations in your account. Acceptance rate compares accepted and rejected deals; pending offers are excluded.
+        </p>
+      </div>
+
+      <section className="mt-7 grid gap-3.5 sm:grid-cols-2 xl:grid-cols-4" aria-label="Activity metrics">
+        {metrics.map((metric) => (
+          <div
+            key={metric.label}
+            className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-4 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000]"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-[0.06em] text-[#5A5870] dark:text-[#9CA1BA]">{metric.label}</span>
+              <span className="flex size-8 items-center justify-center rounded-[6px] border-2 border-[#0D0C1D] bg-[#EEF2FF] text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#1E1F3B] dark:text-[#818CF8] dark:shadow-none">
+                <metric.icon className="size-4" aria-hidden="true" />
+              </span>
+            </div>
+            <strong className="mt-3 block truncate text-2xl font-bold tracking-[-0.04em] text-[#0D0C1D] dark:text-[#F3F4F8] sm:text-3xl">
+              {metric.value}
+            </strong>
+            <span className="mt-1 block truncate text-xs font-medium text-[#5A5870] dark:text-[#9CA1BA]">{metric.detail}</span>
+          </div>
+        ))}
+      </section>
+
+      <section className="mt-7 rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] sm:p-6">
+        <div className="flex items-center gap-3">
+          <span className="flex size-10 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-[#EEF2FF] text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#1E1F3B] dark:text-[#818CF8] dark:shadow-none">
+            <Activity className="size-5" />
+          </span>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#4F46E5] dark:text-[#818CF8]">Event Log</p>
+            <h2 className="mt-1 text-lg font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">Recent activity</h2>
+          </div>
+        </div>
+
+        {activity.data.length ? (
+          <ol className="mt-5 grid gap-2.5">
+            {activity.data.map((event) => (
+              <li
+                className="flex items-center justify-between gap-4 rounded-[8px] border-2 border-[#0D0C1D] bg-[#F5F2EA] px-4 py-3 shadow-[2px_2px_0_#0D0C1D] transition-all hover:bg-white dark:border-[#262A3D] dark:bg-[#1E2134] dark:shadow-none dark:hover:bg-[#25283D]"
+                key={event.id}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="size-2 rounded-full border border-[#0D0C1D] bg-[#4F46E5] shadow-[1px_1px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#6366F1]" />
+                  <span className="text-sm font-bold capitalize text-[#0D0C1D] dark:text-[#F3F4F8]">
+                    {event.event_type.toLowerCase().replaceAll('_', ' ')}
+                  </span>
+                </div>
+                <time
+                  className="shrink-0 rounded-[6px] border border-[#0D0C1D] bg-white px-2.5 py-0.5 text-xs font-bold text-[#5A5870] shadow-[1px_1px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:text-[#9CA1BA] dark:shadow-none"
+                  dateTime={event.created_at}
+                >
+                  {new Date(event.created_at).toLocaleDateString('en-IN')}
+                </time>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <div className="mt-5 rounded-[8px] border-2 border-dashed border-[#0D0C1D] bg-[#F5F2EA] p-8 text-center text-sm font-medium text-[#5A5870] dark:border-[#262A3D] dark:bg-[#1E2134] dark:text-[#9CA1BA]">
+            Your activity will appear after you create or evaluate a deal.
+          </div>
+        )}
+      </section>
+    </AppShell>
+  );
 }
