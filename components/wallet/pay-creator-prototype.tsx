@@ -68,9 +68,17 @@ export function PayCreatorPrototype({ creatorName }: {
       setPassword('');
     }, 950);
   }
-
-  return <>
-    <button className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-3 py-2 text-xs font-bold text-white shadow-sm" style={{ color: '#fff' }} type="button" onClick={() => setOpen(true)}><BadgeIndianRupee className="size-4" />Pay creator</button>
+  return (
+    <>
+      <button
+        className="inline-flex min-h-9 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-[#4F46E5] px-3 py-1.5 text-xs font-bold text-white shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#6366F1] dark:shadow-[2px_2px_0_#000000]"
+      style={{ color: '#fff' }}
+      type="button"
+      onClick={() => setOpen(true)}
+    >
+      <BadgeIndianRupee className="size-4" />
+      Pay creator
+    </button>
     {open ? <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Pay creator prototype">
       <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl sm:p-7">
         <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-bold uppercase tracking-[0.1em] text-violet-700">Prototype payment</p><h2 className="mt-1 text-2xl font-bold tracking-[-0.03em] text-slate-950">Pay {creatorName}</h2><p className="mt-2 text-sm leading-6 text-slate-500">This simulates the future Razorpay-backed payment flow. Collab Deal OS adds an 8% platform commission on top of the creator amount.</p></div><button className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600" type="button" onClick={close} aria-label="Close"><X className="size-4" /></button></div>
@@ -98,5 +106,6 @@ export function PayCreatorPrototype({ creatorName }: {
       onClose={(message) => { setRecoveryOpen(false); if (message) setNotice(message); }}
       onReset={() => { setPassword(''); setError(''); setNotice('Payment password changed. Use the new password for this creator payment.'); }}
     />
-  </>;
+  </>
+  );
 }

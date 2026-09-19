@@ -34,15 +34,84 @@ export default async function BrandConversationPage({ params }: { params: Promis
   const creator = creatorResult.data;
   const messages = (messagesResult.data ?? []) as Message[];
 
-  return <AppShell role="brand" displayName={account.displayName ?? 'Brand'} email={account.email} plan={account.plan}>
-    <Link className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-950" href="/brand/messages"><ArrowLeft className="size-4" />Messages</Link>
-    <section className="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <header className="flex flex-wrap items-center gap-3 border-b border-slate-200 px-4 py-4 sm:px-5"><span className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-violet-100 to-blue-100 font-bold text-violet-700">{creator.full_name.slice(0, 1).toUpperCase()}</span><div className="min-w-0 flex-1"><h1 className="truncate text-sm font-bold text-slate-950">{creator.full_name}</h1><p className="truncate text-xs text-slate-500">@{creator.username} · {creator.niche} · {creator.location}</p></div><div className="flex items-center gap-2"><Link className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700" href={`/brand/connect/${conversation.campaign_id}`}>View deal</Link><PayCreatorPrototype creatorName={creator.full_name} conversationId={conversation.id} campaignId={conversation.campaign_id} creatorProfileId={conversation.creator_profile_id} /></div></header>
-      <div className="border-b border-slate-100 bg-slate-50 px-4 py-2 text-[11px] font-medium text-slate-500 sm:px-5">Deal: {campaignResult.data.title} · Payment is currently prototype-only.</div>
-      <div className="min-h-[420px] max-h-[62vh] overflow-y-auto p-4 sm:p-5">{messages.length ? <div className="grid gap-3">{messages.map((message) => { const own = message.sender_user_id === account.id; return <div className={`flex ${own ? 'justify-end' : 'justify-start'}`} key={message.id}><div className={`max-w-[80%] rounded-2xl px-4 py-3 ${own ? 'rounded-br-md bg-slate-950 text-white' : 'rounded-bl-md bg-slate-100 text-slate-800'}`} style={own ? { color: '#fff' } : undefined}><p className="whitespace-pre-wrap text-sm leading-6">{message.body}</p><span className={`mt-1 block text-[10px] ${own ? 'text-slate-400' : 'text-slate-400'}`}>{formatTime(message.created_at)}</span></div></div>; })}</div> : <div className="flex min-h-[360px] flex-col items-center justify-center text-center"><MessageCircle className="size-8 text-slate-300" /><h2 className="mt-3 text-sm font-bold text-slate-800">Start the conversation</h2><p className="mt-1 max-w-sm text-xs leading-5 text-slate-500">Discuss the deal details, expectations, timeline, and next steps here. When the deal is finalized, use Pay Creator above.</p></div>}</div>
-      <MessageComposer conversationId={conversation.id} senderUserId={account.id} />
-    </section>
-  </AppShell>;
+  return (
+    <AppShell role="brand" displayName={account.displayName ?? 'Brand'} email={account.email} plan={account.plan}>
+      <Link
+        className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-[#5A5870] transition-colors hover:text-[#0D0C1D] dark:text-[#9CA1BA] dark:hover:text-[#F3F4F8]"
+        href="/brand/messages"
+      >
+        <ArrowLeft className="size-4" />
+        Back to Messages
+      </Link>
+      <section className="mt-3 overflow-hidden rounded-[10px] border-2 border-[#0D0C1D] bg-white shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000]">
+        <header className="flex flex-wrap items-center gap-3 border-b-2 border-[#0D0C1D] px-4 py-4 dark:border-[#262A3D] sm:px-5">
+          <span className="flex size-10 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-[#EEF2FF] font-bold text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#1E1F3B] dark:text-[#818CF8] dark:shadow-[2px_2px_0_#000000]">
+            {creator.full_name.slice(0, 1).toUpperCase()}
+          </span>
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate text-base font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">{creator.full_name}</h1>
+            <p className="truncate text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8]">
+              @{creator.username} · {creator.niche} · {creator.location}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link
+              className="inline-flex min-h-9 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-white px-3 text-xs font-semibold text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_#000000]"
+              href={`/brand/connect/${conversation.campaign_id}`}
+            >
+              View deal
+            </Link>
+            <PayCreatorPrototype
+              creatorName={creator.full_name}
+              conversationId={conversation.id}
+              campaignId={conversation.campaign_id}
+              creatorProfileId={conversation.creator_profile_id}
+            />
+          </div>
+        </header>
+        <div className="border-b-2 border-[#0D0C1D] bg-[#F5F2EA] px-4 py-2 text-xs font-medium text-[#0D0C1D] dark:border-[#262A3D] dark:bg-[#1C1E30] dark:text-[#9CA1BA] sm:px-5">
+          <span className="font-bold text-[#4F46E5] dark:text-[#818CF8]">Deal:</span> {campaignResult.data.title} · Payment is currently prototype-only.
+        </div>
+        <div className="min-h-[420px] max-h-[62vh] overflow-y-auto p-4 sm:p-5">
+          {messages.length ? (
+            <div className="grid gap-3">
+              {messages.map((message) => {
+                const own = message.sender_user_id === account.id;
+                return (
+                  <div className={`flex ${own ? 'justify-end' : 'justify-start'}`} key={message.id}>
+                    <div
+                      className={`max-w-[80%] rounded-[10px] border-2 border-[#0D0C1D] px-4 py-3 shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] ${
+                        own
+                          ? 'bg-[#4F46E5] text-white dark:bg-[#6366F1]'
+                          : 'bg-[#F5F2EA] text-[#0D0C1D] dark:bg-[#1E2134] dark:text-[#F3F4F8]'
+                      }`}
+                      style={own ? { color: '#fff' } : undefined}
+                    >
+                      <p className="whitespace-pre-wrap text-sm leading-6">{message.body}</p>
+                      <span className={`mt-1 block text-[11px] ${own ? 'text-indigo-100' : 'text-[#5A5870] dark:text-[#9CA1BA]'}`}>
+                        {formatTime(message.created_at)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex min-h-[360px] flex-col items-center justify-center text-center">
+              <span className="flex size-12 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-[#EEF2FF] text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#1E1F3B] dark:text-[#818CF8] dark:shadow-[2px_2px_0_#000000]">
+                <MessageCircle className="size-6" />
+              </span>
+              <h2 className="mt-3 text-base font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">Start the conversation</h2>
+              <p className="mt-1 max-w-sm text-xs leading-5 text-[#5A5870] dark:text-[#9CA1BA]">
+                Discuss the deal details, expectations, timeline, and next steps here. When the deal is finalized, use Pay Creator above.
+              </p>
+            </div>
+          )}
+        </div>
+        <MessageComposer conversationId={conversation.id} senderUserId={account.id} />
+      </section>
+    </AppShell>
+  );
 }
 
 function formatTime(value: string) { return new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)); }

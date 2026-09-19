@@ -33,15 +33,75 @@ export default async function CreatorConversationPage({ params }: { params: Prom
   const brand = brandResult.data;
   const messages = (messagesResult.data ?? []) as Message[];
 
-  return <AppShell role="creator" displayName={account.displayName ?? 'Creator'} email={account.email} plan={account.plan}>
-    <Link className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-950" href="/creator/messages"><ArrowLeft className="size-4" />Messages</Link>
-    <section className="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <header className="flex items-center gap-3 border-b border-slate-200 px-4 py-4 sm:px-5"><span className="flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-violet-100 font-bold text-blue-700">{brand.brand_name.slice(0, 1).toUpperCase()}</span><div className="min-w-0 flex-1"><h1 className="truncate text-sm font-bold text-slate-950">{brand.brand_name}</h1><p className="truncate text-xs text-slate-500">{brand.industry} · {brand.location}</p></div><Link className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700" href={`/creator/connect/${conversation.campaign_id}`}>View deal</Link></header>
-      <div className="border-b border-slate-100 bg-slate-50 px-4 py-2 text-[11px] font-medium text-slate-500 sm:px-5">Deal: {campaignResult.data.title}</div>
-      <div className="min-h-[420px] max-h-[62vh] overflow-y-auto p-4 sm:p-5">{messages.length ? <div className="grid gap-3">{messages.map((message) => { const own = message.sender_user_id === account.id; return <div className={`flex ${own ? 'justify-end' : 'justify-start'}`} key={message.id}><div className={`max-w-[80%] rounded-2xl px-4 py-3 ${own ? 'rounded-br-md bg-slate-950 text-white' : 'rounded-bl-md bg-slate-100 text-slate-800'}`}><p className="whitespace-pre-wrap text-sm leading-6">{message.body}</p><span className="mt-1 block text-[10px] text-slate-400">{formatTime(message.created_at)}</span></div></div>; })}</div> : <div className="flex min-h-[360px] flex-col items-center justify-center text-center"><MessageCircle className="size-8 text-slate-300" /><h2 className="mt-3 text-sm font-bold text-slate-800">The brand opened this conversation</h2><p className="mt-1 max-w-sm text-xs leading-5 text-slate-500">Reply here to discuss collaboration details and next steps.</p></div>}</div>
-      <MessageComposer conversationId={conversation.id} senderUserId={account.id} />
-    </section>
-  </AppShell>;
+  return (
+    <AppShell role="creator" displayName={account.displayName ?? 'Creator'} email={account.email} plan={account.plan}>
+      <Link
+        className="inline-flex min-h-10 items-center gap-2 text-sm font-semibold text-[#5A5870] transition-colors hover:text-[#0D0C1D] dark:text-[#9CA1BA] dark:hover:text-[#F3F4F8]"
+        href="/creator/messages"
+      >
+        <ArrowLeft className="size-4" />
+        Back to Messages
+      </Link>
+      <section className="mt-3 overflow-hidden rounded-[10px] border-2 border-[#0D0C1D] bg-white shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000]">
+        <header className="flex items-center gap-3 border-b-2 border-[#0D0C1D] px-4 py-4 dark:border-[#262A3D] sm:px-5">
+          <span className="flex size-10 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-[#EFF6FF] font-bold text-[#2563EB] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#1E293B] dark:text-[#60A5FA] dark:shadow-[2px_2px_0_#000000]">
+            {brand.brand_name.slice(0, 1).toUpperCase()}
+          </span>
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate text-base font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">{brand.brand_name}</h1>
+            <p className="truncate text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8]">
+              {brand.industry} · {brand.location}
+            </p>
+          </div>
+          <Link
+            className="inline-flex min-h-9 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-white px-3 text-xs font-semibold text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_#000000]"
+            href={`/creator/connect/${conversation.campaign_id}`}
+          >
+            View deal
+          </Link>
+        </header>
+        <div className="border-b-2 border-[#0D0C1D] bg-[#F5F2EA] px-4 py-2 text-xs font-medium text-[#0D0C1D] dark:border-[#262A3D] dark:bg-[#1E2134] dark:text-[#9CA1BA] sm:px-5">
+          <span className="font-bold text-[#4F46E5] dark:text-[#818CF8]">Deal:</span> {campaignResult.data.title}
+        </div>
+        <div className="min-h-[420px] max-h-[62vh] overflow-y-auto p-4 sm:p-5">
+          {messages.length ? (
+            <div className="grid gap-3">
+              {messages.map((message) => {
+                const own = message.sender_user_id === account.id;
+                return (
+                  <div className={`flex ${own ? 'justify-end' : 'justify-start'}`} key={message.id}>
+                    <div
+                      className={`max-w-[80%] rounded-[10px] border-2 border-[#0D0C1D] px-4 py-3 shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] ${
+                        own
+                          ? 'bg-[#4F46E5] text-white dark:bg-[#6366F1]'
+                          : 'bg-[#F5F2EA] text-[#0D0C1D] dark:bg-[#1E2134] dark:text-[#F3F4F8]'
+                      }`}
+                    >
+                      <p className="whitespace-pre-wrap text-sm leading-6">{message.body}</p>
+                      <span className={`mt-1 block text-[11px] ${own ? 'text-indigo-100' : 'text-[#5A5870] dark:text-[#9CA1BA]'}`}>
+                        {formatTime(message.created_at)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="flex min-h-[360px] flex-col items-center justify-center text-center">
+              <span className="flex size-12 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-[#EFF6FF] text-[#2563EB] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#1E293B] dark:text-[#60A5FA] dark:shadow-[2px_2px_0_#000000]">
+                <MessageCircle className="size-6" />
+              </span>
+              <h2 className="mt-3 text-base font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">The brand opened this conversation</h2>
+              <p className="mt-1 max-w-sm text-xs leading-5 text-[#5A5870] dark:text-[#9CA1BA]">
+                Reply here to discuss collaboration details and next steps.
+              </p>
+            </div>
+          )}
+        </div>
+        <MessageComposer conversationId={conversation.id} senderUserId={account.id} />
+      </section>
+    </AppShell>
+  );
 }
 
 function formatTime(value: string) { return new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)); }
