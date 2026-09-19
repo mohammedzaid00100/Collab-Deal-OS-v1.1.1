@@ -41,8 +41,8 @@ export default async function BrandDashboardPage() {
         <p className="mt-2 text-sm font-medium text-[#5A5870] dark:text-[#9CA1BA]">Build campaigns, compare creator fit, and keep every offer structured.</p>
       </div>
       <div className="flex flex-wrap gap-2.5">
-        <Link className="inline-flex min-h-11 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-white px-4 text-sm font-bold text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#161826] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_#000000]" href="/brand/offers">Review offers</Link>
-        <Link className="inline-flex min-h-11 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-[#4F46E5] px-4 text-sm font-bold text-white shadow-[3px_3px_0_#0D0C1D] transition-all hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none dark:border-[#383E5E] dark:bg-[#6366F1] dark:shadow-[3px_3px_0_#000000]" href="/brand/campaigns/new"><FilePlus2 className="size-4" />Create campaign</Link>
+        <Link className="inline-flex min-h-11 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-white px-4 text-sm font-bold text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-white dark:bg-[#161826] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_rgba(255,255,255,0.25)]" href="/brand/offers">Review offers</Link>
+        <Link className="inline-flex min-h-11 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-[#4F46E5] px-4 text-sm font-bold text-white shadow-[3px_3px_0_#0D0C1D] transition-all hover:translate-x-[1.5px] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0_#0D0C1D] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none dark:border-white dark:bg-[#6366F1] dark:shadow-[3px_3px_0_rgba(255,255,255,0.25)]" href="/brand/campaigns/new"><FilePlus2 className="size-4" />Create campaign</Link>
       </div>
     </div>
 
@@ -54,26 +54,26 @@ export default async function BrandDashboardPage() {
     </section>
 
     <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
-      <section className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] sm:p-6">
+      <section className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-white dark:bg-[#161826] dark:shadow-[4px_4px_0_rgba(255,255,255,0.2)] sm:p-6">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#D97706] dark:text-[#FBBF24]">Creator matches</p>
             <h2 className="mt-1 text-lg font-bold tracking-[-0.03em] text-[#0D0C1D] dark:text-[#F3F4F8]">Strongest creator fit</h2>
           </div>
-          <Link className="rounded-[6px] border-2 border-[#0D0C1D] bg-[#EEF2FF] px-2.5 py-1 text-xs font-bold text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#1E1F3B] dark:text-[#818CF8] dark:shadow-[2px_2px_0_#000000]" href="/brand/creators">Discover creators →</Link>
+          <Link className="rounded-[6px] border-2 border-[#0D0C1D] bg-[#EEF2FF] px-2.5 py-1 text-xs font-bold text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-white dark:bg-[#1E213B] dark:text-[#818CF8] dark:shadow-[2px_2px_0_rgba(255,255,255,0.25)]" href="/brand/creators">Discover creators →</Link>
         </div>
         <div className="mt-5">
           <EmptyState icon={UsersRound} title="No creator matches yet" description="Create and publish a campaign. The matching engine will score niche, audience, size, engagement, budget, and platform fit." actionLabel="Create your first campaign" actionHref="/brand/campaigns/new" />
         </div>
       </section>
-      <aside className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] sm:p-6">
+      <aside className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-white dark:bg-[#161826] dark:shadow-[4px_4px_0_rgba(255,255,255,0.2)] sm:p-6">
         <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#4F46E5] dark:text-[#818CF8]">Campaign activity</p>
         <h2 className="mt-1 text-lg font-bold tracking-[-0.03em] text-[#0D0C1D] dark:text-[#F3F4F8]">Next best action</h2>
-        <div className="mt-5 rounded-[8px] border-2 border-[#0D0C1D] bg-[#EEF2FF] p-5 shadow-[3px_3px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#1B1E32] dark:shadow-[3px_3px_0_#000000]">
-          <span className="flex size-10 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-white text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#121422] dark:text-[#818CF8] dark:shadow-[2px_2px_0_#000000]"><BriefcaseBusiness className="size-5" /></span>
+        <div className="mt-5 rounded-[8px] border-2 border-[#0D0C1D] bg-[#EEF2FF] p-5 shadow-[3px_3px_0_#0D0C1D] dark:border-white dark:bg-[#1B1E32] dark:shadow-[3px_3px_0_rgba(255,255,255,0.25)]">
+          <span className="flex size-10 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-white text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-white dark:bg-[#121422] dark:text-[#818CF8] dark:shadow-[2px_2px_0_rgba(255,255,255,0.25)]"><BriefcaseBusiness className="size-5" /></span>
           <h3 className="mt-4 font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">Create a structured campaign</h3>
           <p className="mt-2 text-sm font-medium leading-6 text-[#5A5870] dark:text-[#9CA1BA]">Clear deliverables, rights, budget, and audience criteria produce better matches and cleaner offers.</p>
-          <Link className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-white px-3.5 text-xs font-bold text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#161826] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_#000000]" href="/brand/campaigns/new">Start campaign<ArrowRight className="size-4" /></Link>
+          <Link className="mt-5 inline-flex min-h-10 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-white px-3.5 text-xs font-bold text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-white dark:bg-[#161826] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_rgba(255,255,255,0.25)]" href="/brand/campaigns/new">Start campaign<ArrowRight className="size-4" /></Link>
         </div>
       </aside>
     </div>
@@ -82,10 +82,10 @@ export default async function BrandDashboardPage() {
 
 function BrandMetric({ icon: Icon, label, value, detail }: { icon: typeof BriefcaseBusiness; label: string; value: number; detail: string }) {
   return (
-    <div className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-4 shadow-[4px_4px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000]">
+    <div className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-4 shadow-[4px_4px_0_#0D0C1D] dark:border-white dark:bg-[#161826] dark:shadow-[4px_4px_0_rgba(255,255,255,0.2)]">
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold uppercase tracking-[0.06em] text-[#5A5870] dark:text-[#A5ADC6]">{label}</span>
-        <span className="flex size-8 items-center justify-center rounded-[6px] border-2 border-[#0D0C1D] bg-[#EEF2FF] text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#1E213B] dark:text-[#818CF8] dark:shadow-[2px_2px_0_#000000]">
+        <span className="flex size-8 items-center justify-center rounded-[6px] border-2 border-[#0D0C1D] bg-[#EEF2FF] text-[#4F46E5] shadow-[2px_2px_0_#0D0C1D] dark:border-white dark:bg-[#1E213B] dark:text-[#818CF8] dark:shadow-[2px_2px_0_rgba(255,255,255,0.25)]">
           <Icon className="size-4" />
         </span>
       </div>
