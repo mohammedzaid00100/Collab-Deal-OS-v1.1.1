@@ -87,6 +87,7 @@ function BrandMetric({ icon: Icon, label, value, detail }: { icon: typeof Briefc
       <Icon className="size-4 text-[#4F46E5] dark:text-[#818CF8]" />
     </div>
     <strong className="mt-3 block text-2xl font-bold tracking-[-0.04em] text-slate-950 dark:text-white">{value}</strong>
-    <span className="mt-1 block text-[11px] text-slate-500 dark:text-slate-400">{detail}</span>
+    <span className="mt-1 block text-xs text-slate-500 dark:text-slate-400">{detail}</span>
   </div>;
 }
+

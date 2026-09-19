@@ -187,7 +187,7 @@ function MetricCard({ icon: Icon, label, value, detail }: { icon: typeof UsersRo
         <Icon className="size-4 text-[#4F46E5] dark:text-[#818CF8]" aria-hidden="true" />
       </div>
       <strong className="mt-3 block text-2xl font-bold tracking-[-0.04em] text-[#0D0C1D] dark:text-[#F3F4F8]">{value}</strong>
-      <span className="mt-1 block truncate text-[11px] text-[#5A5870] dark:text-[#727790]">{detail}</span>
+      <span className="mt-1 block truncate text-xs text-[#5A5870] dark:text-[#727790]">{detail}</span>
     </div>
   );
 }
