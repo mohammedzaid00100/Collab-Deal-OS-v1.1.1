@@ -60,9 +60,11 @@ export default async function CreatorConnectPage() {
           {deals.map((deal) => {
             const brand = brands.get(deal.brand_profile_id);
             return (
-              <article
-                className="group flex flex-col justify-between rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] transition-all hover:-translate-y-0.5 hover:bg-[#FBF9F5] hover:shadow-[6px_6px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] dark:hover:border-[#6366F1] dark:hover:bg-[#1C1E30]"
+              <Link
+                className="group flex flex-col justify-between rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] transition-all hover:-translate-y-0.5 hover:bg-[#FBF9F5] hover:shadow-[6px_6px_0_#0D0C1D] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000] dark:hover:border-[#6366F1] dark:hover:bg-[#1C1E30]"
+                href={`/creator/connect/${deal.id}`}
                 key={deal.id}
+                aria-label={`Open ${deal.title}`}
               >
                 <div>
                   <div className="flex items-start justify-between gap-4">
@@ -83,13 +85,12 @@ export default async function CreatorConnectPage() {
                         {deal.description}
                       </p>
                     </div>
-                    <Link
-                      className="flex size-10 shrink-0 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-[#F5F2EA] text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all group-hover:bg-[#4F46E5] group-hover:text-white active:translate-x-[1px] active:translate-y-[1px] active:shadow-none dark:border-[#383E5E] dark:bg-[#1E2134] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_#000000] dark:group-hover:bg-[#6366F1] dark:group-hover:text-white"
-                      href={`/creator/connect/${deal.id}`}
-                      aria-label={`Open ${deal.title}`}
+                    <span
+                      className="flex size-10 shrink-0 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-[#F5F2EA] text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all group-hover:bg-[#4F46E5] group-hover:text-white dark:border-[#383E5E] dark:bg-[#1E2134] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_#000000] dark:group-hover:bg-[#6366F1] dark:group-hover:text-white"
+                      aria-hidden="true"
                     >
                       <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                    </Link>
+                    </span>
                   </div>
 
                   <div className="mt-5 grid grid-cols-2 gap-3 border-t-2 border-[#0D0C1D] pt-4 dark:border-[#383E5E] sm:grid-cols-3">
@@ -104,7 +105,7 @@ export default async function CreatorConnectPage() {
                     {brand.industry} · {brand.location} · Posted {formatDate(deal.created_at)}
                   </p>
                 ) : null}
-              </article>
+              </Link>
             );
           })}
         </section>
