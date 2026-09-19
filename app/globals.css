@@ -113,7 +113,12 @@ body {
   font-size: 16px;
   font-weight: 800;
   letter-spacing: -0.035em;
-  color: #0D0C1D;
+  color: currentColor;
+}
+
+html[data-theme='dark'] .wordmark,
+.dark .wordmark {
+  color: #FFFFFF;
 }
 
 .brand-mark {

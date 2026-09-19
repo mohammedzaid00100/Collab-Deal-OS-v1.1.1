@@ -22,7 +22,7 @@ export function AuthShell({ eyebrow, title, description, children }: AuthShellPr
       <aside className="relative hidden overflow-hidden border-r-2 border-[#0D0C1D] bg-[#1E1B4B] px-12 py-10 text-white dark:border-[#383E5E] dark:bg-[#111326] lg:flex lg:flex-col">
         <div className="absolute -left-32 top-20 size-96 rounded-full bg-[#4F46E5]/20 blur-3xl" />
         <div className="absolute -right-28 bottom-12 size-80 rounded-full bg-[#D97706]/15 blur-3xl" />
-        <BrandLogo className="relative z-10 text-white" />
+        <BrandLogo className="relative z-10 !text-white text-white" />
 
         <div className="relative z-10 my-auto max-w-md py-12">
           <span className="inline-block rounded-[6px] border border-[#A5B4FC]/30 bg-white/10 px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[#A5B4FC] shadow-[2px_2px_0_rgba(0,0,0,0.3)]">

@@ -27,20 +27,20 @@ export function BrandLogo({
           decoding="async"
         />
       </span>
-      {showName ? <span>Collab Deal OS</span> : null}
+      {showName ? <span className="font-extrabold tracking-tight text-inherit">Collab Deal OS</span> : null}
     </>
   );
 
   return href ? (
     <Link
-      className={cn('wordmark text-slate-950 dark:text-white', className)}
+      className={cn('wordmark text-[#0D0C1D] dark:text-white', className)}
       href={href}
       aria-label="Collab Deal OS home"
     >
       {mark}
     </Link>
   ) : (
-    <span className={cn('wordmark text-slate-950 dark:text-white', className)}>{mark}</span>
+    <span className={cn('wordmark text-[#0D0C1D] dark:text-white', className)}>{mark}</span>
   );
 }
 
