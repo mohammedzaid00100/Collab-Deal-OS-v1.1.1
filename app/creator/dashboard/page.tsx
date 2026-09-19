@@ -101,7 +101,7 @@ export default async function CreatorDashboardPage() {
             <h2 className="mt-1 text-lg font-bold tracking-[-0.03em] text-[#0D0C1D] dark:text-[#F3F4F8]">Highest-priority active offer</h2>
           </div>
           {topOffer ? (
-            <span className="rounded-[6px] border border-[#0D0C1D] bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-900 shadow-[1px_1px_0_#0D0C1D] dark:border-[#2D334D] dark:bg-[#281D0D] dark:text-[#F59E0B] dark:shadow-none">
+            <span className="rounded-[6px] border-2 border-[#0D0C1D] bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-900 shadow-[2px_2px_0_#0D0C1D] dark:border-amber-700/60 dark:bg-amber-950/50 dark:text-amber-300 dark:shadow-[2px_2px_0_#000000]">
               {topOffer.status.replaceAll('_', ' ')}
             </span>
           ) : null}
@@ -115,7 +115,7 @@ export default async function CreatorDashboardPage() {
             </div>
             <div className="mt-5 flex flex-wrap gap-2">
               <Link
-                className="inline-flex min-h-10 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-[#0D0C1D] px-4 text-sm font-semibold text-white shadow-[2px_2px_0_rgba(0,0,0,0.3)] transition-all hover:translate-x-[1px] hover:translate-y-[1px] dark:border-[#2D334D] dark:bg-[#F3F4F8] dark:text-[#0D0C1D]"
+                className="inline-flex min-h-10 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-[#0D0C1D] px-4 text-sm font-bold text-white shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#4F46E5] dark:text-white dark:shadow-[2px_2px_0_#000000] dark:hover:bg-[#6366F1]"
                 style={{ color: '#fff' }}
                 href={`/creator/offers/${topOffer.id}`}
               >
@@ -177,7 +177,7 @@ function MetricCard({ icon: Icon, label, value, detail }: { icon: typeof UsersRo
 function DealValue({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#5A5870] dark:text-[#727790]">{label}</span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#5A5870] dark:text-[#9CA1BA]">{label}</span>
       <strong className="mt-1 block text-sm text-[#0D0C1D] dark:text-[#F3F4F8]">{value}</strong>
     </div>
   );
