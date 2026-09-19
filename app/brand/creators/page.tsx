@@ -16,8 +16,29 @@ export default async function CreatorDiscoveryPage() {
   const supabase = await createSupabaseServerClient();
   const creators = await getCreatorDiscovery(supabase!);
 
-  return <AppShell role="brand" displayName={account.displayName ?? 'Brand'} email={account.email} plan={account.plan}>
-    <div><p className="text-xs font-bold uppercase tracking-[0.1em] text-blue-700">Brand workspace</p><h1 className="mt-1 text-2xl font-bold tracking-[-0.035em] text-slate-950 sm:text-3xl">Creator discovery</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">Compare discoverable creators using declared or API-verified metrics. Match scores reflect only your active published campaigns.</p></div>
-    {creators.length ? <CreatorDiscoveryBrowser creators={creators} /> : <section className="mt-7 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"><EmptyState icon={Search} title="No creators to show yet" description="Completed, discoverable creator profiles will appear here. Publish a campaign to add campaign-specific match scores." /></section>}
-  </AppShell>;
+  return (
+    <AppShell role="brand" displayName={account.displayName ?? 'Brand'} email={account.email} plan={account.plan}>
+      <div>
+        <p className="text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8]">Brand workspace</p>
+        <h1 className="mt-1 text-2xl font-bold tracking-[-0.04em] text-[#0D0C1D] sm:text-3xl dark:text-[#F3F4F8]">
+          Creator discovery
+        </h1>
+        <p className="mt-2 max-w-3xl text-sm text-[#5A5870] dark:text-[#9CA1BA]">
+          Compare discoverable creators using declared or API-verified metrics. Match scores reflect only your active published campaigns.
+        </p>
+      </div>
+      {creators.length ? (
+        <CreatorDiscoveryBrowser creators={creators} />
+      ) : (
+        <section className="mt-7 rounded-[10px] border-2 border-[#0D0C1D] bg-white p-6 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000]">
+          <EmptyState
+            icon={Search}
+            title="No creators to show yet"
+            description="Completed, discoverable creator profiles will appear here. Publish a campaign to add campaign-specific match scores."
+          />
+        </section>
+      )}
+    </AppShell>
+  );
 }
+
