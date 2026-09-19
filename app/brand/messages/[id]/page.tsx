@@ -5,7 +5,6 @@ import { ArrowLeft, MessageCircle } from 'lucide-react';
 import { AppShell } from '@/components/app/app-shell';
 import { MessageComposer } from '@/components/messages/message-composer';
 import { ServiceState } from '@/components/ui/service-state';
-import { PayCreatorPrototype } from '@/components/wallet/pay-creator-prototype';
 import { requireAppAccount } from '@/lib/auth/protected-page';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
@@ -61,16 +60,10 @@ export default async function BrandConversationPage({ params }: { params: Promis
             >
               View deal
             </Link>
-            <PayCreatorPrototype
-              creatorName={creator.full_name}
-              conversationId={conversation.id}
-              campaignId={conversation.campaign_id}
-              creatorProfileId={conversation.creator_profile_id}
-            />
           </div>
         </header>
         <div className="border-b-2 border-[#0D0C1D] bg-[#F5F2EA] px-4 py-2 text-xs font-medium text-[#0D0C1D] dark:border-[#262A3D] dark:bg-[#1C1E30] dark:text-[#9CA1BA] sm:px-5">
-          <span className="font-bold text-[#4F46E5] dark:text-[#818CF8]">Deal:</span> {campaignResult.data.title} · Payment is currently prototype-only.
+          <span className="font-bold text-[#4F46E5] dark:text-[#818CF8]">Deal:</span> {campaignResult.data.title}
         </div>
         <div className="min-h-[420px] max-h-[62vh] overflow-y-auto p-4 sm:p-5">
           {messages.length ? (
@@ -82,8 +75,8 @@ export default async function BrandConversationPage({ params }: { params: Promis
                     <div
                       className={`max-w-[80%] rounded-[10px] border-2 border-[#0D0C1D] px-4 py-3 shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] ${
                         own
-                          ? 'bg-[#4F46E5] text-white dark:bg-[#6366F1]'
-                          : 'bg-[#F5F2EA] text-[#0D0C1D] dark:bg-[#1E2134] dark:text-[#F3F4F8]'
+                            ? 'bg-[#4F46E5] text-white dark:bg-[#6366F1]'
+                            : 'bg-[#F5F2EA] text-[#0D0C1D] dark:bg-[#1E2134] dark:text-[#F3F4F8]'
                       }`}
                       style={own ? { color: '#fff' } : undefined}
                     >
@@ -103,7 +96,7 @@ export default async function BrandConversationPage({ params }: { params: Promis
               </span>
               <h2 className="mt-3 text-base font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">Start the conversation</h2>
               <p className="mt-1 max-w-sm text-xs leading-5 text-[#5A5870] dark:text-[#9CA1BA]">
-                Discuss the deal details, expectations, timeline, and next steps here. When the deal is finalized, use Pay Creator above.
+                Discuss the deal details, deliverables, timeline, and collaboration expectations here.
               </p>
             </div>
           )}

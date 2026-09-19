@@ -9,7 +9,6 @@ import {
   Percent,
   Radio,
   UsersRound,
-  WalletCards,
 } from 'lucide-react';
 import { AppShell } from '@/components/app/app-shell';
 import { EmptyState } from '@/components/app/empty-state';
@@ -95,65 +94,48 @@ export default async function CreatorDashboardPage() {
         <MetricCard icon={MousePointerClick} label="Platform presence" value={`${socials.filter((item) => item.audience_count > 0).length}`} detail={socials.length ? socials.map((item) => prettyPlatform(item.platform)).slice(0, 3).join(' · ') : 'No platforms added'} />
       </section>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(300px,0.75fr)]">
-        <section className="rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#2D334D] dark:bg-[#171927] dark:shadow-[4px_4px_0_#000000] sm:p-6">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#D97706] dark:text-[#F59E0B]">Active collaboration</p>
-              <h2 className="mt-1 text-lg font-bold tracking-[-0.03em] text-[#0D0C1D] dark:text-[#F3F4F8]">Highest-priority active offer</h2>
-            </div>
-            {topOffer ? (
-              <span className="rounded-[6px] border border-[#0D0C1D] bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-900 shadow-[1px_1px_0_#0D0C1D] dark:border-[#2D334D] dark:bg-[#281D0D] dark:text-[#F59E0B] dark:shadow-none">
-                {topOffer.status.replaceAll('_', ' ')}
-              </span>
-            ) : null}
+      <section className="mt-6 rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#2D334D] dark:bg-[#171927] dark:shadow-[4px_4px_0_#000000] sm:p-6">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#D97706] dark:text-[#F59E0B]">Active collaboration</p>
+            <h2 className="mt-1 text-lg font-bold tracking-[-0.03em] text-[#0D0C1D] dark:text-[#F3F4F8]">Highest-priority active offer</h2>
           </div>
           {topOffer ? (
-            <div className="mt-5 rounded-[8px] border-2 border-[#0D0C1D] bg-[#F5F2EA] p-4 dark:border-[#2D334D] dark:bg-[#1E2134] sm:p-5">
-              <div className="grid gap-4 sm:grid-cols-3">
-                <DealValue label="Cash payment" value={formatInr(topOffer.cash_payment)} />
-                <DealValue label="Product perk" value={topOffer.product_name ?? 'None'} />
-                <DealValue label="Product value" value={formatInr(topOffer.product_value)} />
-              </div>
-              <div className="mt-5 flex flex-wrap gap-2">
-                <Link
-                  className="inline-flex min-h-10 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-[#0D0C1D] px-4 text-sm font-semibold text-white shadow-[2px_2px_0_rgba(0,0,0,0.3)] transition-all hover:translate-x-[1px] hover:translate-y-[1px] dark:border-[#2D334D] dark:bg-[#F3F4F8] dark:text-[#0D0C1D]"
-                  style={{ color: '#fff' }}
-                  href={`/creator/offers/${topOffer.id}`}
-                >
-                  View offer
-                  <ArrowRight className="size-4" />
-                </Link>
-              </div>
+            <span className="rounded-[6px] border border-[#0D0C1D] bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-900 shadow-[1px_1px_0_#0D0C1D] dark:border-[#2D334D] dark:bg-[#281D0D] dark:text-[#F59E0B] dark:shadow-none">
+              {topOffer.status.replaceAll('_', ' ')}
+            </span>
+          ) : null}
+        </div>
+        {topOffer ? (
+          <div className="mt-5 rounded-[8px] border-2 border-[#0D0C1D] bg-[#F5F2EA] p-4 dark:border-[#2D334D] dark:bg-[#1E2134] sm:p-5">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <DealValue label="Cash payment" value={formatInr(topOffer.cash_payment)} />
+              <DealValue label="Product perk" value={topOffer.product_name ?? 'None'} />
+              <DealValue label="Product value" value={formatInr(topOffer.product_value)} />
             </div>
-          ) : (
-            <div className="mt-5">
-              <EmptyState
-                icon={Handshake}
-                title="No active offers yet"
-                description="Start in Connect. When a brand selects you and the collaboration progresses, your active deal information will appear here."
-                actionLabel="Browse Connect"
-                actionHref="/creator/connect"
-              />
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Link
+                className="inline-flex min-h-10 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-[#0D0C1D] px-4 text-sm font-semibold text-white shadow-[2px_2px_0_rgba(0,0,0,0.3)] transition-all hover:translate-x-[1px] hover:translate-y-[1px] dark:border-[#2D334D] dark:bg-[#F3F4F8] dark:text-[#0D0C1D]"
+                style={{ color: '#fff' }}
+                href={`/creator/offers/${topOffer.id}`}
+              >
+                View offer
+                <ArrowRight className="size-4" />
+              </Link>
             </div>
-          )}
-        </section>
-
-        <aside className="rounded-[10px] border-2 border-[#0D0C1D] bg-[#1E1B4B] p-5 text-white shadow-[4px_4px_0_#0D0C1D] dark:border-[#2D334D] dark:bg-[#111326] dark:shadow-[4px_4px_0_#000000] sm:p-6">
-          <span className="flex size-10 items-center justify-center rounded-[8px] border border-white/20 bg-white/10 text-[#A5B4FC]">
-            <WalletCards className="size-5" aria-hidden="true" />
-          </span>
-          <p className="mt-6 text-xs font-bold uppercase tracking-[0.1em] text-[#A5B4FC]">Wallet & earnings</p>
-          <strong className="mt-2 block text-2xl font-bold tracking-[-0.035em]">Payment flow prototype</strong>
-          <p className="mt-2 text-sm leading-6 text-[#C7D2FE]">
-            Review how creator earnings, pending payments, and the planned ₹100 minimum withdrawal will work. No real funds move yet.
-          </p>
-          <Link className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-white hover:underline" style={{ color: '#fff' }} href="/creator/wallet">
-            Open wallet
-            <ArrowRight className="size-4" />
-          </Link>
-        </aside>
-      </div>
+          </div>
+        ) : (
+          <div className="mt-5">
+            <EmptyState
+              icon={Handshake}
+              title="No active offers yet"
+              description="Start in Connect. When a brand selects you and the collaboration progresses, your active deal information will appear here."
+              actionLabel="Browse Connect"
+              actionHref="/creator/connect"
+            />
+          </div>
+        )}
+      </section>
 
       <section className="mt-6 rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#2D334D] dark:bg-[#171927] dark:shadow-[4px_4px_0_#000000] sm:p-6">
         <div className="flex items-center justify-between">

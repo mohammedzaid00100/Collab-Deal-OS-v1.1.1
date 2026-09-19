@@ -15,33 +15,30 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, message: 'Sign in required.' }, { status: 401 });
   }
 
-  const body = await request.json().catch(() => null) as { paymentPassword?: string } | null;
-  const paymentPassword = body?.paymentPassword ?? '';
-  if (!paymentPassword) {
-    return NextResponse.json({ ok: false, message: 'Enter your Collab Deal OS payment password.' }, { status: 400 });
+  const body = await request.json().catch(() => null) as { confirmation?: string } | null;
+  const confirmation = body?.confirmation?.trim() ?? '';
+  if (confirmation !== 'DELETE MY ACCOUNT') {
+    return NextResponse.json({ ok: false, message: 'Type DELETE MY ACCOUNT exactly to confirm deletion.' }, { status: 400 });
   }
 
-  const { data: deletion, error: deletionError } = await supabase.rpc('delete_current_account_with_password', { candidate: paymentPassword });
+  const { data: deletion, error: deletionError } = await supabase.rpc('delete_current_account', {
+    confirmation_text: confirmation,
+  });
+
   if (deletionError || !deletion || typeof deletion !== 'object') {
     return NextResponse.json({ ok: false, message: 'Account deletion is temporarily unavailable.' }, { status: 503 });
   }
 
   const result = deletion as {
     deleted?: boolean;
-    valid?: boolean;
     reason?: string;
-    remaining_attempts?: number;
   };
 
   if (result.deleted !== true) {
-    if (result.reason === 'LOCKED') {
-      return NextResponse.json({ ok: false, message: 'Payment password verification is temporarily locked after repeated failed attempts. Try again in about a minute.' }, { status: 423 });
+    if (result.reason === 'INVALID_CONFIRMATION') {
+      return NextResponse.json({ ok: false, message: 'Confirmation text did not match DELETE MY ACCOUNT.' }, { status: 400 });
     }
-    if (result.reason === 'NOT_CONFIGURED') {
-      return NextResponse.json({ ok: false, message: 'Create your Collab Deal OS payment password before deleting the account.' }, { status: 409 });
-    }
-    const remaining = typeof result.remaining_attempts === 'number' ? ` ${result.remaining_attempts} attempt${result.remaining_attempts === 1 ? '' : 's'} remaining.` : '';
-    return NextResponse.json({ ok: false, message: `Incorrect payment password.${remaining}` }, { status: 403 });
+    return NextResponse.json({ ok: false, message: 'Could not delete account. Please try again.' }, { status: 500 });
   }
 
   const { error: deleteAuthError } = await admin.auth.admin.deleteUser(user.id);
@@ -51,3 +48,4 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ ok: true });
 }
+

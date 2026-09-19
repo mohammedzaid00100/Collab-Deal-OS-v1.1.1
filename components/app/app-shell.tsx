@@ -18,10 +18,8 @@ import {
   Settings,
   UserRound,
   UsersRound,
-  WalletCards,
 } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
-import { PaymentPasswordGate } from '@/components/wallet/payment-password-gate';
 import { LogoutButton } from './logout-button';
 import { AppFab } from './app-fab';
 import { ThemeQuickToggle } from '@/components/account/theme-quick-toggle';
@@ -64,7 +62,6 @@ export function AppShell({ role, displayName, email, children }: AppShellProps) 
 
   return (
     <div data-app-shell className="min-h-svh bg-[#F8F9FA] text-[#0D0C1D] transition-colors dark:bg-[#0B0C14] dark:text-[#F3F4F8] lg:grid lg:grid-cols-[250px_minmax(0,1fr)]">
-      <PaymentPasswordGate role={role} />
       <a className="fixed left-3 top-3 z-50 -translate-y-20 rounded-lg bg-[#0D0C1D] px-3 py-2 text-sm font-semibold text-white focus:translate-y-0 dark:bg-[#F3F4F8] dark:text-[#0D0C1D]" href="#app-main">Skip to content</a>
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-[250px] border-r-2 border-[#0D0C1D] bg-white px-4 py-5 transition-colors dark:border-[#262A3D] dark:bg-[#11131E] lg:flex lg:flex-col">
         <BrandLogo className="px-2" />
@@ -116,14 +113,6 @@ export function AppShell({ role, displayName, email, children }: AppShellProps) 
           </div>
           <div className="flex items-center gap-2">
             <ThemeQuickToggle />
-            <Link
-              className="inline-flex min-h-10 items-center gap-2 rounded-[8px] border-2 border-[#0D0C1D] bg-white px-3 text-xs font-bold text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:text-white dark:shadow-[2px_2px_0_#000000]"
-              href={`/${role}/wallet`}
-              aria-label={`${role} wallet`}
-            >
-              <WalletCards className="size-[18px]" />
-              <span className="hidden sm:inline">Wallet</span>
-            </Link>
             <Link
               className="relative flex size-10 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-white text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-all hover:translate-x-[1px] hover:translate-y-[1px] dark:border-[#262A3D] dark:bg-[#161826] dark:text-white dark:shadow-[2px_2px_0_#000000]"
               href={`/${role}/notifications`}

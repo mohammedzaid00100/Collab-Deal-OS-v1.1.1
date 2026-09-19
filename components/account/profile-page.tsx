@@ -16,7 +16,6 @@ export async function ProfilePage({ role }: { role: AccountType }) {
   const accountLinks = [
     ['Settings', `/${role}/settings`],
     ['Analytics', `/${role}/analytics`],
-    ['Wallet', `/${role}/wallet`],
   ] as const;
 
   return <AppShell role={role} displayName={account.displayName ?? role} email={account.email} plan={account.plan}>

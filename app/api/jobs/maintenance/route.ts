@@ -1,8 +1,7 @@
 import { timingSafeEqual } from 'node:crypto';
+import { NextResponse } from 'next/server';
 import { createSupabaseAdminClient } from '@/lib/supabase/admin';
-import { billingJson } from '@/lib/billing/http';
 import { deliverQueuedEvents } from '@/lib/delivery/worker';
-import { reconcileSubscriptions } from '@/lib/billing/reconcile';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -13,14 +12,16 @@ export async function POST(request: Request) {
   const provided = Buffer.from(token);
   const expected = Buffer.from(secret ?? '');
   if (!secret || secret.length < 32 || provided.length !== expected.length || !timingSafeEqual(provided, expected)) {
-    return billingJson({ error: 'Unauthorized' }, 401);
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const admin = createSupabaseAdminClient();
-  if (!admin) return billingJson({ error: 'Maintenance unavailable' }, 503);
+  if (!admin) return NextResponse.json({ error: 'Maintenance unavailable' }, { status: 503 });
   try {
     const { data: expired, error } = await admin.rpc('expire_stale_deal_analyses', { batch_limit: 100 });
     if (error) throw new Error('ANALYSIS_SWEEP_FAILED');
-    const [deliveries, billing] = await Promise.all([deliverQueuedEvents(admin), reconcileSubscriptions(admin)]);
-    return billingJson({ expiredAnalyses: expired, deliveries, billing }, billing.failed ? 503 : 200);
-  } catch { return billingJson({ error: 'Maintenance needs retry' }, 503); }
+    const deliveries = await deliverQueuedEvents(admin);
+    return NextResponse.json({ expiredAnalyses: expired, deliveries }, { status: 200 });
+  } catch {
+    return NextResponse.json({ error: 'Maintenance needs retry' }, { status: 503 });
+  }
 }

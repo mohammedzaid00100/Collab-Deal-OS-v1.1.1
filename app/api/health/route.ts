@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { isRazorpayCheckoutConfigured } from '@/lib/billing/config';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,8 +23,6 @@ export async function GET() {
   const services = {
       database,
       ai: hasValue(process.env.OPENAI_API_KEY) && Boolean(process.env.OPENAI_MODEL?.trim()) ? 'configured' : 'not_configured',
-      payments: (['creator', 'brand'] as const).every((role) => (['PRO', 'PREMIUM'] as const).every((plan) => isRazorpayCheckoutConfigured(role, plan))) ? 'configured' : 'not_configured',
-      paymentWebhook: connectionState(process.env.RAZORPAY_WEBHOOK_SECRET),
       email: hasValue(process.env.RESEND_API_KEY) && Boolean(process.env.RESEND_FROM_EMAIL) ? 'configured' : 'not_configured',
       analytics: connectionState(process.env.NEXT_PUBLIC_POSTHOG_KEY),
     } as const;

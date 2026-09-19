@@ -16,7 +16,7 @@ export async function SettingsPage({ role }: { role: AccountType }) {
   if (error) throw new Error('Preferences are temporarily unavailable.');
   return <AppShell role={role} displayName={account.displayName ?? role} email={account.email} plan={account.plan}>
     <h1 className="text-3xl font-bold tracking-tight text-slate-950 dark:text-white">Account settings</h1>
-    <p className="mb-7 mt-3 text-sm text-slate-600 dark:text-slate-400">Manage your account, workspace appearance, privacy, and wallet access.</p>
+    <p className="mb-7 mt-3 text-sm text-slate-600 dark:text-slate-400">Manage your account, workspace appearance, and privacy preferences.</p>
     <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
       <PreferencesForm userId={account.id} initialEmail={data.email_notifications} initialAnalytics={data.product_analytics} />
       <div className="grid gap-6">
@@ -27,7 +27,6 @@ export async function SettingsPage({ role }: { role: AccountType }) {
           <nav className="mt-5 grid gap-2 text-sm font-semibold text-violet-700 dark:text-violet-400">
             <Link className="py-2 hover:underline" href="/forgot-password">Reset your password</Link>
             <Link className="py-2 hover:underline" href={`/${role}/profile`}>View your profile</Link>
-            <Link className="py-2 hover:underline" href={`/${role}/wallet`}>Open wallet</Link>
             <Link className="py-2 hover:underline" href="/privacy">Privacy policy</Link>
           </nav>
         </section>

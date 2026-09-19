@@ -15,7 +15,6 @@ import {
   Radio,
   Sparkles,
   Sun,
-  WalletCards,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -84,7 +83,6 @@ export function AppFab({ role }: AppFabProps) {
     { label: 'Browse Deals', href: '/creator/connect', icon: Radio, highlight: true },
     { label: 'Messages', href: '/creator/messages', icon: MessageCircle },
     { label: 'Active Offers', href: '/creator/offers', icon: Handshake },
-    { label: 'Wallet', href: '/creator/wallet', icon: WalletCards },
     { label: 'Analytics', href: '/creator/analytics', icon: BarChart3 },
   ];
 
@@ -94,7 +92,6 @@ export function AppFab({ role }: AppFabProps) {
     { label: 'Connect Marketplace', href: '/brand/connect', icon: Link2 },
     { label: 'Messages', href: '/brand/messages', icon: MessageCircle },
     { label: 'Review Offers', href: '/brand/offers', icon: Handshake },
-    { label: 'Wallet', href: '/brand/wallet', icon: WalletCards },
   ];
 
   const items = role === 'creator' ? creatorItems : brandItems;

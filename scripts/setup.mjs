@@ -8,7 +8,6 @@ if (existsSync(envPath)) loadEnvFile(envPath);
 const env = process.env;
 const has = (...keys) => keys.every((key) => Boolean(env[key]?.trim()));
 const migrations = readdirSync(resolve(root, 'supabase/migrations')).filter((name) => name.endsWith('.sql'));
-const cycleCount = Number(env.RAZORPAY_SUBSCRIPTION_TOTAL_COUNT);
 const checks = [
   ['Application and Android files', ['app/page.tsx', 'android/app/build.gradle', 'capacitor.config.ts'].every((file) => existsSync(resolve(root, file)))],
   ['Database migrations (' + migrations.length + ')', migrations.length >= 13],
@@ -17,9 +16,6 @@ const checks = [
   ['Trusted application origin', validOrigin(env.NEXT_PUBLIC_SITE_URL, true)],
   ['AI key and explicit model', has('OPENAI_API_KEY', 'OPENAI_MODEL')],
   ['Google OAuth operator confirmation', env.GOOGLE_OAUTH_CONFIGURED === 'true'],
-  ['Razorpay credentials and webhook', has('RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET', 'RAZORPAY_WEBHOOK_SECRET')],
-  ['Four Razorpay role/plan mappings', ['CREATOR_PRO', 'CREATOR_PREMIUM', 'BRAND_PRO', 'BRAND_PREMIUM'].every((plan) => /^plan_[A-Za-z0-9]{14,}$/.test(env['RAZORPAY_' + plan + '_PLAN_ID'] ?? ''))],
-  ['Explicit subscription cycle count', Number.isInteger(cycleCount) && cycleCount >= 1 && cycleCount <= 1200],
   ['Resend sender configuration', has('RESEND_API_KEY', 'RESEND_FROM_EMAIL') && !env.RESEND_FROM_EMAIL.includes('example.com')],
   ['PostHog configuration', has('NEXT_PUBLIC_POSTHOG_KEY') && validOrigin(env.NEXT_PUBLIC_POSTHOG_HOST)],
   ['Maintenance authentication', (env.MAINTENANCE_JOB_SECRET?.length ?? 0) >= 32],

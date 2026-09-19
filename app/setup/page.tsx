@@ -3,7 +3,6 @@ import { CheckCircle2, CircleDashed, ExternalLink, ShieldCheck } from 'lucide-re
 import { PublicHeader } from '@/components/public/public-header';
 import { PublicFooter } from '@/components/public/public-footer';
 import { isSupabaseConfigured } from '@/lib/supabase/config';
-import { isRazorpayCheckoutConfigured } from '@/lib/billing/config';
 
 export const metadata: Metadata = { title: 'Connection checklist' };
 export const dynamic = 'force-dynamic';
@@ -16,7 +15,6 @@ export default function SetupPage() {
   const services = [
     ['Supabase', isSupabaseConfigured(), 'Authentication, PostgreSQL, and private file storage'],
     ['OpenAI', Boolean(process.env.OPENAI_API_KEY && process.env.OPENAI_MODEL), 'Server-side AI verdict explanations'],
-    ['Razorpay', (['creator', 'brand'] as const).every((role) => (['PRO', 'PREMIUM'] as const).every((plan) => isRazorpayCheckoutConfigured(role, plan))), 'Credentials and plan mappings; paid allowances and live verification are checked separately'],
     ['Google OAuth', process.env.GOOGLE_OAUTH_CONFIGURED === 'true', 'Authorized in Supabase and Google Cloud'],
     ['Email', Boolean(process.env.RESEND_API_KEY), 'Transactional notifications through Resend'],
     ['Analytics', Boolean(process.env.NEXT_PUBLIC_POSTHOG_KEY), 'Privacy-aware product analytics through PostHog'],
