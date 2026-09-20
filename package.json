@@ -9,6 +9,7 @@
     "dev": "vinext dev",
     "build": "vinext build",
     "start": "vinext start",
+    "deploy": "vinext build && wrangler deploy --config dist/server/wrangler.json",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -16,7 +17,11 @@
     "test:db": "node scripts/test-database.mjs",
     "android:prepare": "node scripts/android-prepare.mjs",
     "android:open": "cap open android",
-    "setup": "node scripts/setup.mjs"
+    "setup": "node scripts/setup.mjs",
+    "dev:vinext": "vinext dev --port 3001",
+    "build:vinext": "vinext build",
+    "start:vinext": "wrangler dev --config dist/server/wrangler.json",
+    "deploy:vinext": "vinext-cloudflare deploy --config dist/server/wrangler.json"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.1",
@@ -25,6 +30,7 @@
     "@hookform/resolvers": "^5.9.1",
     "@supabase/ssr": "^0.12.5",
     "@supabase/supabase-js": "^2.112.4",
+    "@vinext/cloudflare": "^1.0.0-beta.8",
     "lucide-react": "^1.35.0",
     "next": "^16.3.3",
     "react": "^19.2.8",
@@ -35,7 +41,7 @@
   "devDependencies": {
     "@capacitor/android": "^8.5.2",
     "@capacitor/cli": "^8.5.2",
-    "@cloudflare/vite-plugin": "^1.54.1",
+    "@cloudflare/vite-plugin": "^1.56.0",
     "@cloudflare/workers-types": "^5.20260828.1",
     "@electric-sql/pglite": "^0.5.8",
     "@openai/sites-vite-plugin": "^0.1.0 || ^0.2.0",
@@ -58,7 +64,7 @@
     "vinext": "^1.0.0-beta.8",
     "vite": "^8.2.2",
     "vitest": "^4.1.11",
-    "wrangler": "^4.127.0"
+    "wrangler": "^4.135.0"
   },
   "type": "module"
 }

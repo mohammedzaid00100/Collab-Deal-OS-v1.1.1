@@ -1,0 +1,31 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "collab-deal-os",
+	"compatibility_date": "2026-09-20",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"main": "dist/server/index.js",
+	"assets": {
+		"directory": "dist/client",
+		"not_found_handling": "none",
+		"binding": "ASSETS"
+	},
+	"cache": {
+		"enabled": true
+	},
+	"images": {
+		"binding": "IMAGES"
+	},
+	"kv_namespaces": [
+		{
+			"binding": "VINEXT_KV_CACHE",
+			"id": "64ef6ae87ee24aaa85770aea36798ffd"
+		}
+	],
+	"vars": {
+		"NEXT_PUBLIC_SITE_URL": "https://collab-deal-os.mohammedzaid00100.workers.dev",
+		"NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_TFgfwd1yN2SToyKtAeKOuQ_T7G_A3Jt",
+		"NEXT_PUBLIC_SUPABASE_URL": "https://jelqaaiasavrmfuwbmxz.supabase.co"
+	}
+}
