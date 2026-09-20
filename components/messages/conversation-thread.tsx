@@ -488,14 +488,14 @@ export function ConversationThread({
 
   return (
     <>
-      <div className="relative">
+      <div className="relative w-full min-w-0">
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="min-h-[420px] max-h-[62vh] overflow-y-auto p-4 sm:p-5"
+          className="min-h-[420px] max-h-[62vh] overflow-y-auto overflow-x-hidden p-3 sm:p-5"
         >
           {messages.length ? (
-            <div className="grid gap-3">
+            <div className="grid gap-3 w-full min-w-0">
               {messages.map((message) => {
                 const own = message.sender_user_id === currentUserId;
                 const repliedMsg = message.reply_to_message_id
@@ -505,14 +505,14 @@ export function ConversationThread({
                 return (
                   <div
                     id={`msg-${message.id}`}
-                    className={`group flex items-end gap-2 transition-all ${
+                    className={`group flex items-end gap-1.5 sm:gap-2 transition-all w-full min-w-0 ${
                       own ? 'justify-end' : 'justify-start'
                     }`}
                     key={message.id || message.tempId}
                   >
                     {/* Actions menu on left for sender's own messages */}
                     {own ? (
-                      <div className="relative mb-1">
+                      <div className="relative mb-1 shrink-0">
                         <button
                           type="button"
                           onClick={() =>
@@ -520,10 +520,10 @@ export function ConversationThread({
                               curr === message.id ? null : message.id
                             )
                           }
-                          className={`rounded p-1 text-[#5A5870] transition-opacity hover:bg-black/5 hover:text-[#0D0C1D] dark:text-[#9CA1BA] dark:hover:bg-white/10 dark:hover:text-[#F3F4F8] ${
+                          className={`flex size-8 shrink-0 items-center justify-center rounded p-1 text-[#5A5870] transition-opacity hover:bg-black/5 hover:text-[#0D0C1D] dark:text-[#9CA1BA] dark:hover:bg-white/10 dark:hover:text-[#F3F4F8] ${
                             activeMenuMessageId === message.id
                               ? 'opacity-100 bg-black/5 dark:bg-white/10'
-                              : 'opacity-0 group-hover:opacity-100 focus:opacity-100'
+                              : 'opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100'
                           }`}
                           title="Message options"
                           aria-label="Message options"
@@ -535,7 +535,7 @@ export function ConversationThread({
                         {activeMenuMessageId === message.id && (
                           <div
                             ref={menuRef}
-                            className="absolute bottom-full right-0 z-30 mb-1 min-w-[120px] rounded-[8px] border-2 border-[#0D0C1D] bg-white p-1 shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[2px_2px_0_#000000]"
+                            className="absolute bottom-full left-0 right-auto sm:left-auto sm:right-0 z-30 mb-1 min-w-[120px] max-w-[calc(100vw-3rem)] rounded-[8px] border-2 border-[#0D0C1D] bg-white p-1 shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[2px_2px_0_#000000]"
                           >
                             <button
                               type="button"
@@ -565,7 +565,7 @@ export function ConversationThread({
                     ) : null}
 
                     <div
-                      className={`max-w-[82%] rounded-[10px] border-2 border-[#0D0C1D] px-4 py-3 shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] sm:max-w-[75%] ${
+                      className={`min-w-0 max-w-[calc(100%-2.5rem)] sm:max-w-[75%] rounded-[10px] border-2 border-[#0D0C1D] px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] ${
                         own
                           ? message.status === 'failed'
                             ? 'border-red-600 bg-red-50 text-red-950 dark:border-red-500 dark:bg-red-950/40 dark:text-red-100'
@@ -582,7 +582,7 @@ export function ConversationThread({
                               handleScrollToRepliedMessage(message.reply_to_message_id);
                             }
                           }}
-                          className={`mb-2 cursor-pointer rounded-[6px] border-l-4 px-2.5 py-1.5 text-xs transition-opacity hover:opacity-90 ${
+                          className={`mb-2 cursor-pointer rounded-[6px] border-l-4 px-2.5 py-1.5 text-xs transition-opacity hover:opacity-90 min-w-0 ${
                             own && message.status !== 'failed'
                               ? 'border-indigo-200 bg-white/15 text-white'
                               : 'border-[#4F46E5] bg-black/5 text-[#0D0C1D] dark:border-[#818CF8] dark:bg-white/5 dark:text-[#F3F4F8]'
@@ -591,7 +591,7 @@ export function ConversationThread({
                           {repliedMsg ? (
                             <>
                               <span
-                                className={`block font-bold ${
+                                className={`block font-bold truncate ${
                                    own && message.status !== 'failed'
                                     ? 'text-indigo-100'
                                     : 'text-[#4F46E5] dark:text-[#818CF8]'
@@ -601,7 +601,7 @@ export function ConversationThread({
                                   ? 'You'
                                   : otherPartyName}
                               </span>
-                              <p className="line-clamp-2 text-xs opacity-90">
+                              <p className="line-clamp-2 text-xs opacity-90 break-words [overflow-wrap:anywhere]">
                                 {repliedMsg.body}
                               </p>
                             </>
@@ -613,9 +613,11 @@ export function ConversationThread({
                         </div>
                       ) : null}
 
-                      <p className="whitespace-pre-wrap text-sm leading-6">{message.body}</p>
+                      <p className="min-w-0 max-w-full whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-6">
+                        {message.body}
+                      </p>
 
-                      <div className="mt-1 flex items-center justify-between gap-3">
+                      <div className="mt-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-0.5">
                         <span
                           className={`text-[11px] ${
                             own && message.status !== 'failed'
@@ -645,7 +647,7 @@ export function ConversationThread({
                       <button
                         type="button"
                         onClick={() => handleSelectReply(message)}
-                        className="mb-1 rounded p-1 text-[#5A5870] opacity-0 transition-opacity hover:bg-black/5 hover:text-[#0D0C1D] group-hover:opacity-100 dark:text-[#9CA1BA] dark:hover:bg-white/10 dark:hover:text-[#F3F4F8]"
+                        className="mb-1 flex size-8 shrink-0 items-center justify-center rounded p-1 text-[#5A5870] opacity-100 transition-opacity hover:bg-black/5 hover:text-[#0D0C1D] sm:opacity-0 sm:group-hover:opacity-100 sm:focus:opacity-100 dark:text-[#9CA1BA] dark:hover:bg-white/10 dark:hover:text-[#F3F4F8]"
                         title="Reply to this message"
                         aria-label="Reply to message"
                       >
@@ -657,7 +659,7 @@ export function ConversationThread({
               })}
             </div>
           ) : (
-            <div className="flex min-h-[360px] flex-col items-center justify-center text-center">
+            <div className="flex min-h-[360px] flex-col items-center justify-center text-center px-2">
               <span
                 className={`flex size-12 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:shadow-[2px_2px_0_#000000] ${
                   emptyState.iconTheme === 'indigo'
@@ -696,13 +698,13 @@ export function ConversationThread({
       {/* Delete Confirmation Modal */}
       {confirmDeleteMessage && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-[1px]"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-[1px]"
           onClick={(e) => {
             if (e.target === e.currentTarget) setConfirmDeleteMessage(null);
           }}
         >
           <div
-            className="w-full max-w-sm rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000]"
+            className="w-full max-w-sm rounded-[10px] border-2 border-[#0D0C1D] bg-white p-4 sm:p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000]"
             role="dialog"
             aria-modal="true"
             aria-labelledby="delete-dialog-title"

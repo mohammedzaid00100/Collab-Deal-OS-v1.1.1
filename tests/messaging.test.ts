@@ -288,4 +288,30 @@ describe('messaging and realtime deduplication', () => {
       expect(map.get(recipientMessages[0].reply_to_message_id!)).toBeUndefined();
     });
   });
+
+  describe('mobile message payload variants & reply chains', () => {
+    it('handles long unbroken characters, URLs, emojis, and multiline strings in message state', () => {
+      const longWord = 'F'.repeat(120);
+      const longUrl = 'https://example.com/' + 'very/'.repeat(25) + 'long-path';
+      const emojis = '😂'.repeat(30);
+      const multiline = 'Line 1\nLine 2\nLine 3\n' + longWord;
+
+      const items: ChatMessage[] = [
+        { id: 'm-word', sender_user_id: currentUserId, body: longWord, reply_to_message_id: null, created_at: '2026-09-20T10:00:00Z', status: 'sent' },
+        { id: 'm-url', sender_user_id: otherUserId, body: longUrl, reply_to_message_id: 'm-word', created_at: '2026-09-20T10:01:00Z', status: 'sent' },
+        { id: 'm-emoji', sender_user_id: currentUserId, body: emojis, reply_to_message_id: null, created_at: '2026-09-20T10:02:00Z', status: 'sent' },
+        { id: 'm-multi', sender_user_id: otherUserId, body: multiline, reply_to_message_id: 'm-url', created_at: '2026-09-20T10:03:00Z', status: 'sent' },
+      ];
+
+      const map = new Map(items.map((m) => [m.id, m]));
+
+      // Verify replies link correctly across long payloads
+      const urlReplyTarget = map.get(items[1].reply_to_message_id!);
+      expect(urlReplyTarget?.body).toBe(longWord);
+
+      const multiReplyTarget = map.get(items[3].reply_to_message_id!);
+      expect(multiReplyTarget?.body).toBe(longUrl);
+      expect(items[2].body).toHaveLength(60); // 30 emoji surrogate pairs
+    });
+  });
 });

@@ -138,7 +138,7 @@ export function MessageComposer({
       <div className="flex items-end gap-2">
         <textarea
           ref={textareaRef}
-          className="min-h-11 max-h-36 flex-1 resize-y rounded-[8px] border-2 border-[#0D0C1D] bg-[#F5F2EA]/40 px-3 py-2.5 text-sm font-medium text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] outline-none transition placeholder:text-[#8D8BA7] focus:bg-white focus:shadow-[3px_3px_0_#4F46E5] dark:border-[#262A3D] dark:bg-[#11131E] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_#000000] dark:focus:shadow-[3px_3px_0_#6366F1]"
+          className="min-h-11 max-h-36 min-w-0 flex-1 resize-y rounded-[8px] border-2 border-[#0D0C1D] bg-[#F5F2EA]/40 px-3 py-2.5 text-sm font-medium text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] outline-none transition placeholder:text-[#8D8BA7] focus:bg-white focus:shadow-[3px_3px_0_#4F46E5] dark:border-[#262A3D] dark:bg-[#11131E] dark:text-[#F3F4F8] dark:shadow-[2px_2px_0_#000000] dark:focus:shadow-[3px_3px_0_#6366F1]"
           maxLength={4000}
           rows={1}
           placeholder="Write a message…"
