@@ -105,6 +105,38 @@ try {
   console.log('PASS delivery queue lease and acknowledgment idempotency');
   await assert.rejects(prepareEmail(emailRequest), /Delivery lease is not active/);
   console.log('PASS immutable email request and expired lease rejection');
+
+  // Verify messaging reply invariants and realtime publication
+  const pubTableCheck = await db.query(`select tablename from pg_publication_tables where pubname = 'supabase_realtime' and tablename = 'conversation_messages'`);
+  assert.equal(pubTableCheck.rows.length, 1);
+  console.log('PASS conversation_messages registered in supabase_realtime publication');
+
+  await db.query(`insert into public.brand_profiles(user_id,brand_name,website,industry,description,location,target_audience,typical_campaign_budget,target_creator_niche,target_creator_location,onboarding_complete)
+    values($1,'Test Brand','https://testbrand.example','Tech','A valid test description for the brand profile.','Bengaluru','Founders',10000,'Tech','India',true)`, [other]);
+  const brandProfId = (await db.query(`select id from public.brand_profiles where user_id=$1`, [other])).rows[0].id;
+  const creatorProfId = (await db.query(`select id from public.creator_profiles where user_id=$1`, [user])).rows[0].id;
+  const camp1 = (await db.query(`insert into public.campaigns(brand_profile_id,title,description,platform,target_creator_niche,objective,deal_type,budget,status) values($1,'Deal 1','A valid campaign description for testing.','Instagram','Tech','Brand awareness','PAID',5000,'DRAFT') returning id`, [brandProfId])).rows[0].id;
+
+  const conv1 = (await db.query(`insert into public.conversations(campaign_id,brand_profile_id,creator_profile_id) values($1,$2,$3) returning id`, [camp1, brandProfId, creatorProfId])).rows[0].id;
+  const camp2 = (await db.query(`insert into public.campaigns(brand_profile_id,title,description,platform,target_creator_niche,objective,deal_type,budget,status) values($1,'Deal 2','A second valid campaign description for testing.','Instagram','Tech','Brand awareness','PAID',5000,'DRAFT') returning id`, [brandProfId])).rows[0].id;
+  const conv2 = (await db.query(`insert into public.conversations(campaign_id,brand_profile_id,creator_profile_id) values($1,$2,$3) returning id`, [camp2, brandProfId, creatorProfId])).rows[0].id;
+
+  const msg1 = (await db.query(`insert into public.conversation_messages(conversation_id,sender_user_id,body) values($1,$2,'First message') returning id`, [conv1, other])).rows[0].id;
+  const reply1 = (await db.query(`insert into public.conversation_messages(conversation_id,sender_user_id,body,reply_to_message_id) values($1,$2,'Reply to first',$3) returning id, reply_to_message_id`, [conv1, user, msg1])).rows[0];
+  assert.equal(reply1.reply_to_message_id, msg1);
+
+  // Reject reply targeting a message from a different conversation
+  await assert.rejects(
+    db.query(`insert into public.conversation_messages(conversation_id,sender_user_id,body,reply_to_message_id) values($1,$2,'Cross conv reply',$3)`, [conv2, user, msg1]),
+    /Referenced reply message does not belong to the same conversation/
+  );
+  console.log('PASS message reply integrity and cross-conversation rejection');
+
+  // Verify ON DELETE SET NULL on original message delete
+  await db.query(`delete from public.conversation_messages where id=$1`, [msg1]);
+  const replyAfterDelete = (await db.query(`select reply_to_message_id from public.conversation_messages where id=$1`, [reply1.id])).rows[0];
+  assert.equal(replyAfterDelete.reply_to_message_id, null);
+  console.log('PASS reply_to_message_id set null on referenced message delete');
 } catch (error) {
   console.error(error.message);
   process.exitCode = 1;
