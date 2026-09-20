@@ -11,7 +11,16 @@ import type { ConversationMessage } from '@/types/messaging';
 
 export const metadata: Metadata = { title: 'Conversation' };
 
-type Conversation = { id: string; campaign_id: string; brand_profile_id: string; creator_profile_id: string };
+type Conversation = {
+  id: string;
+  campaign_id: string;
+  brand_profile_id: string | null;
+  creator_profile_id: string;
+  participant_creator_profile_id: string | null;
+  conversation_type: 'BRAND_CREATOR' | 'CREATOR_CREATOR';
+};
+type Brand = { brand_name: string; industry: string; location: string };
+type OtherCreator = { full_name: string; username: string; niche: string; location: string };
 
 export default async function CreatorConversationPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -19,18 +28,57 @@ export default async function CreatorConversationPage({ params }: { params: Prom
   if (!account) return <AppShell role="creator" displayName="Setup required" email="Supabase not connected" plan="FREE"><ServiceState /></AppShell>;
   const supabase = await createSupabaseServerClient();
 
-  const { data: conversationData, error } = await supabase!.from('conversations').select('id,campaign_id,brand_profile_id,creator_profile_id').eq('id', id).maybeSingle();
+  const { data: currentCreator, error: creatorError } = await supabase!.from('creator_profiles').select('id').eq('user_id', account.id).single();
+  if (creatorError || !currentCreator) throw new Error('Creator profile is temporarily unavailable.');
+
+  const { data: conversationData, error } = await supabase!
+    .from('conversations')
+    .select('id,campaign_id,brand_profile_id,creator_profile_id,participant_creator_profile_id,conversation_type')
+    .eq('id', id)
+    .maybeSingle();
   if (error) throw new Error('Conversation is temporarily unavailable.');
   if (!conversationData) notFound();
   const conversation = conversationData as Conversation;
 
-  const [brandResult, campaignResult, messagesResult] = await Promise.all([
-    supabase!.from('brand_profiles').select('brand_name,industry,location').eq('id', conversation.brand_profile_id).single(),
+  const isCreatorConnect = conversation.conversation_type === 'CREATOR_CREATOR';
+
+  let partyName = 'Conversation';
+  let initial = 'C';
+  let subtitle = '';
+  let avatarClass = 'bg-[#EFF6FF] text-[#2563EB] dark:bg-[#1E293B] dark:text-[#60A5FA]';
+  let badgeText = 'Brand';
+  let badgeClass = 'bg-[#EFF6FF] text-[#2563EB] dark:bg-[#1E293B] dark:text-[#60A5FA]';
+
+  const [partyResult, campaignResult, messagesResult] = await Promise.all([
+    isCreatorConnect
+      ? (() => {
+          const otherCreatorId = conversation.creator_profile_id === currentCreator.id
+            ? conversation.participant_creator_profile_id
+            : conversation.creator_profile_id;
+          return supabase!.from('creator_profiles').select('full_name,username,niche,location').eq('id', otherCreatorId!).single();
+        })()
+      : supabase!.from('brand_profiles').select('brand_name,industry,location').eq('id', conversation.brand_profile_id!).single(),
     supabase!.from('campaigns').select('title').eq('id', conversation.campaign_id).single(),
     supabase!.from('conversation_messages').select('id,sender_user_id,body,created_at,reply_to_message_id').eq('conversation_id', id).order('created_at', { ascending: true }),
   ]);
-  if (brandResult.error || campaignResult.error || messagesResult.error) throw new Error('Conversation details are temporarily unavailable.');
-  const brand = brandResult.data;
+
+  if (partyResult.error || campaignResult.error || messagesResult.error) throw new Error('Conversation details are temporarily unavailable.');
+
+  if (isCreatorConnect) {
+    const otherCreator = partyResult.data as OtherCreator;
+    partyName = otherCreator.full_name;
+    initial = partyName.slice(0, 1).toUpperCase();
+    subtitle = `@${otherCreator.username}${otherCreator.niche ? ` · ${otherCreator.niche}` : ''}${otherCreator.location ? ` · ${otherCreator.location}` : ''}`;
+    avatarClass = 'bg-[#ECFDF5] text-[#059669] dark:bg-[#064E3B]/40 dark:text-[#34D399]';
+    badgeText = 'Creator';
+    badgeClass = 'bg-[#ECFDF5] text-[#059669] dark:bg-[#064E3B]/40 dark:text-[#34D399]';
+  } else {
+    const brand = partyResult.data as Brand;
+    partyName = brand.brand_name;
+    initial = partyName.slice(0, 1).toUpperCase();
+    subtitle = `${brand.industry} · ${brand.location}`;
+  }
+
   const messages = (messagesResult.data ?? []) as ConversationMessage[];
 
   return (
@@ -44,13 +92,18 @@ export default async function CreatorConversationPage({ params }: { params: Prom
       </Link>
       <section className="mt-3 overflow-hidden rounded-[10px] border-2 border-[#0D0C1D] bg-white shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000]">
         <header className="flex items-center gap-3 border-b-2 border-[#0D0C1D] px-4 py-4 dark:border-[#262A3D] sm:px-5">
-          <span className="flex size-10 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] bg-[#EFF6FF] font-bold text-[#2563EB] shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#1E293B] dark:text-[#60A5FA] dark:shadow-[2px_2px_0_#000000]">
-            {brand.brand_name.slice(0, 1).toUpperCase()}
+          <span className={`flex size-10 items-center justify-center rounded-[8px] border-2 border-[#0D0C1D] font-bold shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:shadow-[2px_2px_0_#000000] ${avatarClass}`}>
+            {initial}
           </span>
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-base font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">{brand.brand_name}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="truncate text-base font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">{partyName}</h1>
+              <span className={`rounded-[4px] border border-[#0D0C1D] px-1.5 py-0.5 text-[10px] font-bold shadow-[1px_1px_0_#0D0C1D] dark:border-[#383E5E] dark:shadow-none ${badgeClass}`}>
+                {badgeText}
+              </span>
+            </div>
             <p className="truncate text-xs font-semibold text-[#4F46E5] dark:text-[#818CF8]">
-              {brand.industry} · {brand.location}
+              {subtitle}
             </p>
           </div>
           <Link
@@ -61,17 +114,19 @@ export default async function CreatorConversationPage({ params }: { params: Prom
           </Link>
         </header>
         <div className="border-b-2 border-[#0D0C1D] bg-[#F5F2EA] px-4 py-2 text-xs font-medium text-[#0D0C1D] dark:border-[#262A3D] dark:bg-[#1E2134] dark:text-[#9CA1BA] sm:px-5">
-          <span className="font-bold text-[#4F46E5] dark:text-[#818CF8]">Deal:</span> {campaignResult.data.title}
+          <span className="font-bold text-[#4F46E5] dark:text-[#818CF8]">{isCreatorConnect ? 'Started from deal:' : 'Deal:'}</span> {campaignResult.data.title}
         </div>
         <ConversationThread
           conversationId={conversation.id}
           currentUserId={account.id}
-          otherPartyName={brand.brand_name}
+          otherPartyName={partyName}
           initialMessages={messages}
           emptyState={{
-            title: 'The brand opened this conversation',
-            description: 'Reply here to discuss collaboration details and next steps.',
-            iconTheme: 'blue',
+            title: isCreatorConnect ? 'Start connecting' : 'The brand opened this conversation',
+            description: isCreatorConnect
+              ? 'Send a message to discuss collaborating or connecting from this deal.'
+              : 'Reply here to discuss collaboration details and next steps.',
+            iconTheme: isCreatorConnect ? 'indigo' : 'blue',
           }}
         />
       </section>

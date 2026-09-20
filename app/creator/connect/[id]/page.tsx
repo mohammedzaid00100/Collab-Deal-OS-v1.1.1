@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft, BadgeIndianRupee, Building2, CalendarDays, MessageSquareText, ShieldCheck } from 'lucide-react';
 import { AppShell } from '@/components/app/app-shell';
 import { CommentComposer } from '@/components/connect/comment-composer';
+import { CreatorCommentAction } from '@/components/connect/creator-comment-action';
 import { ServiceState } from '@/components/ui/service-state';
 import { requireAppAccount } from '@/lib/auth/protected-page';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
@@ -122,15 +123,23 @@ export default async function CreatorConnectDealPage({ params }: { params: Promi
               <div className="mt-5 grid gap-3">
                 {comments.map((comment) => {
                   const creator = creators.get(comment.creator_profile_id);
+                  const isOwnComment = comment.creator_profile_id === profile.id;
                   return (
                     <article
                       className="rounded-[8px] border-2 border-[#0D0C1D] bg-[#F5F2EA] p-4 shadow-[2px_2px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#1E2134] dark:shadow-[2px_2px_0_#000000]"
                       key={comment.id}
                     >
                       <div className="flex items-center justify-between gap-3">
-                        <strong className="text-sm font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">
-                          {creator?.full_name ?? 'Creator'}
-                        </strong>
+                        <div className="flex items-center gap-2">
+                          <strong className="text-sm font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">
+                            {creator?.full_name ?? 'Creator'}
+                          </strong>
+                          {isOwnComment ? (
+                            <span className="rounded-[4px] border border-[#0D0C1D] bg-[#EEF2FF] px-1.5 py-0.5 text-[10px] font-bold text-[#4F46E5] dark:border-[#383E5E] dark:bg-[#1E1F3B] dark:text-[#818CF8]">
+                              You
+                            </span>
+                          ) : null}
+                        </div>
                         <span className="rounded-[4px] border border-[#0D0C1D] bg-white px-2 py-0.5 text-[10px] font-bold text-[#5A5870] shadow-[1px_1px_0_#0D0C1D] dark:border-[#383E5E] dark:bg-[#161826] dark:text-[#9CA1BA] dark:shadow-none">
                           {formatDate(comment.created_at)}
                         </span>
@@ -143,6 +152,13 @@ export default async function CreatorConnectDealPage({ params }: { params: Promi
                       <p className="mt-2 whitespace-pre-line text-sm font-medium leading-6 text-[#0D0C1D] dark:text-[#F3F4F8]">
                         {comment.body}
                       </p>
+                      {!isOwnComment ? (
+                        <CreatorCommentAction
+                          campaignId={deal.id}
+                          targetCreatorProfileId={comment.creator_profile_id}
+                          targetCreatorName={creator?.full_name ?? 'Creator'}
+                        />
+                      ) : null}
                     </article>
                   );
                 })}

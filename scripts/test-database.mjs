@@ -160,6 +160,132 @@ try {
 
   await db.exec(`reset role`);
   console.log('PASS RLS sender-only message deletion and non-sender denial');
+
+  // Verify Creator-to-Creator Connect functionality and RLS isolation
+  const userB = '00000000-0000-4000-8000-000000000003';
+  const userC = '00000000-0000-4000-8000-000000000004';
+  await db.query(`insert into auth.users(id,email,raw_user_meta_data) values
+    ($1,'creator_b@example.test','{"account_type":"creator"}'),
+    ($2,'creator_c@example.test','{"account_type":"creator"}')`, [userB, userC]);
+
+  const creatorProfB = (await db.query(`insert into public.creator_profiles(user_id,full_name,username,bio,niche,location,primary_audience_region,primary_content_format,onboarding_complete)
+    values($1,'Creator Beta','creator_beta','Creator B bio description for database testing','Fashion','Delhi','India','Reels',true) returning id`, [userB])).rows[0].id;
+
+  const creatorProfC = (await db.query(`insert into public.creator_profiles(user_id,full_name,username,bio,niche,location,primary_audience_region,primary_content_format,onboarding_complete)
+    values($1,'Creator Charlie','creator_charlie','Creator C bio description for database testing','Fitness','Goa','India','Reels',true) returning id`, [userC])).rows[0].id;
+
+  // Add deliverable and publish camp1 so it is available for connect
+  await db.query(`insert into public.campaign_deliverables(campaign_id, deliverable_type, quantity) values($1, 'Instagram Reel', 1)`, [camp1]);
+  await db.query(`update public.campaigns set status = 'PUBLISHED' where id = $1`, [camp1]);
+
+  // Both Creator A and Creator B comment on camp1
+  await db.query(`insert into public.campaign_comments(campaign_id,creator_profile_id,body) values($1,$2,'Creator A comment on Deal 1')`, [camp1, creatorProfId]);
+  await db.query(`insert into public.campaign_comments(campaign_id,creator_profile_id,body) values($1,$2,'Great campaign! Count me in.')`, [camp1, creatorProfB]);
+
+  // Test self-messaging rejection as Creator A (user)
+  await db.query(`select set_config('request.jwt.claim.sub',$1,false)`, [user]);
+  await db.exec(`set role authenticated`);
+
+  try {
+    await db.query(`select public.start_creator_connect_conversation($1, $2)`, [creatorProfId, camp1]);
+    assert.fail('Should have rejected self message');
+  } catch (err) {
+    assert.match(err.message, /cannot message yourself/);
+  }
+
+  try {
+    await db.query(`select public.start_creator_connect_conversation($1, $2)`, [creatorProfC, camp1]);
+    assert.fail('Should have rejected creator with no comment');
+  } catch (err) {
+    assert.match(err.message, /must comment on this deal before a conversation can start/);
+  }
+
+  // Creator A starts conversation with Creator B from camp1
+  const ccConvResult1 = await db.query(`select public.start_creator_connect_conversation($1, $2) as id`, [creatorProfB, camp1]);
+  const ccConvId1 = ccConvResult1.rows[0].id;
+  assert.ok(ccConvId1);
+
+  // Creator B starts conversation with Creator A from camp1 -> must return identical conversation ID
+  await db.query(`select set_config('request.jwt.claim.sub',$1,false)`, [userB]);
+  const ccConvResult2 = await db.query(`select public.start_creator_connect_conversation($1, $2) as id`, [creatorProfId, camp1]);
+  const ccConvId2 = ccConvResult2.rows[0].id;
+  assert.equal(ccConvId2, ccConvId1);
+  console.log('PASS Creator-to-Creator symmetrical conversation deduplication and self-message check');
+
+  // Creator B sends message to Creator A
+  const ccMsgResult = await db.query(`insert into public.conversation_messages(conversation_id,sender_user_id,body) values($1,$2,'Hey, loved your comment!') returning id`, [ccConvId1, userB]);
+  const ccMsgId = ccMsgResult.rows[0].id;
+  assert.ok(ccMsgId);
+
+  // Creator B can select conversation and message
+  const creatorBConvs = await db.query(`select id from public.conversations where id = $1`, [ccConvId1]);
+  assert.equal(creatorBConvs.rows.length, 1);
+  const creatorBMsgs = await db.query(`select id from public.conversation_messages where conversation_id = $1`, [ccConvId1]);
+  assert.equal(creatorBMsgs.rows.length, 1);
+
+  // Creator A can select conversation and message
+  await db.query(`select set_config('request.jwt.claim.sub',$1,false)`, [user]);
+  const creatorAConvs = await db.query(`select id from public.conversations where id = $1`, [ccConvId1]);
+  assert.equal(creatorAConvs.rows.length, 1);
+  const creatorAMsgs = await db.query(`select id from public.conversation_messages where conversation_id = $1`, [ccConvId1]);
+  assert.equal(creatorAMsgs.rows.length, 1);
+
+  // Brand (other, who owns the campaign) CANNOT select conversation or messages
+  await db.query(`select set_config('request.jwt.claim.sub',$1,false)`, [other]);
+  const brandConvs = await db.query(`select id from public.conversations where id = $1`, [ccConvId1]);
+  assert.equal(brandConvs.rows.length, 0);
+  const brandMsgs = await db.query(`select id from public.conversation_messages where conversation_id = $1`, [ccConvId1]);
+  assert.equal(brandMsgs.rows.length, 0);
+
+  // Brand CANNOT insert message into Creator-to-Creator conversation
+  await assert.rejects(
+    db.query(`insert into public.conversation_messages(conversation_id,sender_user_id,body) values($1,$2,'Brand snooping')`, [ccConvId1, other]),
+    /violates row-level security policy/
+  );
+
+  // Unrelated Creator C CANNOT select conversation or messages
+  await db.query(`select set_config('request.jwt.claim.sub',$1,false)`, [userC]);
+  const creatorCConvs = await db.query(`select id from public.conversations where id = $1`, [ccConvId1]);
+  assert.equal(creatorCConvs.rows.length, 0);
+  const creatorCMsgs = await db.query(`select id from public.conversation_messages where conversation_id = $1`, [ccConvId1]);
+  assert.equal(creatorCMsgs.rows.length, 0);
+
+  // Unrelated Creator C CANNOT insert message into Creator-to-Creator conversation
+  await assert.rejects(
+    db.query(`insert into public.conversation_messages(conversation_id,sender_user_id,body) values($1,$2,'Creator C snooping')`, [ccConvId1, userC]),
+    /violates row-level security policy/
+  );
+
+  // Brand cannot invoke start_creator_connect_conversation
+  await db.query(`select set_config('request.jwt.claim.sub',$1,false)`, [other]);
+  await assert.rejects(
+    db.query(`select public.start_creator_connect_conversation($1, $2)`, [creatorProfB, camp1]),
+    /Creator account required/
+  );
+
+  // Reset role to superuser and test constraint enforcement
+  await db.exec(`reset role`);
+
+  // Verify conversation invariant check constraint blocks invalid combinations
+  await assert.rejects(
+    db.query(`insert into public.conversations(campaign_id, brand_profile_id, creator_profile_id, participant_creator_profile_id, conversation_type)
+      values($1, null, $2, null, 'BRAND_CREATOR')`, [camp1, creatorProfId]),
+    /violates check constraint "conversations_type_participants_check"/
+  );
+
+  await assert.rejects(
+    db.query(`insert into public.conversations(campaign_id, brand_profile_id, creator_profile_id, participant_creator_profile_id, conversation_type)
+      values($1, $2, $3, $4, 'CREATOR_CREATOR')`, [camp1, brandProfId, creatorProfId, creatorProfB]),
+    /violates check constraint "conversations_type_participants_check"/
+  );
+
+  await assert.rejects(
+    db.query(`insert into public.conversations(campaign_id, brand_profile_id, creator_profile_id, participant_creator_profile_id, conversation_type)
+      values($1, null, $2, $2, 'CREATOR_CREATOR')`, [camp1, creatorProfId]),
+    /violates check constraint "conversations_type_participants_check"/
+  );
+
+  console.log('PASS Creator-to-Creator RLS isolation (Brand & 3rd-party Creator blocked) and constraint checks');
 } catch (error) {
   console.error(error.message);
   process.exitCode = 1;
