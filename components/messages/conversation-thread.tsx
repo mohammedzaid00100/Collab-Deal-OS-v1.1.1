@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { MessageCircle, Reply, ArrowDown, Clock, AlertCircle } from 'lucide-react';
+import { MessageCircle, Reply, ArrowDown, Clock, AlertCircle, MoreVertical, Trash2 } from 'lucide-react';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 import { MessageComposer } from './message-composer';
 import type { ChatMessage, ConversationMessage, ReplyTarget } from '@/types/messaging';
@@ -30,17 +31,46 @@ export function ConversationThread({
   );
   const [replyTarget, setReplyTarget] = useState<ReplyTarget | null>(null);
   const [showNewMessageIndicator, setShowNewMessageIndicator] = useState(false);
+  const [activeMenuMessageId, setActiveMenuMessageId] = useState<string | null>(null);
+  const [confirmDeleteMessage, setConfirmDeleteMessage] = useState<ChatMessage | null>(null);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const isNearBottomRef = useRef(true);
-  const messagesRef = useRef(messages);
-  messagesRef.current = messages;
+  const isRealtimeReadyRef = useRef(false);
+  const channelRef = useRef<RealtimeChannel | null>(null);
 
   // Track latest message timestamp for reconnect delta recovery
   const lastSeenTimestampRef = useRef<string | null>(
     initialMessages.length > 0 ? initialMessages[initialMessages.length - 1].created_at : null
   );
+
+  // Close active dropdown menu when clicking outside
+  useEffect(() => {
+    if (!activeMenuMessageId) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setActiveMenuMessageId(null);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeMenuMessageId]);
+
+  // Handle ESC key to dismiss delete confirmation dialog
+  useEffect(() => {
+    if (!confirmDeleteMessage) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setConfirmDeleteMessage(null);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [confirmDeleteMessage]);
 
   // Map of messages for O(1) reply lookup
   const messagesMap = useMemo(() => {
@@ -92,67 +122,193 @@ export function ConversationThread({
     }
   }, []);
 
-  // Handle incoming realtime message (INSERT)
-  const handleIncomingMessage = useCallback((newRow: ConversationMessage) => {
-    setMessages((prev) => {
-      // 1. Deduplicate by permanent ID
-      if (prev.some((m) => m.id === newRow.id)) {
-        return prev;
+  // Handle message deletion locally and clean up active reply if affected
+  const handleDeleteMessage = useCallback((deletedId: string) => {
+    setMessages((prev) => prev.filter((m) => m.id !== deletedId && m.tempId !== deletedId));
+    setReplyTarget((curr) => (curr?.id === deletedId ? null : curr));
+  }, []);
+
+  // Execute deletion: optimistic local update, realtime broadcast, and database deletion
+  const executeDeleteMessage = useCallback(
+    async (messageId: string) => {
+      handleDeleteMessage(messageId);
+
+      if (messageId.startsWith('temp-')) {
+        return;
       }
 
-      // 2. If it is our own message and we have a matching optimistic item pending
-      if (newRow.sender_user_id === currentUserId) {
-        const optimisticIndex = prev.findIndex(
-          (m) =>
-            m.status === 'sending' &&
-            m.body === newRow.body &&
-            m.reply_to_message_id === newRow.reply_to_message_id
-        );
-        if (optimisticIndex !== -1) {
-          const updated = [...prev];
-          updated[optimisticIndex] = {
-            ...newRow,
-            status: 'sent',
-          };
-          return updated;
+      // Fast peer notification via Realtime Broadcast
+      if (channelRef.current) {
+        try {
+          await channelRef.current.send({
+            type: 'broadcast',
+            event: 'delete_message',
+            payload: { id: messageId },
+          });
+        } catch (err) {
+          console.warn('[Realtime] Failed to broadcast delete_message:', err);
         }
       }
 
-      // 3. Otherwise append the new message
-      return [...prev, { ...newRow, status: 'sent' }];
-    });
+      // Persist deletion to Supabase (RLS ensures sender_user_id = auth.uid())
+      const supabase = createSupabaseBrowserClient();
+      if (supabase) {
+        const { error } = await supabase
+          .from('conversation_messages')
+          .delete()
+          .eq('id', messageId);
 
-    // Update last seen timestamp
-    if (
-      !lastSeenTimestampRef.current ||
-      new Date(newRow.created_at) > new Date(lastSeenTimestampRef.current)
-    ) {
-      lastSeenTimestampRef.current = newRow.created_at;
-    }
-
-    // Scroll management for incoming messages
-    if (newRow.sender_user_id === currentUserId) {
-      // Own message confirmed: keep scrolled
-      scrollToBottom(true);
-    } else {
-      // Message from other party: auto-scroll only if already near bottom
-      if (isNearBottomRef.current) {
-        requestAnimationFrame(() => scrollToBottom(true));
-      } else {
-        setShowNewMessageIndicator(true);
+        if (error) {
+          console.error('[Messaging] Failed to delete message from database:', error.message);
+        }
       }
-    }
-  }, [currentUserId, scrollToBottom]);
+    },
+    [handleDeleteMessage]
+  );
 
-  // Supabase Realtime Subscription
+  // Handle incoming realtime message (INSERT / Broadcast / Poll)
+  const handleIncomingMessage = useCallback(
+    (newRow: ConversationMessage, clientMsgId?: string) => {
+      setMessages((prev) => {
+        // 1. Deduplicate by permanent ID
+        if (prev.some((m) => m.id === newRow.id)) {
+          return prev;
+        }
+
+        // 2. Deduplicate by clientMsgId / tempId if provided
+        if (clientMsgId) {
+          const matchIdx = prev.findIndex((m) => m.tempId === clientMsgId || m.id === clientMsgId);
+          if (matchIdx !== -1) {
+            const updated = [...prev];
+            updated[matchIdx] = { ...newRow, status: 'sent' };
+            return updated;
+          }
+        }
+
+        // 3. If it is our own message and we have a matching optimistic item pending
+        if (newRow.sender_user_id === currentUserId) {
+          const optimisticIndex = prev.findIndex(
+            (m) =>
+              m.status === 'sending' &&
+              m.body === newRow.body &&
+              m.reply_to_message_id === newRow.reply_to_message_id
+          );
+          if (optimisticIndex !== -1) {
+            const updated = [...prev];
+            updated[optimisticIndex] = {
+              ...newRow,
+              status: 'sent',
+            };
+            return updated;
+          }
+        }
+
+        // 4. Otherwise append the new message
+        return [...prev, { ...newRow, status: 'sent' }];
+      });
+
+      // Update last seen timestamp
+      if (
+        !lastSeenTimestampRef.current ||
+        new Date(newRow.created_at) > new Date(lastSeenTimestampRef.current)
+      ) {
+        lastSeenTimestampRef.current = newRow.created_at;
+      }
+
+      // Scroll management for incoming messages
+      if (newRow.sender_user_id === currentUserId) {
+        // Own message confirmed: keep scrolled
+        scrollToBottom(true);
+      } else {
+        // Message from other party: auto-scroll only if already near bottom
+        if (isNearBottomRef.current) {
+          requestAnimationFrame(() => scrollToBottom(true));
+        } else {
+          setShowNewMessageIndicator(true);
+        }
+      }
+    },
+    [currentUserId, scrollToBottom]
+  );
+
+  // Delta polling fallback: queries only messages newer than newest created_at in local state
+  const fetchDeltaMessages = useCallback(async () => {
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) return;
+
+    try {
+      const lastTs = lastSeenTimestampRef.current;
+      let query = supabase
+        .from('conversation_messages')
+        .select('id, sender_user_id, body, created_at, reply_to_message_id')
+        .eq('conversation_id', conversationId)
+        .order('created_at', { ascending: true });
+
+      if (lastTs) {
+        query = query.gt('created_at', lastTs);
+      }
+
+      const { data, error } = await query;
+      if (error) {
+        console.warn('[Realtime] Delta poll error:', error.message);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        for (const row of data as ConversationMessage[]) {
+          handleIncomingMessage(row);
+        }
+      }
+    } catch (err) {
+      console.warn('[Realtime] Delta poll exception:', err);
+    }
+  }, [conversationId, handleIncomingMessage]);
+
+  // Supabase Realtime Subscription & Broadcast Channel
   useEffect(() => {
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return;
 
-    const channel = supabase.channel(`conversation-messages:${conversationId}`);
+    let isMounted = true;
+    let pollInterval: ReturnType<typeof setInterval> | null = null;
+    let authSubscription: { unsubscribe: () => void } | null = null;
 
-    channel
-      .on(
+    async function initChannel() {
+      try {
+        const {
+          data: { session },
+        } = await supabase!.auth.getSession();
+        if (!isMounted) return;
+
+        if (session?.access_token) {
+          await supabase!.realtime.setAuth(session.access_token);
+        }
+      } catch (err) {
+        console.warn('[Realtime] Failed to configure auth:', err);
+      }
+
+      if (!isMounted) return;
+
+      const channel = supabase!.channel(`conversation-messages:${conversationId}`, {
+        config: {
+          broadcast: { ack: true, self: false, replication_ready: true },
+        },
+      });
+      channelRef.current = channel;
+
+      // Listen for system events to detect when postgres_changes extension is active
+      channel.on('system', {}, (payload) => {
+        console.log('[Realtime] System event:', payload);
+        if (
+          (payload?.extension === 'postgres_changes' || payload?.extension === 'system') &&
+          payload?.status === 'ok'
+        ) {
+          isRealtimeReadyRef.current = true;
+        }
+      });
+
+      // Listen for postgres_changes INSERT
+      channel.on(
         'postgres_changes',
         {
           event: 'INSERT',
@@ -166,32 +322,92 @@ export function ConversationThread({
             handleIncomingMessage(newRow);
           }
         }
-      )
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          // Recover any missed messages during connection or reconnection
-          const lastTs = lastSeenTimestampRef.current;
-          if (lastTs) {
-            const { data } = await supabase
-              .from('conversation_messages')
-              .select('id, sender_user_id, body, created_at, reply_to_message_id')
-              .eq('conversation_id', conversationId)
-              .gt('created_at', lastTs)
-              .order('created_at', { ascending: true });
+      );
 
-            if (data && data.length > 0) {
-              for (const row of data as ConversationMessage[]) {
-                handleIncomingMessage(row);
-              }
-            }
+      // Listen for postgres_changes DELETE
+      channel.on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'conversation_messages',
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          const deletedId = (payload.old as { id?: string })?.id;
+          if (deletedId) {
+            handleDeleteMessage(deletedId);
           }
+        }
+      );
+
+      // Listen for broadcast events
+      channel.on('broadcast', { event: 'new_message' }, ({ payload }) => {
+        const row = payload as ConversationMessage & { client_msg_id?: string };
+        if (row && row.id) {
+          handleIncomingMessage(row, row.client_msg_id);
         }
       });
 
+      channel.on('broadcast', { event: 'delete_message' }, ({ payload }) => {
+        const { id } = (payload ?? {}) as { id?: string };
+        if (id) {
+          handleDeleteMessage(id);
+        }
+      });
+
+      // Subscribe and handle all channel lifecycle states
+      channel.subscribe(async (status, err) => {
+        console.log(`[Realtime] Subscription status for conversation ${conversationId}:`, status, err ?? '');
+
+        if (status === 'SUBSCRIBED') {
+          // Delta recovery upon subscription / reconnect
+          await fetchDeltaMessages();
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('[Realtime] Channel error on conversation:', conversationId, err);
+          isRealtimeReadyRef.current = false;
+        } else if (status === 'TIMED_OUT') {
+          console.warn('[Realtime] Channel timed out on conversation:', conversationId, err);
+          isRealtimeReadyRef.current = false;
+        } else if (status === 'CLOSED') {
+          console.log('[Realtime] Channel closed on conversation:', conversationId);
+          isRealtimeReadyRef.current = false;
+        }
+      });
+
+      // 1-second fallback delta polling loop when realtime is not yet ready or reconnecting
+      pollInterval = setInterval(() => {
+        if (!isRealtimeReadyRef.current) {
+          void fetchDeltaMessages();
+        }
+      }, 1000);
+    }
+
+    void initChannel();
+
+    // Keep auth token synchronized
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.access_token) {
+        try {
+          await supabase.realtime.setAuth(session.access_token);
+        } catch (e) {
+          console.warn('[Realtime] Auth refresh error:', e);
+        }
+      }
+    });
+    authSubscription = authListener.subscription;
+
     return () => {
-      void supabase.removeChannel(channel);
+      isMounted = false;
+      isRealtimeReadyRef.current = false;
+      if (pollInterval) clearInterval(pollInterval);
+      if (authSubscription) authSubscription.unsubscribe();
+      if (channelRef.current) {
+        void supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
-  }, [conversationId, handleIncomingMessage]);
+  }, [conversationId, fetchDeltaMessages, handleIncomingMessage, handleDeleteMessage]);
 
   // Optimistic sending handlers
   const handleOptimisticSend = useCallback((optimisticMsg: ChatMessage) => {
@@ -219,6 +435,22 @@ export function ConversationThread({
       new Date(persistedMsg.created_at) > new Date(lastSeenTimestampRef.current)
     ) {
       lastSeenTimestampRef.current = persistedMsg.created_at;
+    }
+
+    // Fast peer delivery via Realtime Broadcast
+    if (channelRef.current) {
+      try {
+        channelRef.current.send({
+          type: 'broadcast',
+          event: 'new_message',
+          payload: {
+            ...persistedMsg,
+            client_msg_id: tempId,
+          },
+        });
+      } catch (err) {
+        console.warn('[Realtime] Broadcast new_message failed:', err);
+      }
     }
   }, []);
 
@@ -278,17 +510,58 @@ export function ConversationThread({
                     }`}
                     key={message.id || message.tempId}
                   >
-                    {/* Reply trigger button on left for own messages */}
+                    {/* Actions menu on left for sender's own messages */}
                     {own ? (
-                      <button
-                        type="button"
-                        onClick={() => handleSelectReply(message)}
-                        className="mb-1 rounded p-1 text-[#5A5870] opacity-0 transition-opacity hover:bg-black/5 hover:text-[#0D0C1D] group-hover:opacity-100 dark:text-[#9CA1BA] dark:hover:bg-white/10 dark:hover:text-[#F3F4F8]"
-                        title="Reply to this message"
-                        aria-label="Reply to message"
-                      >
-                        <Reply className="size-3.5" />
-                      </button>
+                      <div className="relative mb-1">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setActiveMenuMessageId((curr) =>
+                              curr === message.id ? null : message.id
+                            )
+                          }
+                          className={`rounded p-1 text-[#5A5870] transition-opacity hover:bg-black/5 hover:text-[#0D0C1D] dark:text-[#9CA1BA] dark:hover:bg-white/10 dark:hover:text-[#F3F4F8] ${
+                            activeMenuMessageId === message.id
+                              ? 'opacity-100 bg-black/5 dark:bg-white/10'
+                              : 'opacity-0 group-hover:opacity-100 focus:opacity-100'
+                          }`}
+                          title="Message options"
+                          aria-label="Message options"
+                          aria-expanded={activeMenuMessageId === message.id}
+                        >
+                          <MoreVertical className="size-3.5" />
+                        </button>
+
+                        {activeMenuMessageId === message.id && (
+                          <div
+                            ref={menuRef}
+                            className="absolute bottom-full right-0 z-30 mb-1 min-w-[120px] rounded-[8px] border-2 border-[#0D0C1D] bg-white p-1 shadow-[2px_2px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[2px_2px_0_#000000]"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActiveMenuMessageId(null);
+                                handleSelectReply(message);
+                              }}
+                              className="flex w-full items-center gap-2 rounded px-2.5 py-1.5 text-xs font-semibold text-[#0D0C1D] hover:bg-[#F5F2EA] dark:text-[#F3F4F8] dark:hover:bg-[#1E2134]"
+                            >
+                              <Reply className="size-3.5" />
+                              Reply
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActiveMenuMessageId(null);
+                                setConfirmDeleteMessage(message);
+                              }}
+                              className="flex w-full items-center gap-2 rounded px-2.5 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
+                            >
+                              <Trash2 className="size-3.5" />
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     ) : null}
 
                     <div
@@ -319,7 +592,7 @@ export function ConversationThread({
                             <>
                               <span
                                 className={`block font-bold ${
-                                  own && message.status !== 'failed'
+                                   own && message.status !== 'failed'
                                     ? 'text-indigo-100'
                                     : 'text-[#4F46E5] dark:text-[#818CF8]'
                                 }`}
@@ -367,7 +640,7 @@ export function ConversationThread({
                       </div>
                     </div>
 
-                    {/* Reply trigger button on right for incoming messages */}
+                    {/* Reply trigger button on right for incoming messages from other party (never delete) */}
                     {!own ? (
                       <button
                         type="button"
@@ -419,6 +692,55 @@ export function ConversationThread({
           </button>
         ) : null}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {confirmDeleteMessage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-[1px]"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setConfirmDeleteMessage(null);
+          }}
+        >
+          <div
+            className="w-full max-w-sm rounded-[10px] border-2 border-[#0D0C1D] bg-white p-5 shadow-[4px_4px_0_#0D0C1D] dark:border-[#262A3D] dark:bg-[#161826] dark:shadow-[4px_4px_0_#000000]"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-dialog-title"
+          >
+            <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+              <Trash2 className="size-5 shrink-0" />
+              <h3 id="delete-dialog-title" className="text-base font-bold text-[#0D0C1D] dark:text-[#F3F4F8]">
+                Delete message?
+              </h3>
+            </div>
+            <p className="mt-2 text-xs leading-5 text-[#5A5870] dark:text-[#9CA1BA]">
+              Delete message? This cannot be undone.
+            </p>
+            <div className="mt-4 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setConfirmDeleteMessage(null)}
+                className="rounded-[6px] border-2 border-[#0D0C1D] bg-white px-3.5 py-1.5 text-xs font-bold text-[#0D0C1D] shadow-[2px_2px_0_#0D0C1D] transition-transform hover:translate-x-[1px] hover:translate-y-[1px] dark:border-[#262A3D] dark:bg-[#1E2134] dark:text-[#F3F4F8]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const target = confirmDeleteMessage;
+                  setConfirmDeleteMessage(null);
+                  if (target) {
+                    void executeDeleteMessage(target.id);
+                  }
+                }}
+                className="rounded-[6px] border-2 border-[#0D0C1D] bg-red-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-[2px_2px_0_#0D0C1D] transition-transform hover:translate-x-[1px] hover:translate-y-[1px] hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <MessageComposer
         conversationId={conversationId}

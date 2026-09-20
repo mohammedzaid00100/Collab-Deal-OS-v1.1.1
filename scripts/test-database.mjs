@@ -137,6 +137,29 @@ try {
   const replyAfterDelete = (await db.query(`select reply_to_message_id from public.conversation_messages where id=$1`, [reply1.id])).rows[0];
   assert.equal(replyAfterDelete.reply_to_message_id, null);
   console.log('PASS reply_to_message_id set null on referenced message delete');
+
+  // Verify RLS sender-only deletion
+  const creatorMsg = (await db.query(`insert into public.conversation_messages(conversation_id,sender_user_id,body) values($1,$2,'Creator message to delete') returning id`, [conv1, user])).rows[0].id;
+
+  // As 'other' (non-sender), attempt to delete creatorMsg -> 0 rows affected
+  await db.query(`select set_config('request.jwt.claim.sub',$1,false)`, [other]);
+  await db.exec(`set role authenticated`);
+  const nonSenderDelete = await db.query(`delete from public.conversation_messages where id=$1`, [creatorMsg]);
+  assert.equal(nonSenderDelete.rowCount ?? 0, 0);
+
+  const stillExists = (await db.query(`select count(*)::integer as n from public.conversation_messages where id=$1`, [creatorMsg])).rows[0].n;
+  assert.equal(stillExists, 1);
+
+  // As 'user' (sender), delete creatorMsg -> succeeds
+  await db.query(`select set_config('request.jwt.claim.sub',$1,false)`, [user]);
+  const senderDelete = await db.query(`delete from public.conversation_messages where id=$1`, [creatorMsg]);
+  assert.equal(senderDelete.rowCount, 1);
+
+  const deletedCheck = (await db.query(`select count(*)::integer as n from public.conversation_messages where id=$1`, [creatorMsg])).rows[0].n;
+  assert.equal(deletedCheck, 0);
+
+  await db.exec(`reset role`);
+  console.log('PASS RLS sender-only message deletion and non-sender denial');
 } catch (error) {
   console.error(error.message);
   process.exitCode = 1;
