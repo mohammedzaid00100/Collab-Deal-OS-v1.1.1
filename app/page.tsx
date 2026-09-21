@@ -1,6 +1,40 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
+
+export const metadata: Metadata = {
+  title: {
+    absolute: 'Collab Deal OS | Creator-Brand Collaboration Marketplace',
+  },
+  description:
+    'Collab Deal OS helps creators and brands discover collaboration opportunities, connect directly, discuss campaign terms, manage offers, and keep deals organized in one place.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'Collab Deal OS | Creator-Brand Collaboration Marketplace',
+    description:
+      'Discover creator-brand collaborations, connect directly, discuss campaign terms, and manage offers in one structured marketplace.',
+    url: '/',
+    type: 'website',
+    images: [
+      {
+        url: '/og.png',
+        width: 1728,
+        height: 941,
+        alt: 'Collab Deal OS',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Collab Deal OS | Creator-Brand Collaboration Marketplace',
+    description:
+      'Discover creator-brand collaborations, connect directly, discuss campaign terms, and manage offers in one structured marketplace.',
+    images: ['/og.png'],
+  },
+};
 
 const trustPoints = [
   ['Secure by design', 'Your deal data stays private'],
