@@ -2,7 +2,29 @@ import type { Metadata } from 'next';
 import { PublicHeader } from '@/components/public/public-header';
 import { PublicFooter } from '@/components/public/public-footer';
 
-export const metadata: Metadata = { title: 'Terms of Service' };
+export const metadata: Metadata = {
+  title: 'Terms of Service',
+  description:
+    'Read the Collab Deal OS Terms of Service covering account accuracy, collaboration offers, acceptable use, platform limits, deal decisions, and user responsibilities.',
+  alternates: {
+    canonical: '/terms',
+  },
+  openGraph: {
+    title: 'Terms of Service | Collab Deal OS',
+    description:
+      'Review the terms governing Collab Deal OS, including account responsibilities, collaboration activity, acceptable use, deal decisions, and platform limitations.',
+    url: '/terms',
+    type: 'website',
+    images: ['/og.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Terms of Service | Collab Deal OS',
+    description:
+      'Review the terms governing Collab Deal OS, including account responsibilities, collaboration activity, acceptable use, deal decisions, and platform limitations.',
+    images: ['/og.png'],
+  },
+};
 
 export default function TermsPage() {
   return <div className="min-h-svh bg-white"><PublicHeader /><main className="prose-policy"><p className="policy-eyebrow">Legal</p><h1>Terms of Service</h1><p className="policy-lead">Last updated: 20 September 2026</p><section><h2>Deal intelligence, not a guarantee</h2><p>Collab Deal OS provides structured estimates, comparisons, and AI-assisted explanations. Results are decision support, not a guarantee of market price, campaign performance, legal outcome, or acceptance by another party.</p></section><section><h2>Accurate information</h2><p>Users must provide accurate account, profile, social metric, campaign, offer, and collaboration rights information. Creator-declared metrics remain visibly labeled until verified through an authorized official source.</p></section><section><h2>Structured deal actions</h2><p>The service records offers and revisions as structured versions. Acceptance in the product records a deal decision but does not replace legal review or any separate written agreement required by the parties.</p></section><section><h2>Feature access and evaluation limits</h2><p>Evaluation limits and feature entitlements are enforced server-side. Collab Deal OS currently operates without financial billing or payment processing.</p></section><section><h2>Acceptable use</h2><p>Users may not submit unlawful content, misrepresent identity or metrics, probe other accounts, bypass usage limits, scrape restricted platforms, or attempt to extract provider credentials.</p></section><section><h2>Launch review</h2><p>These initial terms require review with the operating entity, jurisdiction, support contact, and dispute terms before public production launch.</p></section></main><PublicFooter /></div>;
