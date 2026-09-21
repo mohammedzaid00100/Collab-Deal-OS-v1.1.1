@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+Disallow: /api/
+Disallow: /auth/
+Disallow: /brand/
+Disallow: /creator/
+Disallow: /onboarding/
+Disallow: /setup
+Disallow: /reset-password
+Disallow: /forgot-password
+
+Sitemap: https://collab-deal-os.mohammedzaid00100.workers.dev/sitemap.xml
