@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   BarChart3,
+  BriefcaseBusiness,
+  Compass,
   FilePlus2,
   Handshake,
   LayoutDashboard,
@@ -12,9 +14,10 @@ import {
   MessageCircle,
   Moon,
   Plus,
-  Radio,
-  Sparkles,
+  Search,
+  Settings,
   Sun,
+  UsersRound,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -80,18 +83,25 @@ export function AppFab({ role }: AppFabProps) {
 
   const creatorItems = [
     { label: 'Dashboard', href: '/creator/dashboard', icon: LayoutDashboard },
-    { label: 'Browse Deals', href: '/creator/connect', icon: Radio, highlight: true },
+    { label: 'Connect', href: '/creator/connect', icon: Link2, highlight: true },
+    { label: 'Opportunities', href: '/creator/opportunities', icon: Compass },
     { label: 'Messages', href: '/creator/messages', icon: MessageCircle },
     { label: 'Active Offers', href: '/creator/offers', icon: Handshake },
     { label: 'Analytics', href: '/creator/analytics', icon: BarChart3 },
+    { label: 'Settings', href: '/creator/settings', icon: Settings },
   ];
 
   const brandItems = [
     { label: 'Dashboard', href: '/brand/dashboard', icon: LayoutDashboard },
     { label: 'New Campaign', href: '/brand/campaigns/new', icon: FilePlus2, highlight: true },
+    { label: 'Campaigns', href: '/brand/campaigns', icon: BriefcaseBusiness },
+    { label: 'Creator Discovery', href: '/brand/creators', icon: Search },
+    { label: 'Matches', href: '/brand/matches', icon: UsersRound },
     { label: 'Connect Marketplace', href: '/brand/connect', icon: Link2 },
     { label: 'Messages', href: '/brand/messages', icon: MessageCircle },
     { label: 'Review Offers', href: '/brand/offers', icon: Handshake },
+    { label: 'Analytics', href: '/brand/analytics', icon: BarChart3 },
+    { label: 'Settings', href: '/brand/settings', icon: Settings },
   ];
 
   const items = role === 'creator' ? creatorItems : brandItems;
@@ -114,7 +124,7 @@ export function AppFab({ role }: AppFabProps) {
         <div
           role="menu"
           aria-label="Quick Actions"
-          className="absolute bottom-16 right-0 z-50 mb-2 w-60 rounded-2xl border-2 border-[#0D0C1D] bg-white p-2.5 shadow-[6px_6px_0_#0D0C1D] transition-all animate-in slide-in-from-bottom-3 dark:border-[#2D334D] dark:bg-[#171927] dark:shadow-[6px_6px_0_#000000]"
+          className="absolute bottom-16 right-0 z-50 mb-2 max-h-[calc(100dvh-100px)] w-60 overflow-y-auto rounded-2xl border-2 border-[#0D0C1D] bg-white p-2.5 shadow-[6px_6px_0_#0D0C1D] transition-all animate-in slide-in-from-bottom-3 dark:border-[#2D334D] dark:bg-[#171927] dark:shadow-[6px_6px_0_#000000]"
         >
           <div className="mb-2 flex items-center justify-between border-b border-[#E0DACE] px-2.5 pb-2 text-[11px] font-bold uppercase tracking-wider text-[#5A5870] dark:border-[#2D334D] dark:text-[#9CA1BA]">
             <span>Quick Actions</span>
