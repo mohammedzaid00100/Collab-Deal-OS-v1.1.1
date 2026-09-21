@@ -4,7 +4,29 @@ import { Check, Gift, Link2, MessageCircle } from 'lucide-react';
 import { PublicHeader } from '@/components/public/public-header';
 import { PublicFooter } from '@/components/public/public-footer';
 
-export const metadata: Metadata = { title: 'Free early access' };
+export const metadata: Metadata = {
+  title: 'Free Early Access',
+  description:
+    'Collab Deal OS is currently free for creators and brands. Discover collaboration deals, connect directly, message privately, and manage campaigns and offers without a paid subscription.',
+  alternates: {
+    canonical: '/pricing',
+  },
+  openGraph: {
+    title: 'Free Early Access | Collab Deal OS',
+    description:
+      'Use Collab Deal OS for free during early access. Creators and brands can discover deals, connect, message, and manage collaborations without a paid plan.',
+    url: '/pricing',
+    type: 'website',
+    images: ['/og.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Free Early Access | Collab Deal OS',
+    description:
+      'Use Collab Deal OS for free during early access. Creators and brands can discover deals, connect, message, and manage collaborations without a paid plan.',
+    images: ['/og.png'],
+  },
+};
 
 const included = [
   'Brand and creator accounts',
