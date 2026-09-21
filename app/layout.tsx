@@ -9,9 +9,10 @@ export const viewport: Viewport = { themeColor: '#7c3aed', viewportFit: 'cover' 
 export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ??
-  'https://collab-deal-os.mohammedzaid00100.workers.dev',
-  ),
+  process.env.NODE_ENV === 'production'
+    ? 'https://collab-deal-os.mohammedzaid00100.workers.dev'
+    : process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+),
   title: {
     default: 'Collab Deal OS · Creator-brand collaboration marketplace',
     template: '%s · Collab Deal OS',
