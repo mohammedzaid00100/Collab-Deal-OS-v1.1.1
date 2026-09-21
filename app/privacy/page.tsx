@@ -2,7 +2,29 @@ import type { Metadata } from 'next';
 import { PublicHeader } from '@/components/public/public-header';
 import { PublicFooter } from '@/components/public/public-footer';
 
-export const metadata: Metadata = { title: 'Privacy Policy' };
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description:
+    'Read the Collab Deal OS Privacy Policy to understand what data we collect, how creator and brand information is used, how messages and account data are handled, and what choices users have.',
+  alternates: {
+    canonical: '/privacy',
+  },
+  openGraph: {
+    title: 'Privacy Policy | Collab Deal OS',
+    description:
+      'Learn how Collab Deal OS handles account information, creator and brand data, collaboration messages, product usage, and user privacy choices.',
+    url: '/privacy',
+    type: 'website',
+    images: ['/og.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Privacy Policy | Collab Deal OS',
+    description:
+      'Learn how Collab Deal OS handles account information, creator and brand data, collaboration messages, product usage, and user privacy choices.',
+    images: ['/og.png'],
+  },
+};
 
 export default function PrivacyPage() {
   return <div className="min-h-svh bg-white"><PublicHeader /><main className="prose-policy"><p className="policy-eyebrow">Legal</p><h1>Privacy Policy</h1><p className="policy-lead">Last updated: 20 September 2026</p><section><h2>What we collect</h2><p>We collect account details, creator or brand profile information, collaboration deals, offer terms, declared social metrics, uploaded assets, brand–creator messages, and product usage needed to operate Collab Deal OS.</p></section><section><h2>How we use data</h2><p>We use this information to authenticate accounts, operate creator discovery and campaign workflows, support brand–creator conversations and offers, protect account actions, prevent abuse, and provide account support.</p></section><section><h2>Declared and verified metrics</h2><p>Creator social metrics are entered by creators and labeled Creator Declared unless a future official platform integration verifies them. We do not infer follower counts from profile URLs or scrape social platforms.</p></section><section><h2>Security and service providers</h2><p>Private provider keys are kept server-side. Authorized infrastructure providers may process limited data for authentication, hosting, transactional email, and product analytics under their applicable terms.</p></section><section><h2>Your choices</h2><p>You may update your profile, preferences, and account information. Account deletion is available from Settings and requires typing DELETE MY ACCOUNT to confirm permanent data removal.</p></section><section><h2>Payment processing</h2><p>Collab Deal OS currently does not process financial transactions or store payment credentials. Campaign budgets and offer values are negotiated collaboration terms directly between brands and creators.</p></section><section><h2>Contact</h2><p>This is an initial product privacy policy and should be reviewed with final company details, support contact information, and legal counsel before a public production launch.</p></section></main><PublicFooter /></div>;
