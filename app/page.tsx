@@ -198,6 +198,67 @@ export default function Home() {
           </article>
         </div>
       </section>
+      <section className="platform-overview" aria-labelledby="platform-overview-title">
+        <div className="platform-overview__intro">
+          <p className="platform-overview__eyebrow">How Collab Deal OS works</p>
+
+          <h2 id="platform-overview-title">
+            A creator-brand collaboration marketplace built around real deals.
+          </h2>
+
+          <p>
+            Collab Deal OS gives creators and brands one structured place to
+            discover collaboration opportunities, show interest, start private
+            conversations, discuss campaign terms, and manage offers.
+          </p>
+        </div>
+
+        <ol className="platform-flow" aria-label="Collaboration workflow">
+          <li className="platform-flow__item">
+            <span>01</span>
+            <div>
+              <strong>Brand publishes a deal</strong>
+              <p>
+                Brands create collaboration opportunities with campaign details
+                and expectations.
+              </p>
+            </div>
+          </li>
+
+          <li className="platform-flow__item">
+            <span>02</span>
+            <div>
+              <strong>Creator discovers it</strong>
+              <p>
+                Creators browse relevant opportunities and show interest in the
+                deals that fit them.
+              </p>
+            </div>
+          </li>
+
+          <li className="platform-flow__item">
+            <span>03</span>
+            <div>
+              <strong>Private conversation begins</strong>
+              <p>
+                Brands and creators move from discovery into direct,
+                deal-specific messaging.
+              </p>
+            </div>
+          </li>
+
+          <li className="platform-flow__item">
+            <span>04</span>
+            <div>
+              <strong>Offer terms are organized</strong>
+              <p>
+                Collaboration details, offers, and decisions stay structured in
+                one workflow.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
 
       <section className="trust-strip" aria-label="Platform values">
         {trustPoints.map(([title, description], index) => (
