@@ -38,26 +38,54 @@ export const metadata: Metadata = {
 
 const structuredData = {
   '@context': 'https://schema.org',
-  '@type': 'WebApplication',
-  name: 'Collab Deal OS',
-  url: 'https://collab-deal-os.mohammedzaid00100.workers.dev/',
-  applicationCategory: 'BusinessApplication',
-  operatingSystem: 'Web',
-  description:
-    'Collab Deal OS is a creator-brand collaboration marketplace where creators and brands can discover opportunities, connect directly, discuss campaign terms, manage offers, and organize collaboration workflows.',
-  isAccessibleForFree: true,
-  audience: [
+  '@graph': [
     {
-      '@type': 'Audience',
-      audienceType: 'Creators',
+      '@type': 'WebApplication',
+      '@id':
+        'https://collab-deal-os.mohammedzaid00100.workers.dev/#application',
+      name: 'Collab Deal OS',
+      url: 'https://collab-deal-os.mohammedzaid00100.workers.dev/',
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      description:
+        'Collab Deal OS is a creator-brand collaboration marketplace where creators and brands can discover opportunities, connect directly, discuss campaign terms, manage offers, and organize collaboration workflows.',
+      isAccessibleForFree: true,
+      brand: {
+        '@id': 'https://collab-deal-os.mohammedzaid00100.workers.dev/#brand',
+      },
+      audience: [
+        {
+          '@type': 'Audience',
+          audienceType: 'Creators',
+        },
+        {
+          '@type': 'Audience',
+          audienceType: 'Brands',
+        },
+      ],
     },
     {
-      '@type': 'Audience',
-      audienceType: 'Brands',
+      '@type': 'WebSite',
+      '@id': 'https://collab-deal-os.mohammedzaid00100.workers.dev/#website',
+      name: 'Collab Deal OS',
+      url: 'https://collab-deal-os.mohammedzaid00100.workers.dev/',
+      description:
+        'A creator-brand collaboration marketplace for discovering opportunities, connecting directly, discussing campaigns, and managing collaboration offers.',
+      inLanguage: 'en',
+      about: {
+        '@id':
+          'https://collab-deal-os.mohammedzaid00100.workers.dev/#application',
+      },
+    },
+    {
+      '@type': 'Brand',
+      '@id': 'https://collab-deal-os.mohammedzaid00100.workers.dev/#brand',
+      name: 'Collab Deal OS',
+      url: 'https://collab-deal-os.mohammedzaid00100.workers.dev/',
+      logo: 'https://collab-deal-os.mohammedzaid00100.workers.dev/brand-logo.png',
     },
   ],
 };
-
 const trustPoints = [
   ['Secure by design', 'Your deal data stays private'],
   ['Data-driven', 'Clear pricing and fit signals'],
