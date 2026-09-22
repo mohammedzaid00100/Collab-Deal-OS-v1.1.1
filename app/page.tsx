@@ -36,6 +36,28 @@ export const metadata: Metadata = {
   },
 };
 
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Collab Deal OS',
+  url: 'https://collab-deal-os.mohammedzaid00100.workers.dev/',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  description:
+    'Collab Deal OS is a creator-brand collaboration marketplace where creators and brands can discover opportunities, connect directly, discuss campaign terms, manage offers, and organize collaboration workflows.',
+  isAccessibleForFree: true,
+  audience: [
+    {
+      '@type': 'Audience',
+      audienceType: 'Creators',
+    },
+    {
+      '@type': 'Audience',
+      audienceType: 'Brands',
+    },
+  ],
+};
+
 const trustPoints = [
   ['Secure by design', 'Your deal data stays private'],
   ['Data-driven', 'Clear pricing and fit signals'],
@@ -46,8 +68,13 @@ const trustPoints = [
 export default function Home() {
   return (
     <main className="landing-shell">
-      <header className="site-header">
-        <BrandLogo />
+           <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+
+       <header className="site-header">
+         <BrandLogo />
 
         <nav className="header-actions" aria-label="Account navigation">
           <Link className="text-link" href="/login">
