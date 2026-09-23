@@ -18,7 +18,7 @@ export function BrandLogo({
     <>
       <span className="brand-mark" aria-hidden="true">
         <img
-          src="/brand-logo.png"
+          src="/brand-logo-small.png"
           alt="Collab Deal OS logo"
           width={50}
           height={24}
