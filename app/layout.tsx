@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: '%s · Collab Deal OS',
   },
   description:
-    'A creator-brand collaboration marketplace for discovering deals, negotiating in one place, and managing the path to payment.',
+    'A creator-brand collaboration marketplace for discovering deals, connecting directly, and managing collaboration offers in one place.',
   openGraph: {
     title: 'Collab Deal OS',
     description: 'Real brands. Real creators. Clear deals.',

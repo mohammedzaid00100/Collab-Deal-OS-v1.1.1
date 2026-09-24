@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { BrandLogo } from '@/components/brand-logo';
+import { PublicFooter } from '@/components/public/public-footer';
 
 export const metadata: Metadata = {
   title: {
@@ -95,16 +96,20 @@ const trustPoints = [
 
 export default function Home() {
   return (
-    <main className="landing-shell">
-           <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+    <>
+      <main className="landing-shell">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
 
        <header className="site-header">
          <BrandLogo />
 
         <nav className="header-actions" aria-label="Account navigation">
+          <Link className="text-link" href="/pricing">
+            Pricing
+          </Link>
           <Link className="text-link" href="/login">
             Sign in
           </Link>
@@ -273,6 +278,8 @@ export default function Home() {
           </div>
         ))}
       </section>
-    </main>
+      </main>
+      <PublicFooter />
+    </>
   );
 }
