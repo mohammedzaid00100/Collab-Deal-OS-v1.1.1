@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ContentPage } from '@/components/public/content-page';
 
 const title = 'How Collab Deal OS Works | Creator-Brand Marketplace';
-const description = 'See how Collab Deal OS connects brands and creators through deal discovery, expressions of interest, private conversations, structured offers, and collaboration management.';
+const description = 'See how Collab Deal OS connects creators and brands through deal discovery, private conversations, structured offers, and collaboration management.';
 
 export const metadata: Metadata = {
   title: { absolute: title }, description,
