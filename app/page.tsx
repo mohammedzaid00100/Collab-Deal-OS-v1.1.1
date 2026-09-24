@@ -168,6 +168,7 @@ export default function Home() {
               Continue as creator
               <ArrowRight className="arrow-icon" aria-hidden="true" />
             </Link>
+            <Link className="text-link" href="/for-creators">Learn more for creators</Link>
           </article>
 
           <article className="role-card role-card--brand">
@@ -200,6 +201,7 @@ export default function Home() {
               Continue as brand
               <ArrowRight className="arrow-icon" aria-hidden="true" />
             </Link>
+            <Link className="text-link" href="/for-brands">Learn more for brands</Link>
           </article>
         </div>
       </section>
@@ -263,6 +265,7 @@ export default function Home() {
             </div>
           </li>
         </ol>
+        <Link className="text-link" href="/how-it-works">See how Collab Deal OS works →</Link>
       </section>
 
       <section className="trust-strip" aria-label="Platform values">
