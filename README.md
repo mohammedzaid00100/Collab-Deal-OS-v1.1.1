@@ -1,21 +1,30 @@
 # Collab Deal OS
 
-Neutral creator-brand deal intelligence: discover opportunities, structure terms, evaluate fair value, revise offers, and accept clearer partnerships. There is no chat, DM inbox, or messaging system.
+Creator-brand collaboration marketplace with role-based workspaces, deal and creator discovery, private messaging, structured offers and creator networking. Built with React, TypeScript and Supabase.
 
-## Implemented
+Collab Deal OS brings collaboration discovery and negotiation into one workspace. Brands can publish opportunities, creators can discover deals and express interest, and both sides can move into private conversations and structured offers.
 
-- Role-first Supabase authentication, email/password recovery, Google OAuth plumbing, creator/brand onboarding, protected dashboards, profile editing and preferences.
-- Campaign creation/lifecycle, opportunities, creator discovery, explainable matching, private assets, and saved opportunities.
-- Structured offers, immutable revisions, accept/reject/counter workflows, notifications, and audit history.
-- Deterministic INR pricing engine, strict OpenAI explanations, saved results/history, server-side quotas, five lifetime free evaluations, and failure-safe refunds.
-- Creator/brand billing pages, verified Razorpay checkout/webhooks, idempotent cancellation, and scheduled subscription reconciliation.
-- Resend delivery outbox, opt-in PostHog events, exact account activity counts, responsive navigation, PWA assets, and Capacitor Android project/build workflow.
+## Current project
 
-These are implemented workflows, not a claim of a live production launch. Credentials are absent, paid AI allowances await approval, and live provider/device tests remain outstanding. See [PROJECT_STATUS.md](PROJECT_STATUS.md).
+This repository contains the newer marketplace iteration. The earlier [collab-deal-os](https://github.com/mohammedzaid00100/collab-deal-os) repository is the discontinued prototype.
+
+[View deployed website](https://collab-deal-os.mohammedzaid00100.workers.dev/)
+
+## Core features
+
+- Creator and brand onboarding with role-based workspaces.
+- Deal/campaign publishing and opportunity discovery.
+- Creator discovery and matching.
+- Interest/comment interactions and creator networking.
+- Private conversation screens and messaging components.
+- Structured offers and collaboration-term workflows.
+- Profile, notification and account-management interfaces.
+
+The current source includes messaging routes and components; descriptions of the earlier version as having no chat are obsolete.
 
 ## Stack
 
-React 19, strict TypeScript, Tailwind 4, Next.js-compatible App Router through Vinext/Sites, Supabase Auth/PostgreSQL/Storage, Zod, Vitest, and Capacitor 8. Privileged AI, billing, email, and database work stays server-side.
+React, TypeScript, Tailwind CSS, Supabase, Vinext/Next.js-compatible routing, Cloudflare Workers and Capacitor for the Android project.
 
 ## Local development
 
@@ -27,13 +36,9 @@ npm run setup
 npm run dev
 ```
 
-Copy `.env.example` to ignored `.env.local` and supply credentials from accounts you control. The setup command reports missing configuration without printing values. Public pages render without credentials; account workflows show setup-required states.
+Copy `.env.example` to ignored `.env.local` and configure the services used by your working environment. Keep private credentials server-side and out of Git history.
 
-For a disposable local Supabase database, install its CLI/container prerequisites, then run `supabase start` and `supabase db reset`. Never reset a production database. Configure Auth redirects and email/Google providers separately.
-
-The dev server prints its URL, normally `http://localhost:3000`. This Windows session also has an ignored portable Node installation in `.tools/node-v22.23.2-win-x64`; it is a local convenience, not part of deployment.
-
-## Verification
+## Verification commands
 
 ```bash
 npm run typecheck
@@ -41,28 +46,16 @@ npm run lint
 npm test
 npm run test:db
 npm run build
-npm run setup -- --check-database
 ```
 
-`test:db` executes every migration and selected billing, RLS, quota, and delivery flows in disposable PGlite PostgreSQL. Its test-only Auth/Storage stubs and SHA-256 adapter do not replace hosted Supabase/pgTAP or concurrent multi-connection testing. Hosted security tests are in `supabase/tests`.
+These are repository commands, not a claim that they were rerun for this documentation update. A deployed page is not proof that every provider integration or multi-account workflow is production-ready.
 
-Production dependency audit: `npm audit --omit=dev`. Review the complete dependency audit separately; development tooling can have advisories too.
+## Engineering references
 
-## Configuration and delivery
-
-- [Deployment and provider operations](docs/DEPLOYMENT.md)
-- [Android build, signing, and device-test requirements](docs/ANDROID.md)
+- [Deployment notes](docs/DEPLOYMENT.md)
+- [Android notes](docs/ANDROID.md)
 - [Security notes](SECURITY.md)
-- [Current progress and blockers](PROJECT_STATUS.md)
+- [Historical project status](PROJECT_STATUS.md)
+- [Payment removal and future reintroduction](PAYMENT_REMOVAL_AND_FUTURE_REINTRODUCTION.md)
 
-Thirteen ordered SQL migrations are the database source of truth. Paid monthly limits are intentionally NULL until approved; the five free evaluations remain enforced server-side. No fake users, revenue, provider verdicts, or paid entitlements are shown as production facts.
-
-## Routes
-
-Public: `/`, `/pricing`, `/login`, `/signup`, `/forgot-password`, `/reset-password`, `/privacy`, `/terms`, `/setup`.
-
-Creator: dashboard, opportunities/detail, offers/detail, AI advisor, analysis/detail, analytics, subscription, profile, settings, and notifications beneath `/creator`.
-
-Brand: dashboard, campaigns/new/detail, creators/detail, matches, offers/new/detail, AI advisor, analysis/detail, analytics, subscription, profile, settings, and notifications beneath `/brand`.
-
-Health: `GET /api/health`. Provider webhooks and authenticated maintenance use separate server-only endpoints. No secret should ever use a `NEXT_PUBLIC_` prefix.
+The dated status document describes an earlier implementation phase. Check current source and the payment-removal notes before treating older messaging, billing or deployment statements as current behavior.
