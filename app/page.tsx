@@ -51,6 +51,10 @@ const structuredData = {
       description:
         'Collab Deal OS is a creator-brand collaboration marketplace where creators and brands can discover opportunities, connect directly, discuss campaign terms, manage offers, and organize collaboration workflows.',
       isAccessibleForFree: true,
+      provider: {
+        '@id':
+          'https://collab-deal-os.mohammedzaid00100.workers.dev/#organization',
+      },
       brand: {
         '@id': 'https://collab-deal-os.mohammedzaid00100.workers.dev/#brand',
       },
@@ -73,6 +77,10 @@ const structuredData = {
       description:
         'A creator-brand collaboration marketplace for discovering opportunities, connecting directly, discussing campaigns, and managing collaboration offers.',
       inLanguage: 'en',
+      publisher: {
+        '@id':
+          'https://collab-deal-os.mohammedzaid00100.workers.dev/#organization',
+      },
       about: {
         '@id':
           'https://collab-deal-os.mohammedzaid00100.workers.dev/#application',
@@ -84,6 +92,17 @@ const structuredData = {
       name: 'Collab Deal OS',
       url: 'https://collab-deal-os.mohammedzaid00100.workers.dev/',
       logo: 'https://collab-deal-os.mohammedzaid00100.workers.dev/brand-logo.png',
+    },
+    {
+      '@type': 'Organization',
+      '@id':
+        'https://collab-deal-os.mohammedzaid00100.workers.dev/#organization',
+      name: 'Collab Deal OS',
+      url: 'https://collab-deal-os.mohammedzaid00100.workers.dev/',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://collab-deal-os.mohammedzaid00100.workers.dev/brand-logo.png',
+      },
     },
   ],
 };
