@@ -17,6 +17,10 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      NEXT_PUBLIC_SITE_URL: https://collab-deal-os.mohammedzaid00100.workers.dev
+      NEXT_PUBLIC_SUPABASE_URL: https://jelqaaiasavrmfuwbmxz.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_TFgfwd1yN2SToyKtAeKOuQ_T7G_A3Jt
     steps:
       - name: Check out commit
         uses: actions/checkout@v4
@@ -29,6 +33,13 @@ jobs:
 
       - name: Install locked dependencies
         run: npm ci
+
+      - name: Check public build configuration
+        run: |
+          if [ -z "$NEXT_PUBLIC_SUPABASE_URL" ] || [ -z "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo 'Missing public Supabase build configuration.'
+            exit 1
+          fi
 
       - name: Typecheck
         run: npm run typecheck
